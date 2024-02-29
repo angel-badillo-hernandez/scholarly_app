@@ -1,2 +1,46 @@
 # scholarly_app
-# Windows Form App for processing scholarship applicant data for MSU CS Department
+# Windows App developed with PyQt6 GUI framework.
+## Python3.11
+
+## Python Virtual Environment Setup:
+1. Download Python3.11, easier to do so on Microsft Store.
+2. Get into the scholarly_app directory.
+3. Run the following command in Powershell:
+```powershell
+python3.11 -m venv venv
+```
+4. To activate and use the virtual environment's Python interpretor run the following command:
+```
+venv\Scripts\Activate.ps1
+```
+5. To install the require packages, run the following command:
+```
+pip install -r requirements.txt
+```
+
+## Opening and Closing the Python Virtual Environment:
+- To open the virtual environment, run this command in powershell:
+```
+venv\Scripts\Activate.ps1
+```
+- To close the virtual environment, run this command in Powershell:
+```
+deactivate
+```
+
+## Running Python Source Files:
+- To run a script:
+```
+python main.py
+```
+
+## Turning the project into a distributable EXE with included dependencies:
+- Coming soon
+
+## Resources:
+### Sqlite3
+- https://docs.python.org/3/library/sqlite3.html
+### PyQt6
+- https://pypi.org/project/PyQt6/
+### Google Forms API:
+- https://developers.google.com/forms/api/quickstart/python
