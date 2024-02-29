@@ -37,6 +37,13 @@ python main.py
 ## Turning the project into a distributable EXE with included dependencies:
 - Coming soon
 
+## Recommended VS Code Extensions:
+- Black Formatter: ms-python.black-formatter
+- Python: ms-python.python
+- SQLite Viewer: qwtel.sqlite-viewer
+- Todo Tree: Gruntfuggly.todo-tree
+- Office Viewer: cweijan.vscode-office
+
 ## Resources:
 ### Sqlite3
 - https://docs.python.org/3/library/sqlite3.html
