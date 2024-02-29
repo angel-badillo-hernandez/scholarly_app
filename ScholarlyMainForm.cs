@@ -1,8 +1,8 @@
 namespace scholarly_app
 {
-    public partial class Form1 : Form
+    public partial class ScholarlyMainForm : Form
     {
-        public Form1()
+        public ScholarlyMainForm()
         {
             InitializeComponent();
         }
