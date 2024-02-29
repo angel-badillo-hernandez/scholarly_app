@@ -2,6 +2,11 @@
 
 
 class StudentRecord:
+    """Represents student information.
+    Class for representing student information. Allows easy conversion
+    to dict, tuple, list, and SQLite insertable record/row.
+    """
+
     def __init__(
         self,
         studentID: str = "",
@@ -10,7 +15,7 @@ class StudentRecord:
         classification: str = "",
         credit_hrs: int = 0,
         gender: str = "",
-        address: str = "",
+        in_state: bool =  False,
     ) -> None:
         self.id: str = studentID
         self.name: str = name
@@ -18,7 +23,7 @@ class StudentRecord:
         self.classification: str = classification
         self.credit_hrs: int = credit_hrs
         self.gender: str = gender
-        self.address: str = address
+        self.in_state: bool = in_state
 
     def __iter__(self):
         yield "id", self.id,
@@ -27,24 +32,24 @@ class StudentRecord:
         yield "classification", self.classification,
         yield "credit_hrs", self.credit_hrs
         yield "gender", self.gender,
-        yield "address", self.address,
+        yield "in_state", self.in_state,
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str]:
         return dict(self)
-    
-    def to_record(self):
+
+    def to_record(self) -> tuple:
         return tuple(dict(self).values())
-    
+
     def __repr__(self) -> str:
-        return f"{StudentRecord.__name__}(studentID={self.name})"
+        return f"{dict(self)}"
+
 
 if __name__ == "__main__":
     from rich import print
-    x = StudentRecord("M10", "Angel", 4.0, "Freshman", 120, "male", "Texas")
-    
-    print(x.to_record())
-    print(dict(x))
-    print(tuple(x))
-    print(x)
 
-    
+    x = StudentRecord("M10", "Angel", 4.0, "Freshman", 120, "male", True)
+
+    print(f"SQLite record/row:  {x.to_record()}")
+    print(f"Dictionary: {dict(x)}")
+    print(f"Tuple: {tuple(x)}")
+    print(f"String representation: {x}")
