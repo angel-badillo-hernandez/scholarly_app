@@ -11,8 +11,6 @@ from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt, QSize
 
 
-# ChatGPT Prompt: "Write me python code for a PyQT6 menu bar with a File tab and Open button."
-# Citation: (OpenAI's ChatGPT, response to prompt from author, February 29, 2024)
 class ScholarlyMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -20,6 +18,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.initui()
 
     def initui(self):
+        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         """Intializes the QMainWindow UI component
 
         Initializes main window's attributes such as: size, title, etc.
@@ -30,6 +29,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.create_menubar()
 
     def create_menubar(self):
+        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         """Creates a QMenuBar on the main window
 
         Creates and displays a menu bar with "File" menu.
@@ -48,6 +48,7 @@ class ScholarlyMainWindow(QMainWindow):
         file_menu.show()
 
     def open_file_dialog(self) -> str:
+        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         """Opens File Explorer for selecting CSV file.
 
         Opens File Explorer for selecting a CSV file with student data.
