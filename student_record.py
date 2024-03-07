@@ -9,30 +9,39 @@ class StudentRecord:
 
     def __init__(
         self,
-        studentID: str = "",
         name: str = "",
+        student_ID: str = "",
         cum_gpa: float = 0.0,
+        major:str = "",
         classification: str = "",
-        credit_hrs: int = 0,
+        earned_credits: int = 0,
+        enrolled:str = "",
+        email:str = "",
         gender: str = "",
-        in_state: bool =  False,
+        in_state:str =  "",
     ) -> None:
-        self.id: str = studentID
         self.name: str = name
+        self.student_ID: str = student_ID
         self.cum_gpa: float = cum_gpa
+        self.major:str = major
         self.classification: str = classification
-        self.credit_hrs: int = credit_hrs
+        self.earned_credits: int = earned_credits
+        self.enrolled:str = enrolled
+        self.email:str = email
         self.gender: str = gender
         self.in_state: bool = in_state
 
     def __iter__(self):
-        yield "id", self.id,
-        yield "name", self.name,
+        yield "name", self.name
+        yield "student_ID", self.student_ID
         yield "cum_gpa", self.cum_gpa
-        yield "classification", self.classification,
-        yield "credit_hrs", self.credit_hrs
-        yield "gender", self.gender,
-        yield "in_state", self.in_state,
+        yield "major", self.major
+        yield "classification", self.classification
+        yield "earned_credits", self.earned_credits
+        yield "enrolled", self.enrolled
+        yield "email", self.email
+        yield "gender", self.gender
+        yield "in_state", self.in_state
 
     def to_dict(self) -> dict[str]:
         return dict(self)
