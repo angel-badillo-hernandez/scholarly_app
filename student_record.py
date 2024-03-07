@@ -1,4 +1,8 @@
-# Student Record
+"""Provides a class for storing student records.
+
+Provides the class `StudentRecord` for storing student data and converting it
+into other data structures for ease of use in SQLite database.
+"""
 
 
 class StudentRecord:
@@ -20,6 +24,22 @@ class StudentRecord:
         gender: str = "",
         in_state:str =  "",
     ) -> None:
+        """Creates a StudentRecord object.
+        
+        A class for storing and representing student data.
+
+        Args:
+            name (str): Name of the student.
+            student_ID (str): Mustangs ID of the student.
+            cum_gpa (float): Cumulative GPA of the student.
+            major (str): Major of the student.
+            classification (str): Classification of the student.
+            earned_credits (str): Total earned credits of the student.
+            enrolled (str): Enrollment status of the student ("Yes", "No").
+            gender (str): Gender of the student.
+            in_state (str): 
+
+        """
         self.name: str = name
         self.student_ID: str = student_ID
         self.cum_gpa: float = cum_gpa
