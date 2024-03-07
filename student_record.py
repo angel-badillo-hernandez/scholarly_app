@@ -16,16 +16,16 @@ class StudentRecord:
         name: str = "",
         student_ID: str = "",
         cum_gpa: float = 0.0,
-        major:str = "",
+        major: str = "",
         classification: str = "",
         earned_credits: int = 0,
-        enrolled:str = "",
-        email:str = "",
+        enrolled: str = "",
+        email: str = "",
         gender: str = "",
-        in_state:str =  "",
+        in_state: str = "",
     ) -> None:
         """Creates a StudentRecord object.
-        
+
         A class for storing and representing student data.
 
         Args:
@@ -37,17 +37,16 @@ class StudentRecord:
             earned_credits (str): Total earned credits of the student.
             enrolled (str): Enrollment status of the student ("Yes", "No").
             gender (str): Gender of the student.
-            in_state (str): 
-
+            in_state (str): Whether or not the student is in state ("Yes", "No").
         """
         self.name: str = name
         self.student_ID: str = student_ID
         self.cum_gpa: float = cum_gpa
-        self.major:str = major
+        self.major: str = major
         self.classification: str = classification
         self.earned_credits: int = earned_credits
-        self.enrolled:str = enrolled
-        self.email:str = email
+        self.enrolled: str = enrolled
+        self.email: str = email
         self.gender: str = gender
         self.in_state: bool = in_state
 
