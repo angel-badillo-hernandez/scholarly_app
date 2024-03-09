@@ -6,3 +6,4 @@ google-auth-oauthlib
 rich
 pandas
 pypika
+python-docx

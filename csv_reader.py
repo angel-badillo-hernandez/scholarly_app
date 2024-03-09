@@ -8,20 +8,20 @@ from student_record import StudentRecord
 
 
 class CSVReader:
-    def __init__(self, file_name: str) -> None:
-        self.file_name: str = file_name
+    def __init__(self, file_path: str) -> None:
+        self.file_path: str = file_path
 
-    def get_file_name(self) -> str:
-        return self.file_name
+    def get_file_path(self) -> str:
+        return self.file_path
 
-    def set_file_name(self, file_name: str) -> None:
-        self.file_name = file_name
+    def set_file_path(self, file_name: str) -> None:
+        self.file_path = file_name
 
     def read_values(self) -> list[StudentRecord]:
         studentRecordList: list[StudentRecord] = []
 
         # Read data from CSV file
-        dataframe = pd.read_csv(self.file_name)
+        dataframe = pd.read_csv(self.file_path)
         headers: list = dataframe.columns.values.tolist()
 
         # Convert data from dataframe to list of StudentRecord
