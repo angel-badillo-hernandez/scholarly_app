@@ -6,6 +6,7 @@ contains methods for creating the applications GUI.
 """
 
 import sys
+import webbrowser
 import os
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QAction, QCloseEvent, QIcon
@@ -68,18 +69,21 @@ class ScholarlyMainWindow(QMainWindow):
         file_menu: QMenu = menu_bar.addMenu("&File")
 
         # Open Action
-        open_action: QAction = QAction("Open", self)
+        open_action: QAction = QAction("Open File", self)
         open_action.triggered.connect(self.open_file_slot)
+        open_action.setShortcut("ctrl+o")
         file_menu.addAction(open_action)
 
         # Save Action
-        save_action: QAction = QAction("Save", self)
+        save_action: QAction = QAction("Save File", self)
         save_action.triggered.connect(self.save_file_slot)
+        save_action.setShortcut("ctrl+s")
         file_menu.addAction(save_action)
 
         # Close Action
-        close_action: QAction = QAction("Close", self)
+        close_action: QAction = QAction("Close File", self)
         close_action.triggered.connect(self.close_file_slot)
+        close_action.setShortcut("ctrl+f4")
         file_menu.addAction(close_action)
 
         # Exit Action
@@ -88,12 +92,12 @@ class ScholarlyMainWindow(QMainWindow):
         file_menu.addAction(close_action)
 
         # About Menu Tab
-        about_action: QAction = QAction("About", self)
+        about_action: QAction = QAction("&About", self)
         about_action.triggered.connect(self.about_slot)
         menu_bar.addAction(about_action)
 
         # Help Menu Tab
-        help_action: QAction = QAction("Help", self)
+        help_action: QAction = QAction("&Help", self)
         help_action.triggered.connect(self.help_event)
         menu_bar.addAction(help_action)
 
@@ -179,6 +183,7 @@ class ScholarlyMainWindow(QMainWindow):
 
     def about_slot(self) -> None:
         # TODO: Add functionality for About menu
+        webbrowser.open("google.com")
         pass
 
     def help_event(self) -> None:
