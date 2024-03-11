@@ -116,6 +116,10 @@ class ScholarlyMainWindow(QMainWindow):
             filter="CSV (*.csv)",
         )
 
+        # If no file is specified, do nothing
+        if not file_path:
+            return
+
         # Insert data from file to database
         self.database.csv_to_table(file_path)
 
@@ -143,12 +147,15 @@ class ScholarlyMainWindow(QMainWindow):
             filter="CSV (*.csv)",
         )
 
-        # Retrieve data from table
-        student_data:list[StudentRecord] = self.student_table.get_all_data()
+        # If no file is specified, do nothing
+        if not file_path:
+            return
 
-        writer:StudentDataWriter = StudentDataWriter(file_path)
+        # Retrieve data from table
+        student_data: list[StudentRecord] = self.student_table.get_all_data()
+
+        writer: StudentDataWriter = StudentDataWriter(file_path)
         writer.write_values(student_data)
-        
 
     def close_file_slot(self) -> None:
         self.database.drop_table()
