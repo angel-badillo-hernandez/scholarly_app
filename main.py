@@ -1,7 +1,7 @@
 """Main Program for creating the Scholarly App GUI
 
 This file contains the `ScholarlyMainWindow` class, which is the
-contains methods for creating the applications GUI.
+contains methods for creating the application's GUI.
 
 """
 
@@ -19,15 +19,28 @@ from scholarly_database import ScholarlyDatabase, StudentRecord
 
 
 class ScholarlyMainWindow(QMainWindow):
+    """Class for implementing the GUI for the Scholarly app.
+
+    Class for implementing the GUI for the Scholarly application.
+    """
+
     def __init__(self):
+        """Creates an instance of ScholarlyMainWindow.
+
+        Creates an instance of ScholarlyMainWindow, the GUI for the application.
+        """
         super().__init__()
         self.student_table: StudentTableModel = None
         self.student_table_view: QTableView = None
         self.database: ScholarlyDatabase = ScholarlyDatabase("student_database.sqlite")
 
-        self.initalize_ui()
+        self.initialize_ui()
 
-    def initalize_ui(self):
+    def initialize_ui(self):
+        """Initializes GUI components on the GUI.
+
+        Initializes the GUI components of the GUI for the application.
+        """
         # Set window properties
         self.setWindowTitle("Scholarly")
         self.setWindowIcon(QIcon("images/scholarly.ico"))
@@ -37,9 +50,14 @@ class ScholarlyMainWindow(QMainWindow):
         self.initialize_menubar()
 
         # Initilize table
-        self.initalize_central_widget()
+        self.initialize_central_widget()
 
-    def initalize_central_widget(self):
+    def initialize_central_widget(self):
+        """Initializes the central widget for the main window.
+
+        Initializes the central widget for the main window of
+        the application.
+        """
         central_widget: QWidget = QWidget()
         horizontal_layout: QHBoxLayout = QHBoxLayout()
 
@@ -57,6 +75,10 @@ class ScholarlyMainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def initialize_menubar(self):
+        """Initializes the menu bar for the main window.
+
+        Initializes the menu bar for the main window of the appllication.
+        """
         # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         """Creates a QMenuBar on the main window
 
@@ -104,11 +126,13 @@ class ScholarlyMainWindow(QMainWindow):
         file_menu.show()
 
     def open_file_slot(self) -> None:
-        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
-        """Opens File Explorer for selecting CSV file.
+        """Slot (event handler) for "Open" action.
 
-        Opens File Explorer for selecting a CSV file with student data.
+        Function called when "Open" action is activated. Shows
+        a file dialog for opening a file, then reads the data
+        from the file into the database and the table.
         """
+        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         # Current user's Documents Directory
         user_documents_path: str = f"{os.path.expanduser('~')}/Documents"
 
@@ -135,11 +159,13 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table_view.setModel(self.student_table)
 
     def save_file_slot(self) -> None:
-        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
-        """Opens File Explorer for saving a CSV file.
+        """Slot (event handler) for "Save" action.
 
-        Opens File Explorer for saving a CSV file with student data.
+        Function called when "Save" action is activated. Shows
+        a file dialog for saving a file, then stores the data from the table
+        into the selected CSV file.
         """
+        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         # Current user's Documents Directory
         user_documents_path: str = f"{os.path.expanduser('~')}/Documents"
 
@@ -167,6 +193,12 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table_view.setModel(self.student_table)
 
     def closeEvent(self, event: QCloseEvent) -> None:
+        """Event handler for closing the application.
+
+        Event handler triggered when the application is closed.
+        Shows a message box asking the user if they are sure they want to close
+        the application.
+        """
         reponse: QMessageBox.StandardButton = QMessageBox.question(
             self,
             "Exit",
@@ -181,21 +213,36 @@ class ScholarlyMainWindow(QMainWindow):
             event.ignore()
 
     def about_slot(self) -> None:
+        """Slot (event handler) for "About" action.
+
+        Function called when "About" action is activated.
+        Opens the default web browser on the device and opens
+        a tab to the link for the about information.
+        """
         # TODO: Add functionality for About menu
-        webbrowser.open("https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md")
+        webbrowser.open(
+            "https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md"
+        )
 
     def help_event(self) -> None:
-        # TODO: Add functionality for Help menu
-        webbrowser.open("https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md")
+        """Slot (event handler) for "Help" action.
 
-    def selected_row(self) -> None:
-        indices = self.student_table_view.selectRow
+        Function called when "Help" action is activated.
+        Opens the default web browser on the device and opens
+        a tab to the link for the manual for the application.
+        """
+        # TODO: Add functionality for Help menu
+        webbrowser.open(
+            "https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md"
+        )
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = ScholarlyMainWindow()
+    window: ScholarlyMainWindow = ScholarlyMainWindow()
+
+    # Displays the main window for the application
     window.show()
 
-    # Run app
+    # Run application
     sys.exit(app.exec())
