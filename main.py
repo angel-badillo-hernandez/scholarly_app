@@ -15,7 +15,7 @@ from student_table_model import StudentTableModel
 from student_record import StudentRecord
 from student_data_reader import StudentDataReader
 from student_data_writer import StudentDataWriter
-from student_database import StudentDataBase
+from scholarly_database import ScholarlyDatabase, StudentRecord
 
 
 class ScholarlyMainWindow(QMainWindow):
@@ -23,7 +23,7 @@ class ScholarlyMainWindow(QMainWindow):
         super().__init__()
         self.student_table: StudentTableModel = None
         self.student_table_view: QTableView = None
-        self.database: StudentDataBase = StudentDataBase("student_database.sqlite")
+        self.database: ScholarlyDatabase = ScholarlyDatabase("student_database.sqlite")
 
         self.initalize_ui()
 
@@ -125,10 +125,10 @@ class ScholarlyMainWindow(QMainWindow):
             return
 
         # Insert data from file to database
-        self.database.csv_to_table(file_path)
+        self.database.student_csv_to_table(file_path)
 
         # Retrieve data from the database
-        student_data = self.database.select_all()
+        student_data = self.database.select_all_students()
 
         # Store data into table
         self.student_table = StudentTableModel(student_data)
@@ -162,7 +162,7 @@ class ScholarlyMainWindow(QMainWindow):
         writer.write_values(student_data)
 
     def close_file_slot(self) -> None:
-        self.database.drop_table()
+        self.database.drop_table(ScholarlyDatabase.students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
 
@@ -170,12 +170,11 @@ class ScholarlyMainWindow(QMainWindow):
         reponse: QMessageBox.StandardButton = QMessageBox.question(
             self,
             "Exit",
-            "Are you sure you want to close the program?",
+            "Are you sure you want to close the program? Any unsaved data will be lost.",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
 
         if reponse == QMessageBox.StandardButton.Yes:
-            # TODO: Add functionality for deleting the database file
             self.close_file_slot()
             event.accept()
         else:
