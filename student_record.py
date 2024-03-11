@@ -51,6 +51,11 @@ class StudentRecord:
         self.in_state: bool = in_state
 
     def __iter__(self):
+        """Allows for iterating over attributes.
+
+        Allows for iterating over attributes and casting to other
+        data structures.
+        """
         yield "name", self.name
         yield "student_ID", self.student_ID
         yield "cum_gpa", self.cum_gpa
@@ -63,18 +68,51 @@ class StudentRecord:
         yield "in_state", self.in_state
 
     def to_dict(self) -> dict[str]:
+        """Returns dict representation of StudentRecord.
+
+        Returns a dict representation of the StudentRecord object.
+
+        Returns:
+            A dict representation of the StudentRecord object.
+        """
         return dict(self)
 
     def to_tuple(self) -> tuple:
+        """Returns tuple representation of StudentRecord.
+
+        Returns a tuple representation of the StudentRecord object.
+
+        Returns:
+            A tuple representation of the StudentRecord object.
+        """
         return tuple(dict(self).values())
 
     def to_list(self) -> list:
+        """Returns list representation of StudentRecord.
+
+        Returns a list representation of the StudentRecord object.
+
+        Returns:
+            A list representation of the StudentRecord object.
+        """
         return list(dict(self).values())
 
     def headers(self) -> list[str]:
+        """Returns the headers / keys.
+
+        Returns the headers / keys pertaining to the attributes in
+        the StudentRecord object.
+
+        Returns:
+            A list of the headers / keys.
+        """
         return list(dict(self).keys())
 
     def __repr__(self) -> str:
+        """Returns a str representation.
+
+        Returns a str representation of the StudentRecord object.
+        """
         return str(dict(self))
 
 
