@@ -183,12 +183,11 @@ class ScholarlyMainWindow(QMainWindow):
 
     def about_slot(self) -> None:
         # TODO: Add functionality for About menu
-        webbrowser.open("google.com")
-        pass
+        webbrowser.open("https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md")
 
     def help_event(self) -> None:
         # TODO: Add functionality for Help menu
-        pass
+        webbrowser.open("https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md")
 
     def selected_row(self) -> None:
         indices = self.student_table_view.selectRow
