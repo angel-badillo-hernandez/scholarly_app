@@ -65,11 +65,17 @@ class StudentRecord:
     def to_dict(self) -> dict[str]:
         return dict(self)
 
-    def to_record(self) -> tuple:
+    def to_tuple(self) -> tuple:
         return tuple(dict(self).values())
 
+    def to_list(self) -> list:
+        return list(dict(self).values())
+
+    def headers(self) -> list[str]:
+        return list(dict(self).keys())
+
     def __repr__(self) -> str:
-        return f"{dict(self)}"
+        return str(dict(self))
 
 
 if __name__ == "__main__":
@@ -77,7 +83,7 @@ if __name__ == "__main__":
 
     x = StudentRecord("M10", "Angel", 4.0, "Freshman", 120, "male", True)
 
-    print(f"SQLite record/row:  {x.to_record()}")
+    print(f"SQLite record/row:  {x.to_tuple()}")
     print(f"Dictionary: {dict(x)}")
     print(f"Tuple: {tuple(x)}")
     print(f"String representation: {x}")
