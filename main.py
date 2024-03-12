@@ -43,7 +43,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         # Set window properties
         self.setWindowTitle("Scholarly")
-        self.setWindowIcon(QIcon("images/scholarly.ico"))
+        self.setWindowIcon(QIcon("assets/scholarly.ico"))
         self.setGeometry(200, 200, 500, 500)
 
         # Initalize menu bar
