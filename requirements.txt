@@ -8,3 +8,4 @@ pandas
 pypika
 python-docx
 auto-py-to-exe
+fsspec

@@ -149,8 +149,12 @@ class ScholarlyMainWindow(QMainWindow):
         if not file_path:
             return
 
-        # Insert data from file to database
-        self.database.student_csv_to_table(file_path)
+        try:
+            # Insert data from file to database
+            self.database.student_csv_to_table(file_path)
+        # If invalid data file, show error message
+        except Exception as e:
+            QMessageBox.critical(self, "Invalid File", f"The file is not a CSV file, or is malformed.\n{type(e).__name__}: {e}")
 
         # Retrieve data from the database
         student_data = self.database.select_all_students()
