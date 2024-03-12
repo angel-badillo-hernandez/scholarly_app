@@ -69,6 +69,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table_view.setSelectionBehavior(
             QAbstractItemView.SelectionBehavior.SelectRows
         )
+        self.student_table_view.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
 
         # Add layout to central widget, and add central widget to main window
         central_widget.setLayout(horizontal_layout)
