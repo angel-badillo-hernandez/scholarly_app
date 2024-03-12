@@ -8,14 +8,25 @@ contains methods for creating the application's GUI.
 import sys
 import webbrowser
 import os
+from datetime import datetime
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QAction, QCloseEvent, QIcon
-from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex
+from PyQt6.QtGui import (
+    QAction,
+    QCloseEvent,
+    QIcon,
+    QPalette,
+    QColor,
+    QIntValidator,
+    QDoubleValidator,
+    QFont,
+)
+from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
 from student_record import StudentRecord
 from student_data_reader import StudentDataReader
 from student_data_writer import StudentDataWriter
 from scholarly_database import ScholarlyDatabase, StudentRecord
+from letter_writer import LetterVariables, LetterWriter
 
 
 class ScholarlyMainWindow(QMainWindow):
@@ -61,15 +72,91 @@ class ScholarlyMainWindow(QMainWindow):
         central_widget: QWidget = QWidget()
         horizontal_layout: QHBoxLayout = QHBoxLayout()
 
-        # Add table to layout
+        # Set central widget background color to maroon
+        # central_widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        # central_widget.setStyleSheet("background-color: maroon;")
+
+        # Create model and table view widget
         self.student_table = StudentTableModel()
         self.student_table_view: QTableView = QTableView()
-        self.student_table_view.setModel(self.student_table)
-        horizontal_layout.addWidget(self.student_table_view)
+
+        # Set table view background color to white
+        # self.student_table_view.setAttribute(
+        #     Qt.WidgetAttribute.WA_StyledBackground, True
+        # )
+        # self.student_table_view.setStyleSheet("background-color: white;")
+
+        # Enable selecting multiple rows
         self.student_table_view.setSelectionBehavior(
             QAbstractItemView.SelectionBehavior.SelectRows
         )
-        self.student_table_view.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+        self.student_table_view.setSelectionMode(
+            QAbstractItemView.SelectionMode.MultiSelection
+        )
+
+        # Add table view to central widget
+        self.student_table_view.setModel(self.student_table)
+        horizontal_layout.addWidget(self.student_table_view)
+
+        # Select Scholarship Groupbox
+        scholarship_groupbox: QGroupBox = QGroupBox("Select Scholarship")
+        scholarship_layout: QVBoxLayout = QVBoxLayout()
+        scholarship_groupbox.setLayout(scholarship_layout)
+
+        # TODO: Make the items displayed and retrieved dynamically
+        self.select_scholarship: QComboBox = QComboBox()
+        self.select_scholarship.addItem("S1")
+        self.select_scholarship.addItem("S2")
+        scholarship_layout.addWidget(self.select_scholarship)
+
+        # Fields and text boxes for generating letters
+        letter_info_widget: QWidget = QWidget()
+        letter_info_layout: QFormLayout = QFormLayout()
+        letter_info_widget.setLayout(letter_info_layout)
+
+        # Text boxes
+        self.sender_name_textbox: QLineEdit = QLineEdit()
+        self.sender_title_textbox: QLineEdit = QLineEdit()
+        self.sender_email_textbox: QLineEdit = QLineEdit()
+        self.award_amount_textbox: QLineEdit = QLineEdit()
+        self.award_amount_textbox.setValidator(QDoubleValidator())
+        self.letter_path_textbox: QLineEdit = QLineEdit()
+        self.academic_year_textbox: QLineEdit = QLineEdit()
+
+        # Select directory button
+        select_directory_button: QToolButton = QToolButton()
+        select_directory_button.setText("...")
+        select_directory_button.setToolTip("Select the destination directory.")
+        select_directory_button.clicked.connect(self.select_directory_slot)
+
+        # Add textboxes to form layout
+        letter_info_layout.addRow("Sender Name", self.sender_name_textbox)
+        letter_info_layout.addRow("Sender Title", self.sender_title_textbox)
+        letter_info_layout.addRow("Sender Email", self.sender_email_textbox)
+        letter_info_layout.addRow("Amount", self.award_amount_textbox)
+        letter_info_layout.addRow("Academic Year", self.academic_year_textbox)
+
+        #
+        select_dir_layout: QHBoxLayout = QHBoxLayout()
+        select_dir_layout.addWidget(select_directory_button)
+        select_dir_layout.addWidget(self.letter_path_textbox)
+
+        letter_info_layout.addRow("Directory Path", select_dir_layout)
+        scholarship_layout.addWidget(letter_info_widget)
+
+        # Generate Letters button
+        generate_letters: QToolButton = QToolButton()
+        generate_letters.setText("Generate Letters")
+        generate_letters.setToolTip(
+            "Generates Scholarship Letter for selected students."
+        )
+        generate_letters.clicked.connect(self.generate_letters)
+
+        # Add widget to scholarship components layout
+        scholarship_layout.addWidget(generate_letters)
+
+        # Add scholarship groupbox to horizontal layout
+        horizontal_layout.addWidget(scholarship_groupbox)
 
         # Add layout to central widget, and add central widget to main window
         central_widget.setLayout(horizontal_layout)
@@ -126,6 +213,7 @@ class ScholarlyMainWindow(QMainWindow):
 
         file_menu.show()
 
+    # @pyqtSlot()
     def open_file_slot(self) -> None:
         """Slot (event handler) for "Open" action.
 
@@ -154,7 +242,11 @@ class ScholarlyMainWindow(QMainWindow):
             self.database.student_csv_to_table(file_path)
         # If invalid data file, show error message
         except Exception as e:
-            QMessageBox.critical(self, "Invalid File", f"The file is not a CSV file, or is malformed.\n{type(e).__name__}: {e}")
+            QMessageBox.critical(
+                self,
+                "Invalid File",
+                f"The file is not a CSV file, or is malformed.\n{type(e).__name__}: {e}",
+            )
 
         # Retrieve data from the database
         student_data = self.database.select_all_students()
@@ -240,6 +332,61 @@ class ScholarlyMainWindow(QMainWindow):
         webbrowser.open(
             "https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md"
         )
+
+    def generate_letters(self):
+        student_data: list[StudentRecord] = self.get_selected_rows()
+        
+        curr_time:datetime = datetime.now()
+        date:str = f"{curr_time.strftime("%B")} {curr_time.day}, {curr_time.year}"
+
+        scholarship_name:str = self.select_scholarship.currentText()
+        sender_name:str = self.sender_name_textbox.text()
+        sender_title:str = self.sender_title_textbox.text()
+        sender_email:str = self.sender_email_textbox.text()
+        amount:str = self.award_amount_textbox.text()
+        academic_year:str = self.academic_year_textbox.text()
+        dir_path:str = self.letter_path_textbox.text()
+
+        for student in student_data:
+
+            student_first_name, student_last_name = student.name.strip(" ").split(",")
+
+            student_name:str = f"{student_first_name}{student_last_name}"
+            letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year, sender_name, sender_email, sender_title)
+            letter_writer:LetterWriter = LetterWriter("template_letter.docx", f"{dir_path}/{student_name}.docx", letter_vars.to_dict())
+            letter_writer.writer_letter()
+        
+        os.startfile(dir_path)
+            
+
+    def get_selected_rows(self):
+        indices: list[QModelIndex] = (
+            self.student_table_view.selectionModel().selectedRows()
+        )
+
+        data: list[StudentRecord] = []
+
+        for index in indices:
+            data.append(self.student_table.get_row(index.row()))
+
+        return data
+
+    def select_directory_slot(self):
+        user_documents_path: str = f"{os.path.expanduser('~')}/Documents"
+
+        # Open file dialog, and gets the selected file path
+        dir_path: str = QFileDialog.getExistingDirectory(
+            parent=self,
+            caption="Select directory",
+            directory=user_documents_path,
+            options=QFileDialog.Option.ShowDirsOnly,
+        )
+        # If no file is specified, do nothing
+        if not dir_path:
+            return
+
+        # Change textbox text to directory path
+        self.letter_path_textbox.setText(dir_path)
 
 
 if __name__ == "__main__":
