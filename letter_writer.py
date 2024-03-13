@@ -57,13 +57,13 @@ class LetterVariables:
         """
         self.student_name: str = student_name
         self.date: str = date
-        self.amount: str = f"{float(amount): .2f}"
+        self.amount: str = f"${float(amount):.2f}"
         self.scholarship_name: str = scholarship_name
         self.academic_year: str = academic_year
         self.sender_name: str = sender_name
         self.sender_email: str = sender_email
         self.sender_title: str = sender_title
-        self.half_amount: str = f"{(float(self.amount) / 2): .2f}"
+        self.half_amount: str = f"${(float(amount) / 2):.2f}"
 
         fall_sem, spring_sem = self.academic_year.split("-")
         self.academic_year_fall: str = fall_sem

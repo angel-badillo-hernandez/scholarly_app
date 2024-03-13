@@ -4,7 +4,6 @@ This file contains the `ScholarlyMainWindow` class, which is the
 contains methods for creating the application's GUI.
 
 """
-
 import sys
 import webbrowser
 import os
@@ -29,7 +28,8 @@ from student_data_writer import StudentDataWriter
 from scholarly_database import ScholarlyDatabase, StudentRecord
 from letter_writer import LetterVariables, LetterWriter
 
-# Base directory for the file
+# Absolute address for file to prevent issues with
+# relative addresses when building app with PyInstaller
 BASE_DIR:str = os.path.dirname(__file__)
 
 class ScholarlyMainWindow(QMainWindow):
@@ -107,10 +107,10 @@ class ScholarlyMainWindow(QMainWindow):
         scholarship_groupbox.setLayout(scholarship_layout)
 
         # TODO: Make the items displayed and retrieved dynamically
-        self.select_scholarship: QComboBox = QComboBox()
-        self.select_scholarship.addItem("S1")
-        self.select_scholarship.addItem("S2")
-        scholarship_layout.addWidget(self.select_scholarship)
+        self.scholarship_combobox: QComboBox = QComboBox()
+        self.scholarship_combobox.addItem("S1")
+        self.scholarship_combobox.addItem("S2")
+        scholarship_layout.addWidget(self.scholarship_combobox)
 
         # Fields and text boxes for generating letters
         letter_info_widget: QWidget = QWidget()
@@ -123,14 +123,26 @@ class ScholarlyMainWindow(QMainWindow):
         self.sender_email_textbox: QLineEdit = QLineEdit()
         self.award_amount_textbox: QLineEdit = QLineEdit()
         self.award_amount_textbox.setValidator(QDoubleValidator())
+        self.template_path_textbox:QLineEdit = QLineEdit()
         self.dest_dir_path_textbox: QLineEdit = QLineEdit()
         self.academic_year_textbox: QLineEdit = QLineEdit()
 
+        # Select template letter button
+        self.select_template_button: QToolButton = QToolButton()
+        self.select_template_button.setText("Browse")
+        self.select_template_button.setToolTip("Select template letter file.")
+        self.select_template_button.clicked.connect(self.select_template)
+
+        # Layout for selecting template letter button
+        select_template_layout: QHBoxLayout = QHBoxLayout()
+        select_template_layout.addWidget(self.select_template_button)
+        select_template_layout.addWidget(self.template_path_textbox)
+
         # Select directory button
-        select_directory_button: QToolButton = QToolButton()
-        select_directory_button.setText("...")
-        select_directory_button.setToolTip("Select the destination directory.")
-        select_directory_button.clicked.connect(self.select_directory_slot)
+        self.select_directory_button: QToolButton = QToolButton()
+        self.select_directory_button.setText("Browse")
+        self.select_directory_button.setToolTip("Select the destination directory.")
+        self.select_directory_button.clicked.connect(self.select_directory)
 
         # Add textboxes to form layout
         letter_info_layout.addRow("Sender Name", self.sender_name_textbox)
@@ -139,12 +151,16 @@ class ScholarlyMainWindow(QMainWindow):
         letter_info_layout.addRow("Amount", self.award_amount_textbox)
         letter_info_layout.addRow("Academic Year", self.academic_year_textbox)
 
-        #
+        # Layout for selecting destination directory
         select_dir_layout: QHBoxLayout = QHBoxLayout()
-        select_dir_layout.addWidget(select_directory_button)
+        select_dir_layout.addWidget(self.select_directory_button)
         select_dir_layout.addWidget(self.dest_dir_path_textbox)
 
-        letter_info_layout.addRow("Directory Path", select_dir_layout)
+        # Add template letter layout to letter info layout
+        letter_info_layout.addRow("Template Letter", select_template_layout)
+
+        # Add layout to letter info layout
+        letter_info_layout.addRow("Destination Directory", select_dir_layout)
         scholarship_layout.addWidget(letter_info_widget)
 
         # Generate Letters button
@@ -352,7 +368,7 @@ class ScholarlyMainWindow(QMainWindow):
         curr_time:datetime = datetime.now()
         date:str = f"{curr_time.strftime("%B")} {curr_time.day}, {curr_time.year}"
 
-        scholarship_name:str = self.select_scholarship.currentText()
+        scholarship_name:str = self.scholarship_combobox.currentText()
         sender_name:str = self.sender_name_textbox.text()
         sender_title:str = self.sender_title_textbox.text()
         sender_email:str = self.sender_email_textbox.text()
@@ -395,7 +411,7 @@ class ScholarlyMainWindow(QMainWindow):
                 raise e
                 return
             
-            letter_writer:LetterWriter = LetterWriter("template_letter.docx", f"{dir_path}/{student_name}.docx", letter_vars.to_dict())
+            letter_writer:LetterWriter = LetterWriter("assets/templates/template_letter.docx", f"{dir_path}/{student_name}.docx", letter_vars.to_dict())
             letter_writer.writer_letter()
         
         # Open File Explorer to show letters
@@ -414,7 +430,7 @@ class ScholarlyMainWindow(QMainWindow):
         return data
 
     @pyqtSlot()
-    def select_directory_slot(self):
+    def select_directory(self):
         user_documents_path: str = os.path.join(os.path.expanduser("~"), "Documents")
 
         # Open file dialog, and gets the selected file path
@@ -431,6 +447,24 @@ class ScholarlyMainWindow(QMainWindow):
         # Change textbox text to directory path
         self.dest_dir_path_textbox.setText(dir_path)
 
+    @pyqtSlot()
+    def select_template(self):
+        templates_path: str = os.path.join(BASE_DIR, "assets/templates")
+
+        # Open file dialog, and get the selected file path
+        file_path, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption="Select Template Letter",
+            directory=templates_path,
+            filter="Word Documents (*.docx)",
+        )
+
+        # If no file is specified, do nothing
+        if not file_path:
+            return
+
+        # Change textbox text to directory path
+        self.template_path_textbox.setText(file_path)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
