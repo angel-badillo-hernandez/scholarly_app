@@ -339,7 +339,7 @@ if __name__ == "__main__":
         ScholarlyDatabase.award_criteria_columns(),
     )
 
-    db.award_critiera_json_to_table("database/scholarships.json")
+    db.award_critiera_json_to_table("scholarships.json")
     c = db.select_award_criteria("Tom C. White")
     print(c)
     stud = db.select_students_by_criteria(c)
