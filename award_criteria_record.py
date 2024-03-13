@@ -11,7 +11,7 @@ class AwardCriteriaRecord:
     to dict, tuple, list, and SQLite insertable record/row.
     """
 
-    def __init__(self, name: str = "", criteria: dict[str] = {}) -> None:
+    def __init__(self, name: str = "", criteria: dict[str] = {}, limit:int = 0) -> None:
         """Creates a AwardCriteriaRecord object.
 
         A class for storing and representing award criteria.
@@ -21,7 +21,8 @@ class AwardCriteriaRecord:
             criteria (dict): Critieria for the award.
         """
         self.name: str = name
-        self.criteria: str = criteria
+        self.criteria: dict[str] = criteria
+        self.limit:int = limit
 
     def __iter__(self):
         """Allows for iterating over attributes.
@@ -31,6 +32,7 @@ class AwardCriteriaRecord:
         """
         yield "name", self.name
         yield "criteria", self.criteria
+        yield "limit", self.limit
 
     def to_dict(self) -> dict[str]:
         """Returns dict representation of AwardCriteriaRecord.
@@ -84,7 +86,7 @@ class AwardCriteriaRecord:
 if __name__ == "__main__":
     from rich import print
 
-    x = AwardCriteriaRecord("Scholarship", {"cum_gpa": {"$gte": 4.0}})
+    x = AwardCriteriaRecord("Scholarship", {"cum_gpa": {"$gte": 4.0}}, limit=4)
 
     print(f"SQLite record/row:  {x.to_tuple()}")
     print(f"Dictionary: {dict(x)}")

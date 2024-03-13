@@ -10,17 +10,17 @@ name,student_ID,cum_gpa,major,classification,earned_credits,enrolled,email,gende
 "Bowne, Cesya",M59977508,0.608,Psychology,Sophomore,78,Yes,cbowne8@drupal.org,Female,Yes
 "Cattow, Bellina",M61231910,0.85,Psychology,Senior,87,No,bcattow9@naver.com,Female,Yes
 "Cuskery, Shurlocke",M87652171,1.23,Psychology,Sophomore,46,Yes,scuskerya@ocn.ne.jp,Male,Yes
-"Maltster, Annice",M49119560,2.399,Computer Science,Sophomore,131,Yes,amaltsterb@123-reg.co.uk,Female,Yes
-"Mariot, Rey",M78447626,3.427,Biology,Sophomore,120,No,rmariotc@cargocollective.com,Female,Yes
-"Sedgemond, Fey",M51864815,0.306,Mathematics,Junior,101,Yes,fsedgemondd@jiathis.com,Female,No
-"Mulrean, Meggie",M24887906,2.75,Mathematics,Sophomore,51,Yes,mmulreane@feedburner.com,Female,Yes
-"Milmoe, Toby",M26865862,2.55,Biology,Junior,58,Yes,tmilmoef@globo.com,Female,No
-"Dorney, Korie",M81719907,1.389,Mathematics,Junior,38,No,kdorneyg@latimes.com,Female,No
-"Askie, Aldis",M66728791,0.187,Mathematics,Sophomore,49,Yes,aaskieh@google.ru,Male,Yes
-"Trethowan, Cirillo",M91882126,3.387,Biology,Junior,85,Yes,ctrethowani@1und1.de,Male,Yes
-"Whardley, Evelin",M64557320,3.917,Biology,Junior,50,Yes,ewhardleyj@latimes.com,Male,Yes
+"Maltster, Annice",M49119560,2.399,Computer Science,Graduate,131,Yes,amaltsterb@123-reg.co.uk,Female,Yes
+"Mariot, Rey",M78447626,3.427,Computer Science,Graduate,120,No,rmariotc@cargocollective.com,Female,Yes
+"Sedgemond, Fey",M51864815,3.0,Computer Science,Junior,101,Yes,fsedgemondd@jiathis.com,Female,No
+"Mulrean, Meggie",M24887906,2.75,Computer Science,Sophomore,51,Yes,mmulreane@feedburner.com,Female,Yes
+"Milmoe, Toby",M26865862,2.55,Computer Science,Junior,58,Yes,tmilmoef@globo.com,Female,No
+"Dorney, Korie",M81719907,1.389,Computer Science,Junior,38,No,kdorneyg@latimes.com,Female,No
+"Askie, Aldis",M66728791,3.0,Computer Science,Sophomore,49,Yes,aaskieh@google.ru,Male,Yes
+"Trethowan, Cirillo",M91882126,3.387,Computer Science,Graduate,85,Yes,ctrethowani@1und1.de,Male,Yes
+"Whardley, Evelin",M64557320,3.917,Computer Science,Graduate,50,Yes,ewhardleyj@latimes.com,Male,Yes
 "Eggerton, Phil",M54821475,3.766,Computer Science,Junior,146,No,peggertonk@e-recht24.de,Female,No
-"Yanukhin, Katheryn",M37488411,1.416,Psychology,Sophomore,130,No,kyanukhinl@unblog.fr,Female,No
-"Teaz, Garrard",M85877342,1.657,Mathematics,Freshman,63,Yes,gteazm@over-blog.com,Male,Yes
-"Baldcock, Archie",M66501875,3.296,Psychology,Sophomore,25,Yes,abaldcockn@amazon.de,Male,No
-"Halladay, Blayne",M27320703,1.956,Mathematics,Sophomore,98,Yes,bhalladayo@facebook.com,Male,No
+"Yanukhin, Katheryn",M37488411,1.416,Computer Science,Sophomore,130,No,kyanukhinl@unblog.fr,Female,No
+"Teaz, Garrard",M85877342,1.657,Computer Science,Freshman,63,Yes,gteazm@over-blog.com,Male,Yes
+"Baldcock, Archie",M66501875,3.296,Computer Science,Sophomore,25,Yes,abaldcockn@amazon.de,Male,No
+"Halladay, Blayne",M27320703,1.956,Computer Science,Sophomore,98,Yes,bhalladayo@facebook.com,Male,No

@@ -26,16 +26,18 @@ class ScholarlyDatabase:
         ("name", "TEXT"),
         ("student_ID", "TEXT PRIMARY KEY"),
         ("cum_gpa", "REAL"),
-        ("major", "TEXT"),
-        ("classification", "TEXT"),
+        ("major", "TEXT COLLATE NOCASE"),
+        ("classification", "TEXT COLLATE NOCASE"),
         ("earned_credits", "INTEGER"),
-        ("enrolled", "TEXT"),
+        ("enrolled", "TEXT COLLATE NOCASE"),
         ("email", "TEXT"),
-        ("gender", "TEXT"),
-        ("in_state", "TEXT"),
+        ("gender", "TEXT COLLATE NOCASE"),
+        ("in_state", "TEXT COLLATE NOCASE"),
     )
     __award_criteria_columns: list[Column] = Columns(
-        ("name", "TEXT PRIMARY KEY"), ("criteria", "JSON")
+        ("name", "TEXT PRIMARY KEY COLLATE NOCASE"),
+        ("criteria", "JSON"),
+        ("limit", "INTEGER"),
     )
 
     def __init__(self, file_path: str) -> None:
@@ -120,7 +122,7 @@ class ScholarlyDatabase:
             record (AwardRecord): An award record.
         """
         query: Query = Query.into(self.__award_criteria_table_name).insert(
-            record.name, json.dumps(record.criteria)
+            record.name, json.dumps(record.criteria), record.limit
         )
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
         cursor: sqlite3.Cursor = conn.cursor()
@@ -163,43 +165,75 @@ class ScholarlyDatabase:
         conn.commit()
         conn.close()
 
-    def select_award_criteria(self, award_name: str) -> AwardCriteriaRecord:
-        """Gets the award criteria for a given award."""
+    def select_award_criteria(self, award_name: str) -> AwardCriteriaRecord | None:
+        """Gets the award criteria for a given award.
 
-        table = Table("students")
-        query: Query = Query.from_(self.__award_criteria_table_name).select("*").where()
+        Returns the award criteria for a given scholarship based on the name.
+
+        Args:
+            award_name (str): Name of the scholarship or award.
+        Returns:
+            Returns AwardCriteriaRecord if found, else returns None.
+        """
+        query: Query = (
+            Query.from_(self.__award_criteria_table_name)
+            .select("*")
+            .where(Field("name") == award_name)
+        )
 
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
         cursor: sqlite3.Cursor = conn.cursor()
         cursor.execute(str(query))
 
         data = cursor.fetchone()
-        result: dict = {"name": None, "criteria": None}
-
-        # If item exists, convert into dict
+        record: AwardCriteriaRecord = None
+        # If record does exist
         if data:
-            result["name"] = data[0]
-            result["criteria"] = json.loads(data[1])
+            name, criteria, limit = data
+            record = AwardCriteriaRecord(name, json.loads(criteria), limit)
 
         conn.commit()
         conn.close()
 
-        return AwardCriteriaRecord(**result)
+        return record
 
-    def select_students_by_criteria(self, criteria: AwardCriteriaRecord) -> list[StudentRecord]:
+    def select_students_by_criteria(
+        self, record: AwardCriteriaRecord
+    ) -> list[StudentRecord]:
         """Get student records by criteria.
 
         Returns students records matching criteria from the `students` table.
 
         Returns:
-            A list of StudentRecord
+            A list of StudentRecord matching the criteria for the award.
 
         """
-
-
+        # The starting base query, if criteria is empty, becomes select all
         query: Query = (
-            Query.from_(self.__students_table_name).where()
+            Query.from_(self.__students_table_name)
+            .select("*")
+            .orderby("cum_gpa", Order.desc)
         )
+
+        # Add where clauses if criteria is not empty
+        if record.criteria:
+            # Iterate over criterion in criteria dict
+            for field, item in record.criteria.items():
+                # If the value for field is a dict, the apply conditions to query
+                if isinstance(item, dict):
+                    for key, val in item.items():
+                        # If criteria is $in, check if value of field is in val
+                        if key == "$in":
+                            query = query.where(Field(field).isin(val))
+                        # If criteria is $gte, check if val >= field
+                        elif key == "$gte":
+                            query = query.where(Field(field) >= val)
+                # If the value for field is not a dict, simply match for equality
+                else:
+                    query = query.where(Field(field) == item)
+        # If limit is specified, and no 0, add limit
+        if record.limit:
+            query = query.limit(record.limit)
 
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
         cursor: sqlite3.Cursor = conn.cursor()
@@ -263,7 +297,33 @@ class ScholarlyDatabase:
             self.insert_student(record)
 
     def award_critiera_json_to_table(self, file_path: str):
-        pass
+        with open(file_path, "r") as file:
+            data:list = json.load(file)
+
+            for record in data:
+                self.insert_award_criteria(AwardCriteriaRecord(**record))
+
+
+    def select_all_award_critieria(self) -> list[AwardCriteriaRecord]:
+        query: Query = (
+            Query.from_(self.__award_criteria_table_name)
+            .select("*")
+            .orderby("name", order=Order.asc)
+        )
+
+        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        cursor: sqlite3.Cursor = conn.cursor()
+        cursor.execute(str(query))
+
+        data: list = cursor.fetchall()
+        conn.commit()
+        conn.close()
+
+        award_records: list[AwardCriteriaRecord] = []
+
+        for name, criteria, limit in data:
+            award_records.append(AwardCriteriaRecord(name, json.loads(criteria), limit))
+        return award_records
 
 
 # Example sqlite3 operations
@@ -272,13 +332,15 @@ if __name__ == "__main__":
 
     db = ScholarlyDatabase("temp.sqlite")
 
+    db.drop_table(ScholarlyDatabase.award_criteria_table_name())
+    db.student_csv_to_table("example_data/student_data2.csv")
     db.create_table(
         ScholarlyDatabase.award_criteria_table_name(),
         ScholarlyDatabase.award_criteria_columns(),
     )
 
-    criteria = {"cum_gpa": {"$gte": 4.0, "$lte": 0.0}}
-    record = AwardCriteriaRecord("Scholarship", criteria)
-    db.insert_award_criteria(record)
-    d = db.select_award_criteria("Scholarship")
-    print(d)
+    db.award_critiera_json_to_table("database/scholarships.json")
+    c = db.select_award_criteria("Tom C. White")
+    print(c)
+    stud = db.select_students_by_criteria(c)
+    print(stud)

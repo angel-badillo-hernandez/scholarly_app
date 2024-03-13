@@ -1,73 +1,73 @@
 name,student_ID,cum_gpa,major,classification,earned_credits,enrolled,email,gender,in_state
 "Ipsgrave, Ruddie",M38753318,4,Psychology,Freshman,130,Yes,ripsgrave0@vinaora.com,Male,No
-"Ackerley, Denyse",M83276072,2.531,Psychology,Senior,75,No,dackerley1@360.cn,Female,Yes
-"Girhard, Danny",M60851892,1.158,Biology,Senior,13,No,dgirhard2@seesaa.net,Female,Yes
-"Salmond, Conroy",M84286662,2.39,Mathematics,Senior,54,No,csalmond3@youtu.be,Male,Yes
-"Cripwell, Leo",M50857239,3.44,Computer Science,Junior,101,No,lcripwell4@mayoclinic.com,Male,Yes
+"Ackerley, Denyse",M83276072,2.531,Psychology,Senior,75,Yes,dackerley1@360.cn,Female,Yes
+"Girhard, Danny",M60851892,1.158,Biology,Senior,13,Yes,dgirhard2@seesaa.net,Female,Yes
+"Salmond, Conroy",M84286662,2.39,Mathematics,Senior,54,Yes,csalmond3@youtu.be,Male,Yes
+"Cripwell, Leo",M50857239,3.44,Computer Science,Junior,101,Yes,lcripwell4@mayoclinic.com,Male,Yes
 "Stuck, Correy",M28041208,1.461,Biology,Junior,63,Yes,cstuck5@moonfruit.com,Female,Yes
 "Beiderbeck, Florrie",M69279847,3.928,Mathematics,Junior,76,Yes,fbeiderbeck6@theglobeandmail.com,Female,No
 "Ivashinnikov, Brocky",M56084432,1.91,Psychology,Senior,119,Yes,bivashinnikov7@discovery.com,Male,No
-"Towhey, Arlana",M23722562,0.681,Computer Science,Sophomore,60,No,atowhey8@irs.gov,Female,No
+"Towhey, Arlana",M23722562,0.681,Computer Science,Sophomore,60,Yes,atowhey8@irs.gov,Female,No
 "Stow, Deanna",M22810787,2.189,Computer Science,Junior,72,Yes,dstow9@foxnews.com,Female,Yes
 "Grocutt, Fran",M58618891,3.539,Computer Science,Senior,103,Yes,fgrocutta@kickstarter.com,Male,Yes
-"Pratt, Torrey",M66509222,1.495,Psychology,Senior,76,No,tprattb@chron.com,Male,No
+"Pratt, Torrey",M66509222,1.495,Psychology,Senior,76,Yes,tprattb@chron.com,Male,No
 "McCritchie, Ricca",M63623194,0.433,Mathematics,Freshman,60,Yes,rmccritchiec@yelp.com,Female,Yes
 "Smittoune, Ola",M58547529,3.781,Computer Science,Senior,134,Yes,osmittouned@blogger.com,Female,No
-"Monkley, Merralee",M37876394,1.898,Mathematics,Freshman,17,No,mmonkleye@dailymail.co.uk,Female,Yes
+"Monkley, Merralee",M37876394,1.898,Mathematics,Freshman,17,Yes,mmonkleye@dailymail.co.uk,Female,Yes
 "De Souza, Kin",M93487107,1.904,Mathematics,Senior,106,Yes,kdesouzaf@posterous.com,Male,No
-"Bereford, Irma",M35549462,0.12,Psychology,Junior,128,No,iberefordg@unesco.org,Female,No
+"Bereford, Irma",M35549462,0.12,Psychology,Junior,128,Yes,iberefordg@unesco.org,Female,No
 "Astbery, Isadore",M43108127,3.717,Biology,Sophomore,13,Yes,iastberyh@bing.com,Male,Yes
-"Lawly, Euell",M55976420,1.241,Psychology,Junior,71,No,elawlyi@artisteer.com,Male,No
+"Lawly, Euell",M55976420,1.241,Psychology,Junior,71,Yes,elawlyi@artisteer.com,Male,No
 "Jerson, Maurizio",M27347418,2.058,Biology,Sophomore,65,Yes,mjersonj@techcrunch.com,Male,Yes
 "Bentson, Rafaela",M82232797,3.28,Biology,Freshman,56,Yes,rbentsonk@prweb.com,Female,No
 "Havoc, Tootsie",M90162891,0.133,Computer Science,Senior,57,Yes,thavocl@nifty.com,Female,Yes
-"Attwill, Omero",M57197605,2.483,Biology,Sophomore,120,No,oattwillm@seesaa.net,Male,Yes
-"Cashen, Jenni",M90523885,3.245,Computer Science,Freshman,108,No,jcashenn@telegraph.co.uk,Female,No
+"Attwill, Omero",M57197605,2.483,Biology,Sophomore,120,Yes,oattwillm@seesaa.net,Male,Yes
+"Cashen, Jenni",M90523885,3.245,Computer Science,Freshman,108,Yes,jcashenn@telegraph.co.uk,Female,No
 "Baillie, Shaylah",M26095606,0.681,Psychology,Freshman,83,Yes,sbaillieo@examiner.com,Female,Yes
 "Borghese, Glenna",M86571218,3.776,Computer Science,Senior,80,Yes,gborghesep@earthlink.net,Female,No
 "Bubb, Geoff",M67580647,0.101,Biology,Sophomore,20,Yes,gbubbq@jiathis.com,Male,Yes
 "Brood, Fulton",M81874739,0.916,Mathematics,Senior,37,Yes,fbroodr@nydailynews.com,Male,Yes
 "Nesfield, Mattheus",M36530395,2.598,Computer Science,Senior,136,Yes,mnesfields@mysql.com,Male,Yes
-"Dignall, Lydia",M63623176,0.303,Computer Science,Junior,77,No,ldignallt@flavors.me,Female,Yes
-"Ouldcott, Isadore",M67992062,1.844,Mathematics,Sophomore,10,No,iouldcottu@posterous.com,Male,No
+"Dignall, Lydia",M63623176,0.303,Computer Science,Junior,77,Yes,ldignallt@flavors.me,Female,Yes
+"Ouldcott, Isadore",M67992062,1.844,Mathematics,Sophomore,10,Yes,iouldcottu@posterous.com,Male,No
 "Crewes, Rose",M28332031,2.083,Computer Science,Senior,103,Yes,rcrewesv@hubpages.com,Female,Yes
-"Ciccottini, Inger",M86412548,1.745,Biology,Junior,48,No,iciccottiniw@cornell.edu,Male,No
+"Ciccottini, Inger",M86412548,1.745,Biology,Junior,48,Yes,iciccottiniw@cornell.edu,Male,No
 "Martineau, Roarke",M77807638,1.712,Mathematics,Senior,149,Yes,rmartineaux@gravatar.com,Male,Yes
-"Baxendale, Guinna",M45187888,3.646,Computer Science,Sophomore,148,No,gbaxendaley@gmpg.org,Female,Yes
+"Baxendale, Guinna",M45187888,3.646,Computer Science,Sophomore,148,Yes,gbaxendaley@gmpg.org,Female,Yes
 "Mineghelli, Adella",M70594227,1.6,Mathematics,Senior,134,Yes,amineghelliz@cbc.ca,Female,No
 "McNeil, Kip",M87512731,2.144,Biology,Junior,132,Yes,kmcneil10@marriott.com,Female,No
-"Snuggs, Grenville",M28091164,0.431,Mathematics,Sophomore,150,No,gsnuggs11@issuu.com,Male,Yes
+"Snuggs, Grenville",M28091164,0.431,Mathematics,Sophomore,150,Yes,gsnuggs11@issuu.com,Male,Yes
 "Getten, Flory",M77726316,1.152,Biology,Senior,62,Yes,fgetten12@vimeo.com,Male,No
-"Trimmill, Rinaldo",M73849632,1.118,Biology,Sophomore,2,No,rtrimmill13@photobucket.com,Male,Yes
+"Trimmill, Rinaldo",M73849632,1.118,Biology,Sophomore,2,Yes,rtrimmill13@photobucket.com,Male,Yes
 "Brend, Ingrim",M30400945,3.393,Mathematics,Freshman,130,Yes,ibrend14@aboutads.info,Male,Yes
 "Titchener, Allx",M20719252,3.472,Biology,Senior,135,Yes,atitchener15@tripod.com,Female,No
 "Elce, Dare",M29888327,0.471,Psychology,Senior,137,Yes,delce16@army.mil,Male,No
 "Yetton, Theresina",M35092741,2.877,Mathematics,Senior,82,Yes,tyetton17@fda.gov,Female,Yes
 "Wyburn, Amitie",M99975522,2.361,Mathematics,Freshman,71,Yes,awyburn18@hc360.com,Female,Yes
-"January, Benton",M78222304,3.578,Computer Science,Freshman,49,No,bjanuary19@ow.ly,Male,Yes
+"January, Benton",M78222304,3.578,Computer Science,Freshman,49,Yes,bjanuary19@ow.ly,Male,Yes
 "Roby, Ignacio",M71932861,0.199,Mathematics,Junior,37,Yes,iroby1a@imdb.com,Male,Yes
 "Creeboe, Graehme",M57027848,1.386,Computer Science,Sophomore,112,Yes,gcreeboe1b@arstechnica.com,Male,No
-"Ilyunin, Shawn",M45329544,3.913,Psychology,Junior,104,No,silyunin1c@elpais.com,Female,Yes
+"Ilyunin, Shawn",M45329544,3.913,Psychology,Junior,104,Yes,silyunin1c@elpais.com,Female,Yes
 "Shortin, Saraann",M93079235,1.235,Computer Science,Senior,143,Yes,sshortin1d@discovery.com,Female,Yes
-"Deinhard, Byrom",M36641424,2.987,Computer Science,Senior,53,No,bdeinhard1e@rambler.ru,Male,Yes
+"Deinhard, Byrom",M36641424,2.987,Computer Science,Senior,53,Yes,bdeinhard1e@rambler.ru,Male,Yes
 "Brackpool, Skipper",M23888852,0.997,Computer Science,Sophomore,75,Yes,sbrackpool1f@cornell.edu,Male,Yes
-"Ismay, Bald",M21561913,2.896,Computer Science,Freshman,74,No,bismay1g@google.ca,Male,No
+"Ismay, Bald",M21561913,2.896,Computer Science,Freshman,74,Yes,bismay1g@google.ca,Male,No
 "Phythien, Bastian",M67168521,3.175,Biology,Freshman,36,Yes,bphythien1h@quantcast.com,Male,No
 "Kilty, Gerta",M73942177,1.19,Computer Science,Junior,26,Yes,gkilty1i@simplemachines.org,Female,Yes
-"Spalls, Loralyn",M38857163,1.799,Computer Science,Junior,40,No,lspalls1j@networkadvertising.org,Female,Yes
-"Hourigan, Lanna",M96362756,1.361,Computer Science,Senior,10,No,lhourigan1k@netscape.com,Female,No
-"Pretswell, Caldwell",M97222621,2.83,Computer Science,Freshman,97,No,cpretswell1l@nba.com,Male,Yes
+"Spalls, Loralyn",M38857163,1.799,Computer Science,Junior,40,Yes,lspalls1j@networkadvertising.org,Female,Yes
+"Hourigan, Lanna",M96362756,1.361,Computer Science,Senior,10,Yes,lhourigan1k@netscape.com,Female,No
+"Pretswell, Caldwell",M97222621,2.83,Computer Science,Freshman,97,Yes,cpretswell1l@nba.com,Male,Yes
 "Laity, Barnabas",M97317912,1.741,Computer Science,Freshman,51,Yes,blaity1m@huffingtonpost.com,Male,No
-"Heaven, Clemens",M31291297,1.531,Biology,Senior,4,No,cheaven1n@google.de,Male,Yes
-"Mathiassen, Terri",M76744961,2.091,Biology,Sophomore,137,No,tmathiassen1o@dropbox.com,Male,No
+"Heaven, Clemens",M31291297,1.531,Biology,Senior,4,Yes,cheaven1n@google.de,Male,Yes
+"Mathiassen, Terri",M76744961,2.091,Biology,Sophomore,137,Yes,tmathiassen1o@dropbox.com,Male,No
 "Roache, Blaire",M31851538,3.893,Mathematics,Senior,145,Yes,broache1p@globo.com,Female,No
-"Cleary, Tabbi",M50047308,3.858,Psychology,Senior,82,No,tcleary1q@arizona.edu,Female,Yes
+"Cleary, Tabbi",M50047308,3.858,Psychology,Senior,82,Yes,tcleary1q@arizona.edu,Female,Yes
 "Ellinor, Natalie",M80829903,3.876,Biology,Sophomore,141,Yes,nellinor1r@berkeley.edu,Female,No
 "Walklott, Lenka",M41207212,0.382,Psychology,Sophomore,69,Yes,lwalklott1s@dion.ne.jp,Female,Yes
-"Cowie, Marje",M80657942,0.163,Psychology,Freshman,14,No,mcowie1t@illinois.edu,Female,No
+"Cowie, Marje",M80657942,0.163,Psychology,Freshman,14,Yes,mcowie1t@illinois.edu,Female,No
 "Halso, Julita",M90188159,2.126,Biology,Senior,129,Yes,jhalso1u@thetimes.co.uk,Female,Yes
-"Etock, Alie",M63309841,1.064,Biology,Junior,83,No,aetock1v@homestead.com,Female,Yes
-"Sedman, Nicolina",M20001707,0.229,Mathematics,Freshman,95,No,nsedman1w@scribd.com,Female,Yes
+"Etock, Alie",M63309841,1.064,Biology,Junior,83,Yes,aetock1v@homestead.com,Female,Yes
+"Sedman, Nicolina",M20001707,0.229,Mathematics,Freshman,95,Yes,nsedman1w@scribd.com,Female,Yes
 "Grisewood, Issiah",M79247848,1.641,Psychology,Junior,94,No,igrisewood1x@technorati.com,Male,Yes
 "Smiley, Valle",M75309634,3.436,Biology,Senior,33,No,vsmiley1y@nsw.gov.au,Male,No
 "Pero, Helenka",M48204169,1.447,Psychology,Sophomore,13,Yes,hpero1z@free.fr,Female,Yes

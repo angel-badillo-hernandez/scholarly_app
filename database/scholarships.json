@@ -1,12 +1,46 @@
 [
     {
-        "name": "Scholarship 1",
+        "name": "David and Gail White",
+        "criteria": {
+            "classification": {
+                "$in": [
+                    "junior",
+                    "senior"
+                ]
+            },
+            "in_state": "yes",
+            "major": "Computer Science",
+            "enrolled": "yes"
+        },
+        "limit": 4
+    },
+    {
+        "name": "Tom C. White",
         "criteria": {
             "cum_gpa": {
-                "$gte": 3.8,
-                "$lte": 4.0
+                "$gte": 3.0
             },
-            "gender": "Male"
-        }
+            "classification": "graduate",
+            "major": "Computer Science",
+            "enrolled": "yes"
+        },
+        "limit": 0
+    },
+    {
+        "name": "Colleen and Richard Simpson",
+        "criteria": {
+            "gender": "female",
+            "major":"Computer Science",
+            "enrolled": "yes"
+        },
+        "limit": 4
+    },
+    {
+        "name": "Orion A Daniel",
+        "criteria": {
+            "major":"Computer Science",
+            "enrolled": "yes"
+        },
+        "limit": 8
     }
 ]
