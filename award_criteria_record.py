@@ -11,7 +11,9 @@ class AwardCriteriaRecord:
     to dict, tuple, list, and SQLite insertable record/row.
     """
 
-    def __init__(self, name: str = "", criteria: dict[str] = {}, limit:int = 0) -> None:
+    def __init__(
+        self, name: str = "", criteria: dict[str] = {}, limit: int = 0
+    ) -> None:
         """Creates a AwardCriteriaRecord object.
 
         A class for storing and representing award criteria.
@@ -22,7 +24,7 @@ class AwardCriteriaRecord:
         """
         self.name: str = name
         self.criteria: dict[str] = criteria
-        self.limit:int = limit
+        self.limit: int = limit
 
     def __iter__(self):
         """Allows for iterating over attributes.
