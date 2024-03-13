@@ -1,30 +1,30 @@
 name,student_ID,cum_gpa,major,classification,earned_credits,enrolled,email,gender,in_state
 "Ipsgrave, Ruddie",M38753318,4,Psychology,Freshman,130,Yes,ripsgrave0@vinaora.com,Male,No
-"Ackerley, Denyse",M83276072,2.531,Psychology,Senior,75,Yes,dackerley1@360.cn,Female,Yes
-"Girhard, Danny",M60851892,1.158,Biology,Senior,13,Yes,dgirhard2@seesaa.net,Female,Yes
-"Salmond, Conroy",M84286662,2.39,Mathematics,Senior,54,Yes,csalmond3@youtu.be,Male,Yes
+"Ackerley, Denyse",M83276072,2.531,Computer Science,Senior,75,Yes,dackerley1@360.cn,Female,Yes
+"Girhard, Danny",M60851892,1.158,Computer Science,Senior,13,Yes,dgirhard2@seesaa.net,Female,Yes
+"Salmond, Conroy",M84286662,2.39,Computer Science,Senior,54,Yes,csalmond3@youtu.be,Male,Yes
 "Cripwell, Leo",M50857239,3.44,Computer Science,Junior,101,Yes,lcripwell4@mayoclinic.com,Male,Yes
-"Stuck, Correy",M28041208,1.461,Biology,Junior,63,Yes,cstuck5@moonfruit.com,Female,Yes
-"Beiderbeck, Florrie",M69279847,3.928,Mathematics,Junior,76,Yes,fbeiderbeck6@theglobeandmail.com,Female,No
-"Ivashinnikov, Brocky",M56084432,1.91,Psychology,Senior,119,Yes,bivashinnikov7@discovery.com,Male,No
-"Towhey, Arlana",M23722562,0.681,Computer Science,Sophomore,60,Yes,atowhey8@irs.gov,Female,No
-"Stow, Deanna",M22810787,2.189,Computer Science,Junior,72,Yes,dstow9@foxnews.com,Female,Yes
-"Grocutt, Fran",M58618891,3.539,Computer Science,Senior,103,Yes,fgrocutta@kickstarter.com,Male,Yes
-"Pratt, Torrey",M66509222,1.495,Psychology,Senior,76,Yes,tprattb@chron.com,Male,No
-"McCritchie, Ricca",M63623194,0.433,Mathematics,Freshman,60,Yes,rmccritchiec@yelp.com,Female,Yes
-"Smittoune, Ola",M58547529,3.781,Computer Science,Senior,134,Yes,osmittouned@blogger.com,Female,No
-"Monkley, Merralee",M37876394,1.898,Mathematics,Freshman,17,Yes,mmonkleye@dailymail.co.uk,Female,Yes
-"De Souza, Kin",M93487107,1.904,Mathematics,Senior,106,Yes,kdesouzaf@posterous.com,Male,No
-"Bereford, Irma",M35549462,0.12,Psychology,Junior,128,Yes,iberefordg@unesco.org,Female,No
-"Astbery, Isadore",M43108127,3.717,Biology,Sophomore,13,Yes,iastberyh@bing.com,Male,Yes
-"Lawly, Euell",M55976420,1.241,Psychology,Junior,71,Yes,elawlyi@artisteer.com,Male,No
-"Jerson, Maurizio",M27347418,2.058,Biology,Sophomore,65,Yes,mjersonj@techcrunch.com,Male,Yes
-"Bentson, Rafaela",M82232797,3.28,Biology,Freshman,56,Yes,rbentsonk@prweb.com,Female,No
-"Havoc, Tootsie",M90162891,0.133,Computer Science,Senior,57,Yes,thavocl@nifty.com,Female,Yes
-"Attwill, Omero",M57197605,2.483,Biology,Sophomore,120,Yes,oattwillm@seesaa.net,Male,Yes
-"Cashen, Jenni",M90523885,3.245,Computer Science,Freshman,108,Yes,jcashenn@telegraph.co.uk,Female,No
-"Baillie, Shaylah",M26095606,0.681,Psychology,Freshman,83,Yes,sbaillieo@examiner.com,Female,Yes
-"Borghese, Glenna",M86571218,3.776,Computer Science,Senior,80,Yes,gborghesep@earthlink.net,Female,No
+"Stuck, Correy",M28041208,1.461,Computer Science,Junior,63,Yes,cstuck5@moonfruit.com,Female,Yes
+"Beiderbeck, Florrie",M69279847,3.928,Computer Science,Junior,76,Yes,fbeiderbeck6@theglobeandmail.com,Female,No
+"Ivashinnikov, Brocky",M56084432,1.91,Computer Science,Graduate,119,Yes,bivashinnikov7@discovery.com,Male,No
+"Towhey, Arlana",M23722562,0.681,Computer Science,Graduate,60,Yes,atowhey8@irs.gov,Female,No
+"Stow, Deanna",M22810787,2.189,Computer Science,Graduate,72,Yes,dstow9@foxnews.com,Female,Yes
+"Grocutt, Fran",M58618891,3.539,Computer Science,Graduate,103,Yes,fgrocutta@kickstarter.com,Male,Yes
+"Pratt, Torrey",M66509222,1.495,Computer Science,Graduate,76,Yes,tprattb@chron.com,Male,No
+"McCritchie, Ricca",M63623194,0.433,Computer Science,Graduate,60,Yes,rmccritchiec@yelp.com,Female,Yes
+"Smittoune, Ola",M58547529,3.781,Computer Science,Graduate,134,Yes,osmittouned@blogger.com,Female,No
+"Monkley, Merralee",M37876394,1.898,Computer Science,Graduate,17,Yes,mmonkleye@dailymail.co.uk,Female,Yes
+"De Souza, Kin",M93487107,1.904,Computer Science,Graduate,106,Yes,kdesouzaf@posterous.com,Male,No
+"Bereford, Irma",M35549462,0.12,Computer Science,Graduate,128,Yes,iberefordg@unesco.org,Female,No
+"Astbery, Isadore",M43108127,3.717,Computer Science,Graduate,13,Yes,iastberyh@bing.com,Male,Yes
+"Lawly, Euell",M55976420,1.241,Computer Science,Graduate,71,Yes,elawlyi@artisteer.com,Male,No
+"Jerson, Maurizio",M27347418,2.058,Computer Science,Graduate,65,Yes,mjersonj@techcrunch.com,Male,Yes
+"Bentson, Rafaela",M82232797,3.28,Computer Science,Graduate,56,Yes,rbentsonk@prweb.com,Female,No
+"Havoc, Tootsie",M90162891,0.133,Computer Science,Graduate,57,Yes,thavocl@nifty.com,Female,Yes
+"Attwill, Omero",M57197605,2.483,Computer Science,Graduate,120,Yes,oattwillm@seesaa.net,Male,Yes
+"Cashen, Jenni",M90523885,3.245,Computer Science,Graduate,108,Yes,jcashenn@telegraph.co.uk,Female,No
+"Baillie, Shaylah",M26095606,0.681,Psychology,Graduate,83,Yes,sbaillieo@examiner.com,Female,Yes
+"Borghese, Glenna",M86571218,3.776,Computer Science,Graduate,80,Yes,gborghesep@earthlink.net,Female,No
 "Bubb, Geoff",M67580647,0.101,Biology,Sophomore,20,Yes,gbubbq@jiathis.com,Male,Yes
 "Brood, Fulton",M81874739,0.916,Mathematics,Senior,37,Yes,fbroodr@nydailynews.com,Male,Yes
 "Nesfield, Mattheus",M36530395,2.598,Computer Science,Senior,136,Yes,mnesfields@mysql.com,Male,Yes

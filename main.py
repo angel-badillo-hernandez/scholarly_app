@@ -23,6 +23,7 @@ from PyQt6.QtGui import (
 from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
 from student_record import StudentRecord
+from award_criteria_record import AwardCriteriaRecord
 from student_data_reader import StudentDataReader
 from student_data_writer import StudentDataWriter
 from scholarly_database import ScholarlyDatabase, StudentRecord
@@ -106,10 +107,10 @@ class ScholarlyMainWindow(QMainWindow):
         scholarship_layout: QVBoxLayout = QVBoxLayout()
         scholarship_groupbox.setLayout(scholarship_layout)
 
-        # TODO: Make the items displayed and retrieved dynamically
+        # Load items in comboxbox
         self.scholarship_combobox: QComboBox = QComboBox()
-        self.scholarship_combobox.addItem("")
-        self.scholarship_combobox.addItem("S2")
+        self.load_scholarship_combobox()
+
         self.scholarship_combobox.currentTextChanged.connect(self.scholarship_changed)
         # Keep disabled until file is opened
         self.scholarship_combobox.setDisabled(True)
@@ -279,6 +280,7 @@ class ScholarlyMainWindow(QMainWindow):
 
         # Enable scholarship combobox
         self.scholarship_combobox.setEnabled(True)
+        self.scholarship_combobox.setCurrentIndex(0)
 
     @pyqtSlot()
     def save_file(self) -> None:
@@ -312,11 +314,12 @@ class ScholarlyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def close_file(self) -> None:
+        self.scholarship_combobox.setDisabled(True)
+        self.scholarship_combobox.setCurrentIndex(0)
         self.database.drop_table(ScholarlyDatabase.students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
-
-        self.scholarship_combobox.setDisabled(True)
+        
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Event handler for closing the application.
@@ -476,6 +479,10 @@ class ScholarlyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def scholarship_changed(self):
+        """Called when selection is changed in scholarship_combobox
+
+        Called when selection is changed in scholarship_combobox
+        """
         scholarship_name:str = self.scholarship_combobox.currentText()
 
         if scholarship_name == "":
@@ -486,6 +493,22 @@ class ScholarlyMainWindow(QMainWindow):
             student_data:list[StudentRecord] = self.database.select_all_students()
             self.student_table = StudentTableModel(student_data)
             self.student_table_view.setModel(self.student_table)
+        else:
+            self.student_table_view.clearSelection()
+            award_criteria_record:AwardCriteriaRecord = self.database.select_award_criteria(scholarship_name)
+            student_data:list[StudentRecord] = self.database.select_students_by_criteria(award_criteria_record)
+            self.student_table = StudentTableModel(student_data)
+            self.student_table_view.setModel(self.student_table)
+
+    def load_scholarship_combobox(self):
+        self.scholarship_combobox.clear()
+
+        self.scholarship_combobox.addItem("")
+
+        records:list[AwardCriteriaRecord] = self.database.select_all_award_critieria()
+
+        for record in records:
+            self.scholarship_combobox.addItem(record.name)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
