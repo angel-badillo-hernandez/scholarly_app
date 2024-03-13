@@ -1,5 +1,5 @@
 # Ignore virtual environment
-*.sqlite
+# *.sqlite
 /.venv
 /venv
 /__pycache__

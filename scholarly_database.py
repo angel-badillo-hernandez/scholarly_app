@@ -203,10 +203,10 @@ class ScholarlyDatabase:
         """Get student records by criteria.
 
         Returns students records matching criteria from the `students` table.
-
+        Args:
+            record (AwardCriteriaRecord): Scholarship criteria.
         Returns:
             A list of StudentRecord matching the criteria for the award.
-
         """
         # The starting base query, if criteria is empty, becomes select all
         query: Query = (
@@ -298,11 +298,10 @@ class ScholarlyDatabase:
 
     def award_critiera_json_to_table(self, file_path: str):
         with open(file_path, "r") as file:
-            data:list = json.load(file)
+            data: list = json.load(file)
 
             for record in data:
                 self.insert_award_criteria(AwardCriteriaRecord(**record))
-
 
     def select_all_award_critieria(self) -> list[AwardCriteriaRecord]:
         query: Query = (
@@ -330,7 +329,7 @@ class ScholarlyDatabase:
 if __name__ == "__main__":
     from rich import print
 
-    db = ScholarlyDatabase("temp.sqlite")
+    db = ScholarlyDatabase("database/scholarly.sqlite")
 
     db.drop_table(ScholarlyDatabase.award_criteria_table_name())
     db.student_csv_to_table("example_data/student_data2.csv")
