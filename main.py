@@ -19,6 +19,7 @@ from PyQt6.QtGui import (
     QIntValidator,
     QDoubleValidator,
     QFont,
+    QPixmap,
 )
 from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
@@ -28,6 +29,8 @@ from student_data_writer import StudentDataWriter
 from scholarly_database import ScholarlyDatabase, StudentRecord
 from letter_writer import LetterVariables, LetterWriter
 
+# Base directory for the file
+BASE_DIR:str = os.path.dirname(__file__)
 
 class ScholarlyMainWindow(QMainWindow):
     """Class for implementing the GUI for the Scholarly app.
@@ -43,7 +46,7 @@ class ScholarlyMainWindow(QMainWindow):
         super().__init__()
         self.student_table: StudentTableModel = None
         self.student_table_view: QTableView = None
-        self.database: ScholarlyDatabase = ScholarlyDatabase("student_database.sqlite")
+        self.database: ScholarlyDatabase = ScholarlyDatabase(os.path.join(BASE_DIR, "database/scholarly.sqlite"))
 
         self.initialize_ui()
 
@@ -54,7 +57,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         # Set window properties
         self.setWindowTitle("Scholarly")
-        self.setWindowIcon(QIcon("assets/scholarly.ico"))
+        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/scholarly.ico")))
         self.setGeometry(200, 200, 500, 500)
 
         # Initalize menu bar
@@ -120,7 +123,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.sender_email_textbox: QLineEdit = QLineEdit()
         self.award_amount_textbox: QLineEdit = QLineEdit()
         self.award_amount_textbox.setValidator(QDoubleValidator())
-        self.letter_path_textbox: QLineEdit = QLineEdit()
+        self.dest_dir_path_textbox: QLineEdit = QLineEdit()
         self.academic_year_textbox: QLineEdit = QLineEdit()
 
         # Select directory button
@@ -139,7 +142,7 @@ class ScholarlyMainWindow(QMainWindow):
         #
         select_dir_layout: QHBoxLayout = QHBoxLayout()
         select_dir_layout.addWidget(select_directory_button)
-        select_dir_layout.addWidget(self.letter_path_textbox)
+        select_dir_layout.addWidget(self.dest_dir_path_textbox)
 
         letter_info_layout.addRow("Directory Path", select_dir_layout)
         scholarship_layout.addWidget(letter_info_widget)
@@ -180,19 +183,19 @@ class ScholarlyMainWindow(QMainWindow):
 
         # Open Action
         open_action: QAction = QAction("Open File", self)
-        open_action.triggered.connect(self.open_file_slot)
+        open_action.triggered.connect(self.open_file)
         open_action.setShortcut("ctrl+o")
         file_menu.addAction(open_action)
 
         # Save Action
         save_action: QAction = QAction("Save File", self)
-        save_action.triggered.connect(self.save_file_slot)
+        save_action.triggered.connect(self.save_file)
         save_action.setShortcut("ctrl+s")
         file_menu.addAction(save_action)
 
         # Close Action
         close_action: QAction = QAction("Close File", self)
-        close_action.triggered.connect(self.close_file_slot)
+        close_action.triggered.connect(self.close_file)
         close_action.setShortcut("ctrl+f4")
         file_menu.addAction(close_action)
 
@@ -203,18 +206,18 @@ class ScholarlyMainWindow(QMainWindow):
 
         # About Menu Tab
         about_action: QAction = QAction("&About", self)
-        about_action.triggered.connect(self.about_slot)
+        about_action.triggered.connect(self.about)
         menu_bar.addAction(about_action)
 
         # Help Menu Tab
         help_action: QAction = QAction("&Help", self)
-        help_action.triggered.connect(self.help_event)
+        help_action.triggered.connect(self.help)
         menu_bar.addAction(help_action)
 
         file_menu.show()
 
-    # @pyqtSlot()
-    def open_file_slot(self) -> None:
+    @pyqtSlot()
+    def open_file(self) -> None:
         """Slot (event handler) for "Open" action.
 
         Function called when "Open" action is activated. Shows
@@ -223,7 +226,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         # Current user's Documents Directory
-        user_documents_path: str = f"{os.path.expanduser('~')}/Documents"
+        user_documents_path: str = os.path.join(os.path.expanduser("~"), "Documents")
 
         # Open file dialog, and gets the selected file path
         file_path, _ = QFileDialog.getOpenFileName(
@@ -255,7 +258,8 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table = StudentTableModel(student_data)
         self.student_table_view.setModel(self.student_table)
 
-    def save_file_slot(self) -> None:
+    @pyqtSlot()
+    def save_file(self) -> None:
         """Slot (event handler) for "Save" action.
 
         Function called when "Save" action is activated. Shows
@@ -264,7 +268,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         # Current user's Documents Directory
-        user_documents_path: str = f"{os.path.expanduser('~')}/Documents"
+        user_documents_path: str = os.path.join(os.path.expanduser("~"), "Documents")
 
         # Open file dialog, and gets the selected file path
         file_path, _ = QFileDialog.getSaveFileName(
@@ -284,7 +288,8 @@ class ScholarlyMainWindow(QMainWindow):
         writer: StudentDataWriter = StudentDataWriter(file_path)
         writer.write_values(student_data)
 
-    def close_file_slot(self) -> None:
+    @pyqtSlot()
+    def close_file(self) -> None:
         self.database.drop_table(ScholarlyDatabase.students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
@@ -304,12 +309,13 @@ class ScholarlyMainWindow(QMainWindow):
         )
 
         if reponse == QMessageBox.StandardButton.Yes:
-            self.close_file_slot()
+            self.close_file()
             event.accept()
         else:
             event.ignore()
 
-    def about_slot(self) -> None:
+    @pyqtSlot()
+    def about(self) -> None:
         """Slot (event handler) for "About" action.
 
         Function called when "About" action is activated.
@@ -321,7 +327,8 @@ class ScholarlyMainWindow(QMainWindow):
             "https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md"
         )
 
-    def help_event(self) -> None:
+    @pyqtSlot()
+    def help(self) -> None:
         """Slot (event handler) for "Help" action.
 
         Function called when "Help" action is activated.
@@ -333,9 +340,15 @@ class ScholarlyMainWindow(QMainWindow):
             "https://github.com/It-Is-Legend27/scholarly_app/blob/main/README.md"
         )
 
+    @pyqtSlot()
     def generate_letters(self):
         student_data: list[StudentRecord] = self.get_selected_rows()
         
+        # If no selection has been made, show warning message
+        if not student_data:
+            QMessageBox.warning(self, "No Selection", "No selection has been made. Make a selection on the table.")
+            return
+
         curr_time:datetime = datetime.now()
         date:str = f"{curr_time.strftime("%B")} {curr_time.day}, {curr_time.year}"
 
@@ -345,20 +358,49 @@ class ScholarlyMainWindow(QMainWindow):
         sender_email:str = self.sender_email_textbox.text()
         amount:str = self.award_amount_textbox.text()
         academic_year:str = self.academic_year_textbox.text()
-        dir_path:str = self.letter_path_textbox.text()
+        dir_path:str = self.dest_dir_path_textbox.text()
+
+        # Ensure text boxes are not empty, if so, show warning
+        if not sender_name:
+            QMessageBox.warning(self, "Enter Sender Name", "Sender name is empty. Please enter the sender name.")
+            return
+        elif not sender_title:
+            QMessageBox.warning(self, "Enter Sender Title", "Sender name is empty. Please enter the sender title.")
+            return
+        elif not sender_email:
+            QMessageBox.warning(self, "Enter Sender Email", "Sender email is empty. Please enter the sender email.")
+            return
+        elif not amount:
+            QMessageBox.warning(self, "Enter Amount", "The amount is empty. Please enter the amount.")
+            return
+        elif not academic_year:
+            QMessageBox.warning(self, "Enter Academic Year", "The academic year is empty. Please enter the academic year.")
+            return
+        elif not dir_path:
+            QMessageBox.warning(self, "Enter Destination Directory", "Destination directory is empty. Please enter the destination directory.")
+            return
 
         for student in student_data:
 
             student_first_name, student_last_name = student.name.strip(" ").split(",")
 
             student_name:str = f"{student_first_name}{student_last_name}"
-            letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year, sender_name, sender_email, sender_title)
+            
+            letter_vars:LetterVariables = None
+
+            try:
+                letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year, sender_name, sender_email, sender_title)
+            except ValueError as e:
+                QMessageBox.critical(self, "Invalid Arguments", f"Invalid arguments in the textboxes.\n{type(e).__name__}: {e}")
+                raise e
+                return
+            
             letter_writer:LetterWriter = LetterWriter("template_letter.docx", f"{dir_path}/{student_name}.docx", letter_vars.to_dict())
             letter_writer.writer_letter()
         
+        # Open File Explorer to show letters
         os.startfile(dir_path)
             
-
     def get_selected_rows(self):
         indices: list[QModelIndex] = (
             self.student_table_view.selectionModel().selectedRows()
@@ -371,8 +413,9 @@ class ScholarlyMainWindow(QMainWindow):
 
         return data
 
+    @pyqtSlot()
     def select_directory_slot(self):
-        user_documents_path: str = f"{os.path.expanduser('~')}/Documents"
+        user_documents_path: str = os.path.join(os.path.expanduser("~"), "Documents")
 
         # Open file dialog, and gets the selected file path
         dir_path: str = QFileDialog.getExistingDirectory(
@@ -386,15 +429,15 @@ class ScholarlyMainWindow(QMainWindow):
             return
 
         # Change textbox text to directory path
-        self.letter_path_textbox.setText(dir_path)
+        self.dest_dir_path_textbox.setText(dir_path)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window: ScholarlyMainWindow = ScholarlyMainWindow()
-
+  
     # Displays the main window for the application
     window.show()
-
+    
     # Run application
     sys.exit(app.exec())
