@@ -314,13 +314,17 @@ class ScholarlyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def close_file(self) -> None:
+        """Slot (event handler) for close action.
+
+        Function that is called when "Close" action is activated. Clears the database
+        and clears the table.
+        """
         self.scholarship_combobox.setDisabled(True)
         self.scholarship_combobox.setCurrentIndex(0)
         self.database.drop_table(ScholarlyDatabase.students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
         
-
     def closeEvent(self, event: QCloseEvent) -> None:
         """Event handler for closing the application.
 
@@ -369,6 +373,11 @@ class ScholarlyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def generate_letters(self):
+        """Slot (event handler) for "generate letters" button.
+
+        Function that is called when "generate letters" button is pressed. Generates
+        the letters based on the selections in the table.
+        """
         student_data: list[StudentRecord] = self.get_selected_rows()
         
         # If no selection has been made, show warning message
@@ -428,7 +437,14 @@ class ScholarlyMainWindow(QMainWindow):
         # Open File Explorer to show letters
         os.startfile(dir_path)
             
-    def get_selected_rows(self):
+    def get_selected_rows(self)-> list[StudentRecord]:
+        """Returns the student data from the selection.
+
+        Returns the student data from the selected rows.
+
+        Returns:
+            A list of StudentRecord.
+        """
         indices: list[QModelIndex] = (
             self.student_table_view.selectionModel().selectedRows()
         )
@@ -442,6 +458,11 @@ class ScholarlyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def select_directory(self):
+        """Slot (event handler) for choosing destination directory.
+
+        Function called when "Browse" button on the "Destination Directory" field
+        section is pressed. Opens file dialog for selecting a directory.
+        """
         user_documents_path: str = os.path.join(os.path.expanduser("~"), "Documents")
 
         # Open file dialog, and gets the selected file path
@@ -460,6 +481,11 @@ class ScholarlyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def select_template(self):
+        """Slot (event handler) for choosing template letter file.
+
+        Function called when "Browse" button on the "Template Letter" field
+        section is pressed. Opens file dialog for selecting a docx file.
+        """
         templates_path: str = os.path.join(BASE_DIR, "assets/templates")
 
         # Open file dialog, and get the selected file path
@@ -501,12 +527,20 @@ class ScholarlyMainWindow(QMainWindow):
             self.student_table_view.setModel(self.student_table)
 
     def load_scholarship_combobox(self):
+        """Populates scholarship combobox with scholarship names.
+
+        Populates scholarship combobox with scholarship names from the
+        award criteria table in the database.
+        """
         self.scholarship_combobox.clear()
 
+        # Add empty item for representing no filter / no selection
         self.scholarship_combobox.addItem("")
+        
+        # Retrieve all award criteria
+        records:list[AwardCriteriaRecord] = self.database.select_all_award_criteria()
 
-        records:list[AwardCriteriaRecord] = self.database.select_all_award_critieria()
-
+        # Add award names to combobox
         for record in records:
             self.scholarship_combobox.addItem(record.name)
 

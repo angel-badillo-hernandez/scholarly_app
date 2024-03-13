@@ -296,14 +296,28 @@ class ScholarlyDatabase:
         for record in data:
             self.insert_student(record)
 
-    def award_critiera_json_to_table(self, file_path: str):
+    def award_criteria_json_to_table(self, file_path: str):
+        """Convienience function for populating table.
+
+        Function to assist with populating award criteria table.
+
+        Args:
+            file_path (str): File path to JSON file.
+        """
         with open(file_path, "r") as file:
             data: list = json.load(file)
 
             for record in data:
                 self.insert_award_criteria(AwardCriteriaRecord(**record))
 
-    def select_all_award_critieria(self) -> list[AwardCriteriaRecord]:
+    def select_all_award_criteria(self) -> list[AwardCriteriaRecord]:
+        """Returns all award criteria.
+
+        Returns all award criteria in the table.
+
+        Returns:
+            A list of AwardCriteriaRecord.
+        """
         query: Query = (
             Query.from_(self.__award_criteria_table_name)
             .select("*")
@@ -338,7 +352,7 @@ if __name__ == "__main__":
         ScholarlyDatabase.award_criteria_columns(),
     )
 
-    db.award_critiera_json_to_table("scholarships.json")
+    db.award_criteria_json_to_table("scholarships.json")
     c = db.select_award_criteria("Tom C. White")
     print(c)
     stud = db.select_students_by_criteria(c)
