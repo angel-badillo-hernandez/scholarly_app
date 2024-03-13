@@ -165,7 +165,9 @@ class ScholarlyDatabase:
 
     def select_award_criteria(self, award_name: str) -> AwardCriteriaRecord:
         """Gets the award criteria for a given award."""
-        query: Query = Query.from_(self.__award_criteria_table_name).select("*")
+
+        table = Table("students")
+        query: Query = Query.from_(self.__award_criteria_table_name).select("*").where()
 
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
         cursor: sqlite3.Cursor = conn.cursor()
@@ -193,10 +195,10 @@ class ScholarlyDatabase:
             A list of StudentRecord
 
         """
+
+
         query: Query = (
-            Query.from_(self.__students_table_name)
-            .select("*")
-            .orderby("cum_gpa", order=Order.desc)
+            Query.from_(self.__students_table_name).where()
         )
 
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
