@@ -108,8 +108,11 @@ class ScholarlyMainWindow(QMainWindow):
 
         # TODO: Make the items displayed and retrieved dynamically
         self.scholarship_combobox: QComboBox = QComboBox()
-        self.scholarship_combobox.addItem("S1")
+        self.scholarship_combobox.addItem("")
         self.scholarship_combobox.addItem("S2")
+        self.scholarship_combobox.currentTextChanged.connect(self.scholarship_changed)
+        # Keep disabled until file is opened
+        self.scholarship_combobox.setDisabled(True)
         scholarship_layout.addWidget(self.scholarship_combobox)
 
         # Fields and text boxes for generating letters
@@ -274,6 +277,9 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table = StudentTableModel(student_data)
         self.student_table_view.setModel(self.student_table)
 
+        # Enable scholarship combobox
+        self.scholarship_combobox.setEnabled(True)
+
     @pyqtSlot()
     def save_file(self) -> None:
         """Slot (event handler) for "Save" action.
@@ -309,6 +315,8 @@ class ScholarlyMainWindow(QMainWindow):
         self.database.drop_table(ScholarlyDatabase.students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
+
+        self.scholarship_combobox.setDisabled(True)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Event handler for closing the application.
@@ -465,6 +473,19 @@ class ScholarlyMainWindow(QMainWindow):
 
         # Change textbox text to directory path
         self.template_path_textbox.setText(file_path)
+
+    @pyqtSlot()
+    def scholarship_changed(self):
+        scholarship_name:str = self.scholarship_combobox.currentText()
+
+        if scholarship_name == "":
+            # Clear selection
+            self.student_table_view.clearSelection()
+            
+            # Reset table to have entire contents of database
+            student_data:list[StudentRecord] = self.database.select_all_students()
+            self.student_table = StudentTableModel(student_data)
+            self.student_table_view.setModel(self.student_table)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -4,6 +4,7 @@ Provides the class `ScholarlyDatabase` for accessing a SQLite database
 and inserting records in the students table and award criteria table.
 
 """
+
 import sqlite3
 import json
 from student_record import StudentRecord
@@ -162,15 +163,8 @@ class ScholarlyDatabase:
         conn.commit()
         conn.close()
 
-    def select_award_criteria(self, award_name: str) -> dict[str]:
-        """Gets all the student records.
-
-        Returns all the student records from the `students` table.
-
-        Returns:
-            All of the student records as
-
-        """
+    def select_award_criteria(self, award_name: str) -> AwardCriteriaRecord:
+        """Gets the award criteria for a given award."""
         query: Query = Query.from_(self.__award_criteria_table_name).select("*")
 
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
@@ -188,10 +182,23 @@ class ScholarlyDatabase:
         conn.commit()
         conn.close()
 
-        return result
+        return AwardCriteriaRecord(**result)
 
-    def select(self, query: Query, key=None) -> list[StudentRecord]:
-        # TODO: Implement this better
+    def select_students_by_criteria(self, criteria: AwardCriteriaRecord) -> list[StudentRecord]:
+        """Get student records by criteria.
+
+        Returns students records matching criteria from the `students` table.
+
+        Returns:
+            A list of StudentRecord
+
+        """
+        query: Query = (
+            Query.from_(self.__students_table_name)
+            .select("*")
+            .orderby("cum_gpa", order=Order.desc)
+        )
+
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
         cursor: sqlite3.Cursor = conn.cursor()
         cursor.execute(str(query))
@@ -212,8 +219,7 @@ class ScholarlyDatabase:
         Returns all the student records from the `students` table.
 
         Returns:
-            All of the student records as
-
+            All of the student records as StudentRecords
         """
         query: Query = (
             Query.from_(self.__students_table_name)
@@ -269,6 +275,8 @@ if __name__ == "__main__":
         ScholarlyDatabase.award_criteria_columns(),
     )
 
-    # criteria = {"cum_gpa": {"$gte": 4.0, "$lte": 0.0}}
-    # db.insert_award_criteria("Scholarship", criteria)
-    db.select_award_criteria("Scholarship")
+    criteria = {"cum_gpa": {"$gte": 4.0, "$lte": 0.0}}
+    record = AwardCriteriaRecord("Scholarship", criteria)
+    db.insert_award_criteria(record)
+    d = db.select_award_criteria("Scholarship")
+    print(d)

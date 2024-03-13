@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Scholarship 1",
+        "criteria": {
+            "cum_gpa": {
+                "$gte": 3.8,
+                "$lte": 4.0
+            },
+            "gender": "Male"
+        }
+    }
+]
