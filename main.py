@@ -418,9 +418,9 @@ class ScholarlyMainWindow(QMainWindow):
 
         for student in student_data:
 
-            student_first_name, student_last_name = student.name.strip(" ").split(",")
+            student_last_name, student_first_name = student.name.replace(" ", "").split(",")
 
-            student_name:str = f"{student_first_name}{student_last_name}"
+            student_name:str = f"{student_first_name} {student_last_name}"
             
             letter_vars:LetterVariables = None
 
