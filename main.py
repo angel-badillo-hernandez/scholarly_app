@@ -28,7 +28,7 @@ from student_data_reader import StudentDataReader
 from student_data_writer import StudentDataWriter
 from scholarly_database import ScholarlyDatabase, StudentRecord
 from letter_writer import LetterVariables, LetterWriter
-
+from scholarly_menu_bar import ScholarlyMenuBar
 # Absolute address for file to prevent issues with
 # relative addresses when building app with PyInstaller
 BASE_DIR:str = os.path.dirname(__file__)
@@ -45,6 +45,7 @@ class ScholarlyMainWindow(QMainWindow):
         Creates an instance of ScholarlyMainWindow, the GUI for the application.
         """
         super().__init__()
+        self.menu_bar:ScholarlyMainWindow = None
         self.student_table: StudentTableModel = None
         self.student_table_view: QTableView = None
         self.database: ScholarlyDatabase = ScholarlyDatabase(os.path.join(BASE_DIR, "database/scholarly.sqlite"))
@@ -196,45 +197,8 @@ class ScholarlyMainWindow(QMainWindow):
         Creates and displays a menu bar with "File" menu.
         File menu has "Open" action.
         """
-        menu_bar: QMenuBar = self.menuBar()
-
-        # File Menu Tab
-        file_menu: QMenu = menu_bar.addMenu("&File")
-
-        # Open Action
-        open_action: QAction = QAction("Open File", self)
-        open_action.triggered.connect(self.open_file)
-        open_action.setShortcut("ctrl+o")
-        file_menu.addAction(open_action)
-
-        # Save Action
-        save_action: QAction = QAction("Save File", self)
-        save_action.triggered.connect(self.save_file)
-        save_action.setShortcut("ctrl+s")
-        file_menu.addAction(save_action)
-
-        # Close Action
-        close_action: QAction = QAction("Close File", self)
-        close_action.triggered.connect(self.close_file)
-        close_action.setShortcut("ctrl+f4")
-        file_menu.addAction(close_action)
-
-        # Exit Action
-        close_action: QAction = QAction("Exit", self)
-        close_action.triggered.connect(self.close)
-        file_menu.addAction(close_action)
-
-        # About Menu Tab
-        about_action: QAction = QAction("&About", self)
-        about_action.triggered.connect(self.about)
-        menu_bar.addAction(about_action)
-
-        # Help Menu Tab
-        help_action: QAction = QAction("&Help", self)
-        help_action.triggered.connect(self.help)
-        menu_bar.addAction(help_action)
-
-        file_menu.show()
+        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self, self.open_file, self.save_file, self.close_file, self.about, self.help, self.close)
+        self.setMenuBar(self.menu_bar)
 
     @pyqtSlot()
     def open_file(self) -> None:
