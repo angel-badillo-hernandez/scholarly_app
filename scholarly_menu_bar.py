@@ -12,13 +12,12 @@ class ScholarlyMenuBar(QMenuBar):
 
     def __init__(
         self,
-        parent: QWidget,
-        open_file_slot: Callable[[QWidget], None],
-        save_file_slot: Callable[[QWidget], None],
-        close_file_slot: Callable[[QWidget], None],
-        about_slot: Callable[[QWidget], None],
-        help_slot: Callable[[QWidget], None],
-        exit_slot: Callable[[QWidget], bool],
+        open_file_slot: Callable[[QWidget], None] = lambda x: None,
+        save_file_slot: Callable[[QWidget], None] = lambda x: None,
+        close_file_slot: Callable[[QWidget], None] = lambda x: None,
+        about_slot: Callable[[QWidget], None] = lambda x: None,
+        help_slot: Callable[[QWidget], None] = lambda x: None,
+        exit_slot: Callable[[QWidget], bool] = lambda x : None,
     ) -> None:
         """Creates a new instance of ScholarlyMenuBar
 
@@ -35,40 +34,47 @@ class ScholarlyMenuBar(QMenuBar):
             help_slot (Callable): A function to be invoked when the "Help" action is activated.
             exit_slot (Callable): A function to be invoked when the "Exit" action is activated.
         """
-        super().__init__(parent)
+        super().__init__()
 
         # File Menu Tab
         self.file_menu: QMenu = self.addMenu("&File")
 
         # Open Action
-        self.open_action: QAction = QAction("Open File", parent)
+        self.open_action: QAction = QAction("Open File")
         self.open_action.triggered.connect(open_file_slot)
         self.open_action.setShortcut("ctrl+o")
         self.file_menu.addAction(self.open_action)
 
         # Save Action
-        self.save_action: QAction = QAction("Save File", parent)
+        self.save_action: QAction = QAction("Save File", self)
         self.save_action.triggered.connect(save_file_slot)
         self.save_action.setShortcut("ctrl+s")
         self.file_menu.addAction(self.save_action)
 
         # Close Action
-        self.close_action: QAction = QAction("Close File", parent)
+        self.close_action: QAction = QAction("Close File", self)
         self.close_action.triggered.connect(close_file_slot)
         self.close_action.setShortcut("ctrl+f4")
         self.file_menu.addAction(self.close_action)
 
         # Exit Action
-        self.exit_action: QAction = QAction("Exit", parent)
+        self.exit_action: QAction = QAction("Exit", self)
         self.exit_action.triggered.connect(exit_slot)
         self.file_menu.addAction(self.exit_action)
 
         # About Menu Tab
-        about_action: QAction = QAction("&About", parent)
+        about_action: QAction = QAction("&About", self)
         about_action.triggered.connect(about_slot)
         self.addAction(about_action)
 
         # Help Menu Tab
-        help_action: QAction = QAction("&Help", parent)
+        help_action: QAction = QAction("&Help", self)
         help_action.triggered.connect(help_slot)
         self.addAction(help_action)
+
+if __name__ == "__main__":
+    from PyQt6.QtWidgets import QApplication
+    a = QApplication([])
+    s = ScholarlyMenuBar(None, lambda x: x, lambda x: x, lambda x: x, lambda x: x, lambda x:x, lambda x: x)
+    s.show()
+    a.exec()

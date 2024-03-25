@@ -189,13 +189,7 @@ class ScholarlyMainWindow(QMainWindow):
 
         Initializes the menu bar for the main window of the appllication.
         """
-        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
-        """Creates a QMenuBar on the main window
-
-        Creates and displays a menu bar with "File" menu.
-        File menu has "Open" action.
-        """
-        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self, self.open_file, self.save_file, self.close_file, self.about, self.help, self.close)
+        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self.open_file, self.save_file, self.close_file, self.about, self.help, self.close)
         self.setMenuBar(self.menu_bar)
 
     @pyqtSlot()
