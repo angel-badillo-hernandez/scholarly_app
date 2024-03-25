@@ -22,11 +22,9 @@ from PyQt6.QtGui import (
 )
 from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
-from student_record import StudentRecord
+from student_record import StudentRecord, read, write
 from award_criteria_record import AwardCriteriaRecord
-from student_data_reader import StudentDataReader
-from student_data_writer import StudentDataWriter
-from scholarly_database import ScholarlyDatabase, StudentRecord
+from scholarly_database import ScholarlyDatabase
 from letter_writer import LetterVariables, LetterWriter
 from scholarly_menu_bar import ScholarlyMenuBar
 # Absolute address for file to prevent issues with
@@ -273,8 +271,8 @@ class ScholarlyMainWindow(QMainWindow):
         # Retrieve data from table
         student_data: list[StudentRecord] = self.student_table.get_all_data()
 
-        writer: StudentDataWriter = StudentDataWriter(file_path)
-        writer.write_values(student_data)
+        # Write to CSV file
+        write(file_path, student_data)
 
     @pyqtSlot()
     def close_file(self) -> None:

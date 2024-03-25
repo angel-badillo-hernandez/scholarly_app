@@ -3,7 +3,7 @@
 Provides the class `StudentRecord` for storing student data and converting it
 into other data structures for ease of use in SQLite database.
 """
-
+import pandas as pd
 
 class StudentRecord:
     """Represents student information.
@@ -115,7 +115,42 @@ class StudentRecord:
         """
         return str(dict(self))
 
+def read(file_path:str) -> list[StudentRecord]:
+        """Returns data from CSV file.
 
+        Returns the student data from the CSV file as
+        a list of StudentRecord.
+
+        Returns:
+            `list[StudentRecord]', a list of student records.
+        """
+        studentRecordList: list[StudentRecord] = []
+
+        # Read data from CSV file
+        dataframe: pd.DataFrame = pd.read_csv(file_path)
+        # headers: list = dataframe.columns.values.tolist()
+
+        # Convert data from dataframe to list of StudentRecord
+        for i in range(len(dataframe)):
+            studentRecord: StudentRecord = StudentRecord(*(dataframe.loc[i].to_list()))
+            studentRecordList.append(studentRecord)
+
+        return studentRecordList
+
+def write(file_path:str, student_data: list[StudentRecord]) -> None:
+        """Writes student data to a CSV file.
+
+        Writes a list of student records to a CSV file.
+
+        Args:
+            student_data (list[StudentRecord]): A list of student records.
+        """
+        data: list[dict] = [student.to_dict() for student in student_data]
+
+        dataframe: pd.DataFrame = pd.DataFrame.from_records(data)
+
+        dataframe.to_csv(file_path, index=False)
+        
 if __name__ == "__main__":
     from rich import print
 
