@@ -3,7 +3,8 @@ from PyQt6.QtGui import QAction
 from typing import Callable, Any
 
 # Function that takes no parameters, and returns nothing
-voidCallBack:Callable[[],None] = lambda : None
+voidCallBack: Callable[[], None] = lambda: None
+
 
 class ScholarlyMenuBar(QMenuBar):
     """Specialized QMenuBar for Scholarly app
@@ -28,7 +29,6 @@ class ScholarlyMenuBar(QMenuBar):
         ScholarlyMainWindow class.
 
         Args:
-            parent (QWidget): A QWidget to add the menu bar to.
             open_file_slot (Callable): A function to be invoked when the "Open" action is activated.
             save_file_slot (Callable): A function to be invoked when the "Save" action is activated.
             close_file_slot (Callable): A function to be invoked when the "Close" action is activated.
@@ -65,18 +65,98 @@ class ScholarlyMenuBar(QMenuBar):
         self.file_menu.addAction(self.exit_action)
 
         # About Menu Tab
-        about_action: QAction = QAction("&About", self)
-        about_action.triggered.connect(about_slot)
-        self.addAction(about_action)
+        self.about_action: QAction = QAction("&About", self)
+        self.about_action.triggered.connect(about_slot)
+        self.addAction(self.about_action)
 
         # Help Menu Tab
-        help_action: QAction = QAction("&Help", self)
-        help_action.triggered.connect(help_slot)
-        self.addAction(help_action)
+        self.help_action: QAction = QAction("&Help", self)
+        self.help_action.triggered.connect(help_slot)
+        self.addAction(self.help_action)
+
+    def setOpenFileSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for open_file_action.
+
+        Sets the slot for the "Open" action on the "File" menu.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.open_action.triggered.connect(callback)
+
+    def setSaveFileSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for save_file_action.
+
+        Sets the slot for the "Save" action on the "File" menu.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.save_action.triggered.connect(callback)
+
+    def setCloseFileSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for close_file_action.
+
+        Sets the slot for the "Close" action on the "File" menu.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.close_action.triggered.connect(callback)
+
+    def setAboutSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for about_action.
+
+        Sets the slot for the "About" action on the menu bar.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.about_action.triggered.connect(callback)
+
+    def setHelpSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for help_action.
+
+        Sets the slot for the "Help" action on the menu bar.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.help_action.triggered.connect(callback)
+
+    def setCloseFileSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for the close_file_action.
+
+        Sets the slot for the "Close" action on the "File" menu.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.close_action.triggered.connect(callback)
+
+    def setExitSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for the exit_action.
+
+        Sets the slot for the "Exit" action on the "File" menu.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.exit_action.triggered.connect(callback)
+
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
+
     a = QApplication([])
     s = ScholarlyMenuBar()
+
+    s.setOpenFileSlot(lambda: print("Open"))
+    s.setSaveFileSlot(lambda: print("Save"))
+    s.setCloseFileSlot(lambda: print("Close"))
+    s.setAboutSlot(lambda: print("About"))
+    s.setHelpSlot(lambda: print("Help"))
+    s.setExitSlot(lambda: print("Exit"))
+
     s.show()
     a.exec()
