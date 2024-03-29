@@ -1,7 +1,9 @@
 from PyQt6.QtWidgets import QMenuBar, QMenu, QWidget
 from PyQt6.QtGui import QAction
-from typing import Callable
+from typing import Callable, Any
 
+# Function that takes no parameters, and returns nothing
+voidCallBack:Callable[[],None] = lambda : None
 
 class ScholarlyMenuBar(QMenuBar):
     """Specialized QMenuBar for Scholarly app
@@ -12,12 +14,12 @@ class ScholarlyMenuBar(QMenuBar):
 
     def __init__(
         self,
-        open_file_slot: Callable[[QWidget], None] = lambda x: None,
-        save_file_slot: Callable[[QWidget], None] = lambda x: None,
-        close_file_slot: Callable[[QWidget], None] = lambda x: None,
-        about_slot: Callable[[QWidget], None] = lambda x: None,
-        help_slot: Callable[[QWidget], None] = lambda x: None,
-        exit_slot: Callable[[QWidget], bool] = lambda x : None,
+        open_file_slot: Callable[[QWidget], None] = voidCallBack,
+        save_file_slot: Callable[[QWidget], None] = voidCallBack,
+        close_file_slot: Callable[[QWidget], None] = voidCallBack,
+        about_slot: Callable[[QWidget], None] = voidCallBack,
+        help_slot: Callable[[QWidget], None] = voidCallBack,
+        exit_slot: Callable[[QWidget], bool] = voidCallBack,
     ) -> None:
         """Creates a new instance of ScholarlyMenuBar
 
@@ -75,6 +77,6 @@ class ScholarlyMenuBar(QMenuBar):
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
     a = QApplication([])
-    s = ScholarlyMenuBar(None, lambda x: x, lambda x: x, lambda x: x, lambda x: x, lambda x:x, lambda x: x)
+    s = ScholarlyMenuBar()
     s.show()
     a.exec()
