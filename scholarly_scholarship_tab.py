@@ -21,7 +21,7 @@ import os
 BASE_DIR: str = os.path.dirname(__file__)
 
 # Function that takes no parameters, and returns nothing
-voidCallBack: Callable[[], None] = lambda: print("works")
+voidCallBack: Callable[[], None] = lambda: None
 
 
 class ScholarlyScholarshipTab(QTabWidget):
