@@ -15,28 +15,14 @@ class LetterVariables:
     Class for representing the variables for
     the placeholders in the template letter.
     """
-
-    variables: list[str] = [
-        "{STUDENT_NAME}",
-        "{DATE}",
-        "{AMOUNT}",
-        "{SCHOLARSHIP_NAME}",
-        "{ACADEMIC_YEAR}",
-        "{HALF_AMOUNT}",
-        "{ACADEMIC_YEAR_FALL}",
-        "{ACADEMIC_YEAR_SPRING}",
-        "{SENDER_NAME}",
-        "{SENDER_EMAIL}",
-        "{SENDER_TITLE}",
-    ]
-
     def __init__(
         self,
         student_name: str,
         date: str,
         amount: str,
         scholarship_name: str,
-        academic_year: str,
+        academic_year_fall: str,
+        academic_year_spring: str,
         sender_name: str,
         sender_email: str,
         sender_title: str,
@@ -59,15 +45,14 @@ class LetterVariables:
         self.date: str = date
         self.amount: str = f"${float(amount):.2f}"
         self.scholarship_name: str = scholarship_name
-        self.academic_year: str = academic_year
+        self.academic_year: str = f"{academic_year_fall}-{academic_year_spring}"
         self.sender_name: str = sender_name
         self.sender_email: str = sender_email
         self.sender_title: str = sender_title
         self.half_amount: str = f"${(float(amount) / 2):.2f}"
 
-        fall_sem, spring_sem = self.academic_year.split("-")
-        self.academic_year_fall: str = fall_sem
-        self.academic_year_spring: str = spring_sem
+        self.academic_year_fall: str = academic_year_fall
+        self.academic_year_spring: str = academic_year_spring
 
     def __iter__(self):
         """Allows for iterating over attributes and casting to other data structures.
@@ -107,18 +92,6 @@ class LetterVariables:
         """
         return str(dict(self))
 
-    def get_variables() -> list[str]:
-        """Returns a list of the keys / names of the variables.
-
-        Returns a list of the keys / names of the variables as they appear in
-        the template letter docx file.
-
-        Returns:
-            A list containing the keys / names of the variables / placeholders.
-        """
-        return LetterVariables.variables
-
-
 class LetterWriter:
     """Class for generating a letter.
 
@@ -130,7 +103,7 @@ class LetterWriter:
         self,
         template_file_path: str,
         output_file_path: str,
-        variables_dict: dict[str, str],
+        variables: LetterVariables,
     ) -> None:
         """Creates an instance of LetterWriter.
 
@@ -143,7 +116,7 @@ class LetterWriter:
         """
         self.template_file_path: str = template_file_path
         self.output_file_path: str = output_file_path
-        self.variables_dict: dict[str, str] = variables_dict
+        self.variables:LetterVariables = variables
 
     def get_template_file_path(self) -> str:
         """Returns the file path to the template letter.
@@ -185,7 +158,7 @@ class LetterWriter:
         """
         self.output_file_path = file_path
 
-    def get_variables_dict(self) -> dict[str, str]:
+    def get_variables_dict(self) -> LetterVariables:
         """Returns the variables dictionary.
 
         Returns the dictionary containing the keys and values for the placeholders
@@ -198,7 +171,7 @@ class LetterWriter:
         """
         return self.variables_dict
 
-    def set_variables_dict(self, vars_dict: dict[str, str]) -> None:
+    def set_variables_dict(self, variables:LetterVariables) -> None:
         """Sets the variables dictionary.
 
         Sets the dictionary containing the keys and values for the placeholders
@@ -208,7 +181,7 @@ class LetterWriter:
             vars_dict (dict[str,str]): dict containing the keys and values for the placeholders
             used to replace the placeholders in the template letter.
         """
-        self.variables_dict = vars_dict
+        self.variables = variables
 
     def writer_letter(self):
         """Generates the letter.
@@ -220,8 +193,11 @@ class LetterWriter:
         # Read in the docx file
         document = Document(self.template_file_path)
 
+        # Convert letter variables to dictionary
+        variables_dict:dict[str] = self.variables.to_dict()
+
         # Iterate over the items in the dictionary
-        for key, value in self.variables_dict.items():
+        for key, value in variables_dict.items():
             for paragraph in document.paragraphs:
                 if key in paragraph.text:
                     runs = paragraph.runs

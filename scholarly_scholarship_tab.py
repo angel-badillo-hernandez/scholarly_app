@@ -430,6 +430,23 @@ class ScholarlyScholarshipTab(QTabWidget):
         """
         return self.dest_dir_path_textbox.text()
 
+    def setTemplateLetterPathTextBoxText(self, file_path:str)-> None:
+        """Sets the text in the template letter path textbox.
+
+        Args:
+            file_path (str): File path to show in textbox.
+        """
+        self.template_path_textbox.setText(file_path)
+
+    def setDestDirPathTextBoxText(self, dir_path:str)-> None:
+        """Sets the text in the dest dir path textbox.
+
+        Args:
+            dir_path (str): Directory path to show in textbox.
+        """
+        self.dest_dir_path_textbox.setText(dir_path)
+
+
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication

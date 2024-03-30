@@ -27,6 +27,9 @@ from award_criteria_record import AwardCriteriaRecord
 from scholarly_database import ScholarlyDatabase
 from letter_writer import LetterVariables, LetterWriter
 from scholarly_menu_bar import ScholarlyMenuBar
+from scholarly_tab_bar import ScholarlyTabBar
+from scholarly_scholarship_tab import ScholarlyScholarshipTab
+
 # Absolute address for file to prevent issues with
 # relative addresses when building app with PyInstaller
 BASE_DIR:str = os.path.dirname(__file__)
@@ -47,6 +50,8 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table: StudentTableModel = None
         self.student_table_view: QTableView = None
         self.database: ScholarlyDatabase = ScholarlyDatabase(os.path.join(BASE_DIR, "database/scholarly.sqlite"))
+        self.scholarship_tab:ScholarlyScholarshipTab = None
+        self.tab_bar:ScholarlyTabBar = None
 
         self.initialize_ui()
 
@@ -73,21 +78,11 @@ class ScholarlyMainWindow(QMainWindow):
         the application.
         """
         central_widget: QWidget = QWidget()
-        horizontal_layout: QHBoxLayout = QHBoxLayout()
-
-        # Set central widget background color to maroon
-        # central_widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-        # central_widget.setStyleSheet("background-color: maroon;")
+        central_widget_layout: QHBoxLayout = QHBoxLayout()
 
         # Create model and table view widget
         self.student_table = StudentTableModel()
         self.student_table_view: QTableView = QTableView()
-
-        # Set table view background color to white
-        # self.student_table_view.setAttribute(
-        #     Qt.WidgetAttribute.WA_StyledBackground, True
-        # )
-        # self.student_table_view.setStyleSheet("background-color: white;")
 
         # Enable selecting multiple rows
         self.student_table_view.setSelectionBehavior(
@@ -99,89 +94,21 @@ class ScholarlyMainWindow(QMainWindow):
 
         # Add table view to central widget
         self.student_table_view.setModel(self.student_table)
-        horizontal_layout.addWidget(self.student_table_view)
+        central_widget_layout.addWidget(self.student_table_view)
+        
+        self.scholarship_tab = ScholarlyScholarshipTab(
+            find_button_clicked= self.find,
+            select_directory_button_clicked=self.select_directory,
+            select_template_button_clicked=self.select_template,
+            generate_letters_button_clicked=self.generate_letters
+            )
+        self.load_combobox()
 
-        # Select Scholarship Groupbox
-        scholarship_groupbox: QGroupBox = QGroupBox("Select Scholarship")
-        scholarship_layout: QVBoxLayout = QVBoxLayout()
-        scholarship_groupbox.setLayout(scholarship_layout)
-
-        # Load items in comboxbox
-        self.scholarship_combobox: QComboBox = QComboBox()
-        self.load_scholarship_combobox()
-
-        self.scholarship_combobox.currentTextChanged.connect(self.scholarship_changed)
-        # Keep disabled until file is opened
-        self.scholarship_combobox.setDisabled(True)
-        scholarship_layout.addWidget(self.scholarship_combobox)
-
-        # Fields and text boxes for generating letters
-        letter_info_widget: QWidget = QWidget()
-        letter_info_layout: QFormLayout = QFormLayout()
-        letter_info_widget.setLayout(letter_info_layout)
-
-        # Text boxes
-        self.sender_name_textbox: QLineEdit = QLineEdit()
-        self.sender_title_textbox: QLineEdit = QLineEdit()
-        self.sender_email_textbox: QLineEdit = QLineEdit()
-        self.award_amount_textbox: QLineEdit = QLineEdit()
-        self.award_amount_textbox.setValidator(QDoubleValidator())
-        self.template_path_textbox:QLineEdit = QLineEdit()
-        self.dest_dir_path_textbox: QLineEdit = QLineEdit()
-        self.academic_year_textbox: QLineEdit = QLineEdit()
-
-        # Select template letter button
-        self.select_template_button: QToolButton = QToolButton()
-        self.select_template_button.setText("Browse")
-        self.select_template_button.setToolTip("Select template letter file.")
-        self.select_template_button.clicked.connect(self.select_template)
-
-        # Layout for selecting template letter button
-        select_template_layout: QHBoxLayout = QHBoxLayout()
-        select_template_layout.addWidget(self.select_template_button)
-        select_template_layout.addWidget(self.template_path_textbox)
-
-        # Select directory button
-        self.select_directory_button: QToolButton = QToolButton()
-        self.select_directory_button.setText("Browse")
-        self.select_directory_button.setToolTip("Select the destination directory.")
-        self.select_directory_button.clicked.connect(self.select_directory)
-
-        # Add textboxes to form layout
-        letter_info_layout.addRow("Sender Name", self.sender_name_textbox)
-        letter_info_layout.addRow("Sender Title", self.sender_title_textbox)
-        letter_info_layout.addRow("Sender Email", self.sender_email_textbox)
-        letter_info_layout.addRow("Amount", self.award_amount_textbox)
-        letter_info_layout.addRow("Academic Year", self.academic_year_textbox)
-
-        # Layout for selecting destination directory
-        select_dir_layout: QHBoxLayout = QHBoxLayout()
-        select_dir_layout.addWidget(self.select_directory_button)
-        select_dir_layout.addWidget(self.dest_dir_path_textbox)
-
-        # Add template letter layout to letter info layout
-        letter_info_layout.addRow("Template Letter", select_template_layout)
-
-        # Add layout to letter info layout
-        letter_info_layout.addRow("Destination Directory", select_dir_layout)
-        scholarship_layout.addWidget(letter_info_widget)
-
-        # Generate Letters button
-        generate_letters: QToolButton = QToolButton()
-        generate_letters.setText("Generate Letters")
-        generate_letters.setToolTip(
-            "Generates Scholarship Letter for selected students."
-        )
-        generate_letters.clicked.connect(self.generate_letters)
-
-        # Add widget to scholarship components layout
-        scholarship_layout.addWidget(generate_letters)
-
-        # Add scholarship groupbox to horizontal layout
-        horizontal_layout.addWidget(scholarship_groupbox)
+        self.tab_bar = ScholarlyTabBar(self.scholarship_tab, QWidget(), QWidget())
+        central_widget_layout.addWidget(self.tab_bar)
 
         # Add layout to central widget, and add central widget to main window
-        central_widget.setLayout(horizontal_layout)
+        central_widget.setLayout(central_widget_layout)
         self.setCentralWidget(central_widget)
 
     def initialize_menubar(self):
@@ -235,8 +162,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table_view.setModel(self.student_table)
 
         # Enable scholarship combobox
-        self.scholarship_combobox.setEnabled(True)
-        self.scholarship_combobox.setCurrentIndex(0)
+        self.scholarship_tab.toggleAll(True)
 
     @pyqtSlot()
     def save_file(self) -> None:
@@ -275,8 +201,8 @@ class ScholarlyMainWindow(QMainWindow):
         Function that is called when "Close" action is activated. Clears the database
         and clears the table.
         """
-        self.scholarship_combobox.setDisabled(True)
-        self.scholarship_combobox.setCurrentIndex(0)
+        self.scholarship_tab.toggleAll(False)
+        self.scholarship_tab.scholarship_combobox.setCurrentText("")
         self.database.drop_table(ScholarlyDatabase.students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
@@ -344,13 +270,15 @@ class ScholarlyMainWindow(QMainWindow):
         curr_time:datetime = datetime.now()
         date:str = f"{curr_time.strftime("%B")} {curr_time.day}, {curr_time.year}"
 
-        scholarship_name:str = self.scholarship_combobox.currentText()
-        sender_name:str = self.sender_name_textbox.text()
-        sender_title:str = self.sender_title_textbox.text()
-        sender_email:str = self.sender_email_textbox.text()
-        amount:str = self.award_amount_textbox.text()
-        academic_year:str = self.academic_year_textbox.text()
-        dir_path:str = self.dest_dir_path_textbox.text()
+        scholarship_name:str = self.scholarship_tab.getScholarshipComboBoxCurrentText()
+        sender_name:str = self.scholarship_tab.getSenderNameTexBoxText()
+        sender_title:str = self.scholarship_tab.getSenderTitleTextBoxText()
+        sender_email:str = self.scholarship_tab.getSenderEmailTextBoxText()
+        amount:str = self.scholarship_tab.getAmountTextBoxText()
+        academic_year_fall:str = self.scholarship_tab.getAcademicYearFallTextBoxText()
+        academic_year_spring:str = self.scholarship_tab.getAcademicYearSpringTextBoxText()
+        template_path:str = self.scholarship_tab.getTemplateLetterPathTextBoxText()
+        dir_path:str = self.scholarship_tab.getDestDirPathTextBoxText()
 
         # Ensure text boxes are not empty, if so, show warning
         if not sender_name:
@@ -365,30 +293,36 @@ class ScholarlyMainWindow(QMainWindow):
         elif not amount:
             QMessageBox.warning(self, "Enter Amount", "The amount is empty. Please enter the amount.")
             return
-        elif not academic_year:
+        elif not academic_year_fall:
             QMessageBox.warning(self, "Enter Academic Year", "The academic year is empty. Please enter the academic year.")
             return
         elif not dir_path:
             QMessageBox.warning(self, "Enter Destination Directory", "Destination directory is empty. Please enter the destination directory.")
             return
+        elif not scholarship_name:
+            QMessageBox.warning(self, "Select a Scholarship", "A scholarship has not been selected. Please select a scholarship.")
+            return
 
         for student in student_data:
-
-            student_last_name, student_first_name = student.name.replace(" ", "").split(",")
-
-            student_name:str = f"{student_first_name} {student_last_name}"
-            
-            letter_vars:LetterVariables = None
+            student_name:str = None
 
             try:
-                letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year, sender_name, sender_email, sender_title)
+                student_last_name, student_first_name = student.name.replace(" ", "").split(",")
+
+                student_name = f"{student_first_name} {student_last_name}"
             except ValueError as e:
-                QMessageBox.critical(self, "Invalid Arguments", f"Invalid arguments in the textboxes.\n{type(e).__name__}: {e}")
-                raise e
+                QMessageBox.critical(self, "Invalid Arguments", f"Invalid student name: '{student.name}'.\nMust be in the format 'last_name, first_name'.\n{type(e).__name__}: {e}")
                 return
             
-            letter_writer:LetterWriter = LetterWriter("assets/templates/template_letter.docx", f"{dir_path}/{student_name}.docx", letter_vars.to_dict())
-            letter_writer.writer_letter()
+            letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year_fall, academic_year_spring, sender_name, sender_email, sender_title)
+            
+            letter_writer:LetterWriter = LetterWriter(template_path, f"{dir_path}/{student_name}.docx", letter_vars)
+            
+            try:
+                letter_writer.writer_letter()
+            except Exception as e:
+                QMessageBox.critical(self, "Invalid File Paths", f"Invalid template letter file path or destination directory path'.\n{type(e).__name__}: {e}")
+                return
         
         # Open File Explorer to show letters
         os.startfile(dir_path)
@@ -433,7 +367,7 @@ class ScholarlyMainWindow(QMainWindow):
             return
 
         # Change textbox text to directory path
-        self.dest_dir_path_textbox.setText(dir_path)
+        self.scholarship_tab.setDestDirPathTextBoxText(dir_path)
 
     @pyqtSlot()
     def select_template(self):
@@ -457,7 +391,30 @@ class ScholarlyMainWindow(QMainWindow):
             return
 
         # Change textbox text to directory path
-        self.template_path_textbox.setText(file_path)
+        self.scholarship_tab.setTemplateLetterPathTextBoxText(file_path)
+
+    @pyqtSlot()
+    def find(self):
+        """Called when selection is changed in scholarship_combobox
+
+        Called when selection is changed in scholarship_combobox
+        """
+        scholarship_name:str = self.scholarship_tab.getScholarshipComboBoxCurrentText()
+    
+        if scholarship_name == "":
+            # Clear selection
+            self.student_table_view.clearSelection()
+            
+            # Reset table to have entire contents of database
+            student_data:list[StudentRecord] = self.database.select_all_students()
+            self.student_table = StudentTableModel(student_data)
+            self.student_table_view.setModel(self.student_table)
+        else:
+            self.student_table_view.clearSelection()
+            award_criteria_record:AwardCriteriaRecord = self.database.select_award_criteria(scholarship_name)
+            student_data:list[StudentRecord] = self.database.select_students_by_criteria(award_criteria_record)
+            self.student_table = StudentTableModel(student_data)
+            self.student_table_view.setModel(self.student_table)
 
     @pyqtSlot()
     def scholarship_changed(self):
@@ -482,23 +439,27 @@ class ScholarlyMainWindow(QMainWindow):
             self.student_table = StudentTableModel(student_data)
             self.student_table_view.setModel(self.student_table)
 
-    def load_scholarship_combobox(self):
+    def getScholarshipNames(self)-> list[str]:
+        records:list[AwardCriteriaRecord] = self.database.select_all_award_criteria()
+        scholarship_names:list[str] = [record.name for record in records]
+
+        return scholarship_names
+
+    def load_combobox(self)-> None:
         """Populates scholarship combobox with scholarship names.
 
         Populates scholarship combobox with scholarship names from the
         award criteria table in the database.
         """
-        self.scholarship_combobox.clear()
+        self.scholarship_tab.scholarshipComboBoxClear()
 
         # Add empty item for representing no filter / no selection
-        self.scholarship_combobox.addItem("")
+        self.scholarship_tab.scholarshipComboBoxAddItem("")
         
         # Retrieve all award criteria
-        records:list[AwardCriteriaRecord] = self.database.select_all_award_criteria()
+        scholarship_names:list[str] = self.getScholarshipNames()
 
-        # Add award names to combobox
-        for record in records:
-            self.scholarship_combobox.addItem(record.name)
+        self.scholarship_tab.scholarshipComboxBoxAddItems(scholarship_names)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
