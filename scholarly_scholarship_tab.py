@@ -25,6 +25,11 @@ voidCallBack: Callable[[], None] = lambda: print("works")
 
 
 class ScholarlyScholarshipTab(QTabWidget):
+    """Widget class for Scholarship Tab
+
+    A class that is for the GUI component, Scholarship tab.
+    """
+
     def __init__(
         self,
         find_button_clicked: Callable[[QWidget], None] = voidCallBack,
@@ -33,6 +38,17 @@ class ScholarlyScholarshipTab(QTabWidget):
         generate_letters_button_clicked: Callable[[QWidget], None] = voidCallBack,
         scholarship_combo_box_items: list[str] = [],
     ) -> None:
+        """Creates a new instance of ScholarlyScholarshipTab
+
+        Creates a new instance of ScholarlyScholarShipTab.
+
+        Args:
+            find_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
+            select_template_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
+            select_directory_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
+            generate_letters_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
+            scholarship_combo_box_items (list[str], optional): The items to be displayed in the combobox. Defaults to [].
+        """
         super().__init__()
 
         # Main layout for widget
@@ -78,11 +94,15 @@ class ScholarlyScholarshipTab(QTabWidget):
         self.template_path_textbox: QLineEdit = QLineEdit()
         self.dest_dir_path_textbox: QLineEdit = QLineEdit()
         self.academic_year_fall_textbox: QLineEdit = QLineEdit()
-        self.academic_year_spring_textbox:QLineEdit = QLineEdit()
+        self.academic_year_fall_textbox.setValidator(QIntValidator())
+        self.academic_year_spring_textbox: QLineEdit = QLineEdit()
+        self.academic_year_spring_textbox.setValidator(QIntValidator())
 
         # Select template letter button
         self.select_template_button: QToolButton = QToolButton()
-        self.select_template_button.setText("Browse")
+        self.select_template_button.setIcon(
+            QIcon(os.path.join(BASE_DIR, "assets/icons/open.svg"))
+        )
         self.select_template_button.setToolTip("Select template letter file.")
         self.select_template_button.clicked.connect(select_template_button_clicked)
 
@@ -93,7 +113,9 @@ class ScholarlyScholarshipTab(QTabWidget):
 
         # Select directory button
         self.select_directory_button: QToolButton = QToolButton()
-        self.select_directory_button.setText("Browse")
+        self.select_directory_button.setIcon(
+            QIcon(os.path.join(BASE_DIR, "assets/icons/open.svg"))
+        )
         self.select_directory_button.setToolTip("Select the destination directory.")
         self.select_directory_button.clicked.connect(select_directory_button_clicked)
 
@@ -102,7 +124,14 @@ class ScholarlyScholarshipTab(QTabWidget):
         letter_info_layout.addRow("Sender Title", self.sender_title_textbox)
         letter_info_layout.addRow("Sender Email", self.sender_email_textbox)
         letter_info_layout.addRow("Amount", self.amount_textbox)
-        letter_info_layout.addRow("Academic Year", self.academic_year_fall_textbox)
+
+        # Create layout for academic year
+        academic_year_layout: QHBoxLayout = QHBoxLayout()
+        academic_year_layout.addWidget(self.academic_year_fall_textbox)
+        academic_year_layout.addWidget(QLabel("-"))
+        academic_year_layout.addWidget(self.academic_year_spring_textbox)
+
+        letter_info_layout.addRow("Academic Year", academic_year_layout)
 
         # Layout for selecting destination directory
         select_dir_layout: QHBoxLayout = QHBoxLayout()
@@ -129,48 +158,150 @@ class ScholarlyScholarshipTab(QTabWidget):
         self.setLayout(main_layout)
 
     def findButtonToggle(self, enabled: bool) -> None:
+        """Toggles the find button
+
+        Toggles the find button.
+
+        Args:
+            enabled (bool): If True, enables the button. If False, disabled it.
+        """
         self.find_button.setEnabled(enabled)
 
     def scholarshipComboBoxToggle(self, enabled: bool) -> None:
+        """Toggles the scholarship combobox
+
+        Toggles the scholarship combobox.
+
+        Args:
+            enabled (bool): If True, enables the combobox. If False, disables it.
+        """
         self.scholarship_combobox.setEnabled(enabled)
 
     def senderNameTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the sender name textbox
+
+        Toggles the sender name textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
         self.sender_name_textbox.setEnabled(enabled)
 
     def senderEmailTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the sender email textbox
+
+        Toggles the sender email textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
         self.sender_email_textbox.setEnabled(enabled)
 
     def senderTitleTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the sender title textbox
+
+        Toggles the sender title textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
         self.sender_title_textbox.setEnabled(enabled)
 
     def amountTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the amount textbox.
+        
+        Toggles the amount textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
         self.amount_textbox.setEnabled(enabled)
 
-    def academicYearTextBoxToggle(self, enabled: bool) -> None:
+    def academicYearFallTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the academic year fall textbox
+
+        Toggles the academic year fall textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
         self.academic_year_fall_textbox.setEnabled(enabled)
 
+    def academicYearSpringTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the academic year spring textbox
+
+        Toggles the academic year spring textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
+        self.academic_year_spring_textbox.setEnabled(enabled)
+
     def templateLetterPathTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the template letter path textbox
+
+        Toggles the template letter path textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
         self.template_path_textbox.setEnabled(enabled)
 
     def destDirPathTextBoxToggle(self, enabled: bool) -> None:
+        """Toggles the dest dir path textbox
+
+        Toggles the dest dir path textbox.
+
+        Args:
+            enabled (bool): If True, enables the textbox. If False, disables it.
+        """
         self.dest_dir_path_textbox.setEnabled(enabled)
 
     def selectTemplateButtonToggle(self, enabled: bool) -> None:
+        """Toggles the select template button
+
+        Toggles the select template button.
+
+        Args:
+            enabled (bool): If True, enables the button. If False, disables it.
+        """
         self.select_template_button.setEnabled(enabled)
 
     def selectDirectoryButtonToggle(self, enabled: bool) -> None:
+        """Toggles the select directory button
+
+        Toggles the select directory button.
+
+        Args:
+            enabled (bool): If True, enables the button. If False, disables it.
+        """
         self.select_directory_button.setEnabled(enabled)
 
     def generateLettersButtonToggle(self, enabled: bool) -> None:
+        """Toggles the generate letters button
+
+        Toggles the generate letters button.
+
+        Args:
+            enabled (bool): If True, enables the button. If False, disables it.
+        """
         self.generate_letters_button.setEnabled(enabled)
 
     def toggleAll(self, enabled: bool) -> None:
+        """Toggles all of the buttons and textboxes in the tab
+
+        Toggles all of the buttons and textboxes in the tab.
+
+        Args:
+            enabled (bool): If True, enables all of the buttons and textboxes in the tab. If False, disables it all.
+        """
         self.senderNameTextBoxToggle(enabled)
         self.scholarshipComboBoxToggle(enabled)
         self.senderEmailTextBoxToggle(enabled)
         self.senderTitleTextBoxToggle(enabled)
         self.amountTextBoxToggle(enabled)
-        self.academicYearTextBoxToggle(enabled)
+        self.academicYearFallTextBoxToggle(enabled)
+        self.academicYearSpringTextBoxToggle(enabled)
         self.templateLetterPathTextBoxToggle(enabled)
         self.selectTemplateButtonToggle(enabled)
         self.selectDirectoryButtonToggle(enabled)
@@ -179,16 +310,125 @@ class ScholarlyScholarshipTab(QTabWidget):
         self.findButtonToggle(enabled)
 
     def scholarshipComboxBoxAddItems(self, items: list[str]) -> None:
+        """Adds items to the scholarship combobox
+
+        Adds items to the scholarship combobox.
+
+        Args:
+            items (list[str]): List of items to add to the combobox.
+        """
         self.scholarship_combobox.addItems(items)
 
     def scholarshipComboBoxClear(self) -> None:
+        """Clears the scholarship combobox.
+
+        Clears the scholarship combobox. Removes all items.
+        """
         self.scholarship_combobox.clear()
 
     def scholarshipComboBoxAddItem(self, item: str) -> None:
+        """Adds an item to the scholarship combobox.
+
+        Args:
+            item (str): An item to add to the combobox.
+        """
         self.scholarship_combobox.addItem(item)
 
     def setFindButtonClicked(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the clicked slot for the find button.
+
+        Args:
+            callback (Callable[[QWidget], None]): The function to be assigned to the click event.
+        """
         self.find_button.clicked.connect(callback)
+
+    def setSelectTemplateButtonClicked(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the clicked slot for the select template button.
+
+        Args:
+            callback (Callable[[QWidget], None]): The function to be assigned to the click event.
+        """
+        self.select_template_button.clicked.connect(callback)
+
+    def setSelectDirectoryButtonClicked(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the clicked slot for the select directory button.
+
+        Args:
+            callback (Callable[[QWidget], None]): The function to be assigned to the click event.
+        """
+        self.select_directory_button.clicked.connect(callback)
+
+    def getScholarshipComboBoxCurrentText(self) -> str:
+        """Returns the current text in the scholarship combobox.
+
+        Returns:
+            str: The current item in the combobox.
+        """
+        return self.scholarship_combobox.currentText()
+
+    def getSenderNameTexBoxText(self) -> str:
+        """Returns the text in the sender name textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.sender_name_textbox.text()
+
+    def getSenderTitleTextBoxText(self) -> str:
+        """Returns the text in the sender title textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.sender_title_textbox.text()
+
+    def getSenderEmailTextBoxText(self) -> str:
+        """Returns the text in the sender email textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.sender_email_textbox.text()
+
+    def getAmountTextBoxText(self) -> str:
+        """Returns the text in the amount textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.amount_textbox.text()
+
+    def getAcademicYearFallTextBoxText(self) -> str:
+        """Returns the text from the academic year fall textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.academic_year_fall_textbox.text()
+
+    def getAcademicYearSpringTextBoxText(self) -> str:
+        """Returns the text from the academic year spring textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.academic_year_spring_textbox.text()
+
+    def getTemplateLetterPathTextBoxText(self) -> str:
+        """Returns the text from the template letter path textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.template_path_textbox.text()
+
+    def getDestDirPathTextBoxText(self) -> str:
+        """Returns the text from the dest dir path textbox.
+
+        Returns:
+            str: The text from the textbox.
+        """
+        return self.dest_dir_path_textbox.text()
 
 
 if __name__ == "__main__":
@@ -196,7 +436,7 @@ if __name__ == "__main__":
 
     a = QApplication([])
     s = ScholarlyScholarshipTab()
-    s.toggleAll(1)
+    s.toggleAll(True)
     s.scholarshipComboxBoxAddItems(
         [
             "",
