@@ -45,28 +45,28 @@ class ScholarlyMenuBar(QMenuBar):
         self.file_menu: QMenu = self.addMenu("&File")
 
         # Open Action
-        self.open_action: QAction = QAction("Open File")
+        self.open_action: QAction = QAction("&Open File")
         self.open_action.setIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/open.svg")))
         self.open_action.triggered.connect(open_file_slot)
         self.open_action.setShortcut("ctrl+o")
         self.file_menu.addAction(self.open_action)
 
         # Save Action
-        self.save_action: QAction = QAction("Save File", self)
+        self.save_action: QAction = QAction("&Save File", self)
         self.save_action.setIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/save.svg")))
         self.save_action.triggered.connect(save_file_slot)
         self.save_action.setShortcut("ctrl+s")
         self.file_menu.addAction(self.save_action)
 
         # Close Action
-        self.close_action: QAction = QAction("Close File", self)
+        self.close_action: QAction = QAction("&Close File", self)
         self.close_action.setIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/close.svg")))
         self.close_action.triggered.connect(close_file_slot)
         self.close_action.setShortcut("ctrl+f4")
         self.file_menu.addAction(self.close_action)
 
         # Exit Action
-        self.exit_action: QAction = QAction("Exit", self)
+        self.exit_action: QAction = QAction("&Exit", self)
         self.exit_action.setIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/exit.svg")))
         self.exit_action.triggered.connect(exit_slot)
         self.file_menu.addAction(self.exit_action)
@@ -76,12 +76,14 @@ class ScholarlyMenuBar(QMenuBar):
         # About Menu Tab
         self.about_action: QAction = QAction("&About", self)
         self.about_action.setIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/about.svg")))
+        self.about_action.setShortcut("ctrl+a")
         self.about_action.triggered.connect(about_slot)
         self.help_menu.addAction(self.about_action)
 
         # Help Menu Tab
         self.help_action: QAction = QAction("&Help", self)
         self.help_action.setIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/help.svg")))
+        self.help_action.setShortcut("F1")
         self.help_action.triggered.connect(help_slot)
         self.help_menu.addAction(self.help_action)
 

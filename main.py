@@ -103,6 +103,7 @@ class ScholarlyMainWindow(QMainWindow):
             generate_letters_button_clicked=self.generate_letters
             )
         self.load_combobox()
+        self.scholarship_tab.toggleAll(False)
 
         self.tab_bar = ScholarlyTabBar(self.scholarship_tab, QWidget(), QWidget())
         central_widget_layout.addWidget(self.tab_bar)
@@ -325,7 +326,15 @@ class ScholarlyMainWindow(QMainWindow):
                 return
         
         # Open File Explorer to show letters
-        os.startfile(dir_path)
+        reponse: QMessageBox.StandardButton = QMessageBox.question(
+            self,
+            "Open File Explorer",
+            "The scholarship acceptance letters were successfully created.\nWould you like to view them in File Explorer?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+
+        if reponse == QMessageBox.StandardButton.Yes:
+            os.startfile(dir_path)
             
     def get_selected_rows(self)-> list[StudentRecord]:
         """Returns the student data from the selection.
