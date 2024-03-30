@@ -62,18 +62,35 @@ class ScholarlyTabBar(QTabWidget):
         self.setOutstandingStudentAwardTab(self.outstanding_student_awards_tab)
 
     def setScholarshipTab(self, tab: ScholarlyScholarshipTab) -> None:
+        """Sets the Scholarship tab
+
+        Args:
+            tab (ScholarlyScholarshipTab): Scholarship tab.
+        """ 
         self.removeTab(0)
         self.insertTab(0, tab, self.scholarship_tab_name)
         self.setTabIcon(0, QIcon(os.path.join(BASE_DIR, "assets/icons/education.svg")))
 
-    def setManageScholarShipsTab(self, tab) -> None:
+    def setManageScholarShipsTab(self, tab: ScholarlyManageScholarshipsTab) -> None:
+        """Sets the Manage Scholarships tab
+
+        Args:
+            tab (ScholarlyManageScholarshipsTab): Manage Scholarships tab.
+        """
         self.removeTab(1)
         self.insertTab(1, tab, self.manage_scholarships_tab_name)
         self.setTabIcon(
             1, QIcon(os.path.join(BASE_DIR, "assets/icons/filter_settings.svg"))
         )
 
-    def setOutstandingStudentAwardTab(self, tab) -> None:
+    def setOutstandingStudentAwardTab(
+        self, tab: ScholarlyOutstandingStudentAwardsTab
+    ) -> None:
+        """Sets the Oustandsting Student Awards tab
+
+        Args:
+            tab (ScholarlyOutstandingStudentAwardsTab): Outstanding Student Awards tab.
+        """
         self.removeTab(2)
         self.insertTab(2, tab, self.outstanding_student_awards_tab_name)
         self.setTabIcon(2, QIcon(os.path.join(BASE_DIR, "assets/icons/medal.svg")))
@@ -84,7 +101,9 @@ if __name__ == "__main__":
 
     a = QApplication([])
     s = ScholarlyTabBar(
-        ScholarlyScholarshipTab(), ScholarlyManageScholarshipsTab(), ScholarlyOutstandingStudentAwardsTab()
+        ScholarlyScholarshipTab(),
+        ScholarlyManageScholarshipsTab(),
+        ScholarlyOutstandingStudentAwardsTab(),
     )
     s.show()
     a.exec()
