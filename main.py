@@ -32,6 +32,7 @@ from scholarly_menu_bar import ScholarlyMenuBar
 from scholarly_tab_bar import ScholarlyTabBar
 from scholarly_scholarship_tab import ScholarlyScholarshipTab
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
+from scholarly_fonts import ScholarlyFont, Fonts
 
 # Absolute address for file to prevent issues with
 # relative addresses when building app with PyInstaller
@@ -480,13 +481,10 @@ class ScholarlyMainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    # TODO: CANNOT STAY HARDCODED, this needs to be fixed later
-    fontID:int = QFontDatabase.addApplicationFont("C:\\Users\\badil\\scholarly_app\\assets\\fonts\\Roboto_Flex\\RobotoFlex-VariableFont_GRAD,XOPQ,XTRA,YOPQ,YTAS,YTDE,YTFI,YTLC,YTUC,opsz,slnt,wdth,wght.ttf")
-
-    fontFamily, = QFontDatabase.applicationFontFamilies(fontID)
+    appFont:ScholarlyFont = ScholarlyFont(Fonts.RobotoFlex, 12)
 
     # Setting Up App font
-    app.setFont(QFont(fontFamily))
+    app.setFont(appFont)
 
     window: ScholarlyMainWindow = ScholarlyMainWindow()
   
