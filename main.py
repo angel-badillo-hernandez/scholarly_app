@@ -29,6 +29,7 @@ from letter_writer import LetterVariables, LetterWriter
 from scholarly_menu_bar import ScholarlyMenuBar
 from scholarly_tab_bar import ScholarlyTabBar
 from scholarly_scholarship_tab import ScholarlyScholarshipTab
+from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 
 # Absolute address for file to prevent issues with
 # relative addresses when building app with PyInstaller
@@ -62,7 +63,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         # Set window properties
         self.setWindowTitle("Scholarly")
-        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "assets/icons/scholarly.ico")))
+        self.setWindowIcon(ScholarlyIcon(Icons.Scholarly, QColor("maroon"), IconSizes.Medium))
         self.setGeometry(200, 200, 500, 500)
 
         # Initalize menu bar
@@ -117,7 +118,7 @@ class ScholarlyMainWindow(QMainWindow):
 
         Initializes the menu bar for the main window of the appllication.
         """
-        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self.open_file, self.save_file, self.close_file, self.about, self.help, self.close)
+        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self.open_file, self.save_as_file, self.close_file, self.about, self.help, self.close)
         self.setMenuBar(self.menu_bar)
 
     @pyqtSlot()
@@ -166,7 +167,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.scholarship_tab.toggleAll(True)
 
     @pyqtSlot()
-    def save_file(self) -> None:
+    def save_as_file(self) -> None:
         """Slot (event handler) for "Save" action.
 
         Function called when "Save" action is activated. Shows

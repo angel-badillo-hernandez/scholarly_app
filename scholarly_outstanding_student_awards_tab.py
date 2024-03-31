@@ -14,11 +14,12 @@ from PyQt6.QtWidgets import (
     QComboBox,
     QLabel,
 )
-from PyQt6.QtGui import QAction, QDoubleValidator, QValidator, QIntValidator, QIcon
+from PyQt6.QtGui import QAction, QDoubleValidator, QValidator, QIntValidator, QIcon, QColor
+from PyQt6.QtCore import QSize
+from scholarly_icons import ScholarlyIcon, IconSizes, Icons
 from typing import Callable
 import os
 
-BASE_DIR: str = os.path.dirname(__file__)
 
 # Function that takes no parameters, and returns nothing
 voidCallBack: Callable[[], None] = lambda: None

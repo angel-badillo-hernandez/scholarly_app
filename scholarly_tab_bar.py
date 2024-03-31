@@ -13,16 +13,23 @@ from PyQt6.QtWidgets import (
     QGroupBox,
     QComboBox,
 )
-from PyQt6.QtGui import QAction, QDoubleValidator, QValidator, QIntValidator, QIcon
+from PyQt6.QtGui import (
+    QAction,
+    QDoubleValidator,
+    QValidator,
+    QIntValidator,
+    QIcon,
+    QColor,
+)
+from PyQt6.QtCore import QSize
 from typing import Callable
+from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from scholarly_scholarship_tab import ScholarlyScholarshipTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_outstanding_student_awards_tab import (
     ScholarlyOutstandingStudentAwardsTab,
 )
 import os
-
-BASE_DIR: str = os.path.dirname(__file__)
 
 # Function that takes no parameters, and returns nothing
 voidCallBack: Callable[[], None] = lambda: None
@@ -61,15 +68,19 @@ class ScholarlyTabBar(QTabWidget):
         self.outstanding_student_awards_tab_name: str = "Outstanding Student Awards"
         self.setOutstandingStudentAwardTab(self.outstanding_student_awards_tab)
 
+        self.setIconSize(IconSizes.Medium.value)
+
     def setScholarshipTab(self, tab: ScholarlyScholarshipTab) -> None:
         """Sets the Scholarship tab
 
         Args:
             tab (ScholarlyScholarshipTab): Scholarship tab.
-        """ 
+        """
         self.removeTab(0)
         self.insertTab(0, tab, self.scholarship_tab_name)
-        self.setTabIcon(0, QIcon(os.path.join(BASE_DIR, "assets/icons/education.svg")))
+        self.setTabIcon(
+            0, ScholarlyIcon(Icons.School, QColor("maroon"), IconSizes.Medium)
+        )
 
     def setManageScholarShipsTab(self, tab: ScholarlyManageScholarshipsTab) -> None:
         """Sets the Manage Scholarships tab
@@ -80,7 +91,7 @@ class ScholarlyTabBar(QTabWidget):
         self.removeTab(1)
         self.insertTab(1, tab, self.manage_scholarships_tab_name)
         self.setTabIcon(
-            1, QIcon(os.path.join(BASE_DIR, "assets/icons/filter_settings.svg"))
+            1, ScholarlyIcon(Icons.Filter, QColor("black"), IconSizes.Medium)
         )
 
     def setOutstandingStudentAwardTab(
@@ -93,7 +104,9 @@ class ScholarlyTabBar(QTabWidget):
         """
         self.removeTab(2)
         self.insertTab(2, tab, self.outstanding_student_awards_tab_name)
-        self.setTabIcon(2, QIcon(os.path.join(BASE_DIR, "assets/icons/medal.svg")))
+        self.setTabIcon(
+            2, ScholarlyIcon(Icons.Trophy, QColor(204, 172, 0), IconSizes.Medium)
+        )
 
 
 if __name__ == "__main__":

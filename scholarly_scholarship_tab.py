@@ -14,11 +14,19 @@ from PyQt6.QtWidgets import (
     QComboBox,
     QLabel,
 )
-from PyQt6.QtGui import QAction, QDoubleValidator, QValidator, QIntValidator, QIcon
+from PyQt6.QtGui import (
+    QAction,
+    QDoubleValidator,
+    QValidator,
+    QIntValidator,
+    QIcon,
+    QColor,
+)
+from PyQt6.QtCore import QSize
+from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from typing import Callable
 import os
 
-BASE_DIR: str = os.path.dirname(__file__)
 
 # Function that takes no parameters, and returns nothing
 voidCallBack: Callable[[], None] = lambda: None
@@ -63,9 +71,7 @@ class ScholarlyScholarshipTab(QTabWidget):
 
         # Create Find button
         self.find_button: QToolButton = QToolButton()
-        self.find_button.setIcon(
-            QIcon(os.path.join(BASE_DIR, "assets/icons/search.svg"))
-        )
+        self.find_button.setIcon(ScholarlyIcon(Icons.Search))
         self.find_button.clicked.connect(find_button_clicked)
 
         # Create groupbox for scholarship combobox and find button
@@ -101,8 +107,9 @@ class ScholarlyScholarshipTab(QTabWidget):
         # Select template letter button
         self.select_template_button: QToolButton = QToolButton()
         self.select_template_button.setIcon(
-            QIcon(os.path.join(BASE_DIR, "assets/icons/open.svg"))
+            ScholarlyIcon(Icons.FileOpenFill, size=IconSizes.Medium)
         )
+        self.select_template_button.setIconSize(QSize(24, 24))
         self.select_template_button.setToolTip("Select template letter file.")
         self.select_template_button.clicked.connect(select_template_button_clicked)
 
@@ -114,8 +121,9 @@ class ScholarlyScholarshipTab(QTabWidget):
         # Select directory button
         self.select_directory_button: QToolButton = QToolButton()
         self.select_directory_button.setIcon(
-            QIcon(os.path.join(BASE_DIR, "assets/icons/open.svg"))
+            ScholarlyIcon(Icons.FolderOpenFill, size=IconSizes.Medium),
         )
+        self.select_directory_button.setIconSize(QSize(24, 24))
         self.select_directory_button.setToolTip("Select the destination directory.")
         self.select_directory_button.clicked.connect(select_directory_button_clicked)
 
@@ -209,7 +217,7 @@ class ScholarlyScholarshipTab(QTabWidget):
 
     def amountTextBoxToggle(self, enabled: bool) -> None:
         """Toggles the amount textbox.
-        
+
         Toggles the amount textbox.
 
         Args:
@@ -342,7 +350,9 @@ class ScholarlyScholarshipTab(QTabWidget):
         """
         self.find_button.clicked.connect(callback)
 
-    def setSelectTemplateButtonClicked(self, callback: Callable[[QWidget], None]) -> None:
+    def setSelectTemplateButtonClicked(
+        self, callback: Callable[[QWidget], None]
+    ) -> None:
         """Sets the clicked slot for the select template button.
 
         Args:
@@ -350,7 +360,9 @@ class ScholarlyScholarshipTab(QTabWidget):
         """
         self.select_template_button.clicked.connect(callback)
 
-    def setSelectDirectoryButtonClicked(self, callback: Callable[[QWidget], None]) -> None:
+    def setSelectDirectoryButtonClicked(
+        self, callback: Callable[[QWidget], None]
+    ) -> None:
         """Sets the clicked slot for the select directory button.
 
         Args:
@@ -430,7 +442,7 @@ class ScholarlyScholarshipTab(QTabWidget):
         """
         return self.dest_dir_path_textbox.text()
 
-    def setTemplateLetterPathTextBoxText(self, file_path:str)-> None:
+    def setTemplateLetterPathTextBoxText(self, file_path: str) -> None:
         """Sets the text in the template letter path textbox.
 
         Args:
@@ -438,14 +450,13 @@ class ScholarlyScholarshipTab(QTabWidget):
         """
         self.template_path_textbox.setText(file_path)
 
-    def setDestDirPathTextBoxText(self, dir_path:str)-> None:
+    def setDestDirPathTextBoxText(self, dir_path: str) -> None:
         """Sets the text in the dest dir path textbox.
 
         Args:
             dir_path (str): Directory path to show in textbox.
         """
         self.dest_dir_path_textbox.setText(dir_path)
-
 
 
 if __name__ == "__main__":
