@@ -19,6 +19,8 @@ from PyQt6.QtGui import (
     QDoubleValidator,
     QFont,
     QPixmap,
+    QFontDatabase,
+    QFontInfo,
 )
 from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
@@ -81,6 +83,21 @@ class ScholarlyMainWindow(QMainWindow):
         central_widget: QWidget = QWidget()
         central_widget_layout: QHBoxLayout = QHBoxLayout()
 
+        self.scholarship_tab = ScholarlyScholarshipTab(
+            find_button_clicked= self.find,
+            select_directory_button_clicked=self.select_directory,
+            select_template_button_clicked=self.select_template,
+            generate_letters_button_clicked=self.generate_letters
+            )
+        self.load_combobox()
+        self.scholarship_tab.toggleAll(False)
+
+        self.tab_bar = ScholarlyTabBar(self.scholarship_tab, QWidget(), QWidget())
+        central_widget_layout.addWidget(self.tab_bar)
+
+        # Add layout to central widget
+        central_widget.setLayout(central_widget_layout)
+
         # Create model and table view widget
         self.student_table = StudentTableModel()
         self.student_table_view: QTableView = QTableView()
@@ -95,22 +112,10 @@ class ScholarlyMainWindow(QMainWindow):
 
         # Add table view to central widget
         self.student_table_view.setModel(self.student_table)
+        self.student_table_view.resizeColumnsToContents()
         central_widget_layout.addWidget(self.student_table_view)
         
-        self.scholarship_tab = ScholarlyScholarshipTab(
-            find_button_clicked= self.find,
-            select_directory_button_clicked=self.select_directory,
-            select_template_button_clicked=self.select_template,
-            generate_letters_button_clicked=self.generate_letters
-            )
-        self.load_combobox()
-        self.scholarship_tab.toggleAll(False)
-
-        self.tab_bar = ScholarlyTabBar(self.scholarship_tab, QWidget(), QWidget())
-        central_widget_layout.addWidget(self.tab_bar)
-
-        # Add layout to central widget, and add central widget to main window
-        central_widget.setLayout(central_widget_layout)
+        # Add central widget to main window
         self.setCentralWidget(central_widget)
 
     def initialize_menubar(self):
@@ -162,6 +167,7 @@ class ScholarlyMainWindow(QMainWindow):
         # Store data into table
         self.student_table = StudentTableModel(student_data)
         self.student_table_view.setModel(self.student_table)
+        self.student_table_view.resizeColumnsToContents()
 
         # Enable scholarship combobox
         self.scholarship_tab.toggleAll(True)
@@ -473,6 +479,15 @@ class ScholarlyMainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    # TODO: CANNOT STAY HARDCODED, this needs to be fixed later
+    fontID:int = QFontDatabase.addApplicationFont("C:\\Users\\badil\\scholarly_app\\assets\\fonts\\Roboto_Flex\\RobotoFlex-VariableFont_GRAD,XOPQ,XTRA,YOPQ,YTAS,YTDE,YTFI,YTLC,YTUC,opsz,slnt,wdth,wght.ttf")
+
+    fontFamily, = QFontDatabase.applicationFontFamilies(fontID)
+
+    # Setting Up App font
+    app.setFont(QFont(fontFamily))
+
     window: ScholarlyMainWindow = ScholarlyMainWindow()
   
     # Displays the main window for the application
