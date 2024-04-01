@@ -32,7 +32,7 @@ import os
 voidCallBack: Callable[[], None] = lambda: None
 
 
-class ScholarlyScholarshipTab(QTabWidget):
+class ScholarlyScholarshipTab(QWidget):
     """Widget class for Scholarship Tab
 
     A class that is for the GUI component, Scholarship tab.
@@ -76,8 +76,14 @@ class ScholarlyScholarshipTab(QTabWidget):
 
         # Create groupbox for scholarship combobox and find button
         select_scholarship_group_box: QGroupBox = QGroupBox("Select a Scholarship")
-
-        #
+        select_scholarship_group_box.setStyleSheet(
+        """
+        QGroupBox {
+            height: 10px;
+        }
+        """
+        )
+        
         search_layout: QHBoxLayout = QHBoxLayout()
         search_layout.addWidget(self.find_button)
         search_layout.addWidget(self.scholarship_combobox)

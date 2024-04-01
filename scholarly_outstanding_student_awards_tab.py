@@ -25,7 +25,7 @@ import os
 voidCallBack: Callable[[], None] = lambda: None
 
 
-class ScholarlyOutstandingStudentAwardsTab(QTabWidget):
+class ScholarlyOutstandingStudentAwardsTab(QWidget):
 
     def __init__(self) -> None:
         super().__init__()
