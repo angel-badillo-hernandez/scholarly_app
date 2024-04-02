@@ -31,6 +31,7 @@ from letter_writer import LetterVariables, LetterWriter
 from scholarly_menu_bar import ScholarlyMenuBar
 from scholarly_tab_bar import ScholarlyTabBar
 from scholarly_scholarship_tab import ScholarlyScholarshipTab
+from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from scholarly_fonts import ScholarlyFont, Fonts
 
@@ -90,10 +91,13 @@ class ScholarlyMainWindow(QMainWindow):
             select_template_button_clicked=self.select_template,
             generate_letters_button_clicked=self.generate_letters
             )
+        self.scholarship_tab.setObjectName("scholarshipTab")
         self.load_combobox()
         self.scholarship_tab.toggleAll(False)
 
-        self.tab_bar = ScholarlyTabBar(self.scholarship_tab, QWidget(), QWidget())
+        self.manage_scholarshops_tab =  ScholarlyManageScholarshipsTab()
+
+        self.tab_bar = ScholarlyTabBar(self.scholarship_tab, self.manage_scholarshops_tab, QWidget())
         central_widget_layout.addWidget(self.tab_bar)
 
         # Add layout to central widget
@@ -481,13 +485,15 @@ class ScholarlyMainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    appFont:ScholarlyFont = ScholarlyFont(Fonts.RobotoFlex, 12)
+    # appFont:ScholarlyFont = ScholarlyFont(Fonts.RobotoFlex, 12)
 
-    # Setting Up App font
-    app.setFont(appFont)
+    # # Setting Up App font
+    # app.setFont(appFont)
 
     window: ScholarlyMainWindow = ScholarlyMainWindow()
-  
+    with open("style.qss", "r") as styleFile:
+        app.setStyleSheet(styleFile.read())
+
     # Displays the main window for the application
     window.show()
     

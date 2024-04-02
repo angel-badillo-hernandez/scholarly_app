@@ -55,6 +55,7 @@ class ScholarlyTabBar(QTabWidget):
 
         # Add scholarship tab
         self.scholarship_tab: ScholarlyScholarshipTab = scholarship_tab
+        self.scholarship_tab.setObjectName("scholarshipTab")
         self.scholarship_tab_name: str = "Select Scholarship Recipients"
         self.setScholarshipTab(self.scholarship_tab)
 

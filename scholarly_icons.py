@@ -29,6 +29,7 @@ class Icons(StrEnum):
     FileOpen: str = auto()
     FileOpenFill:str = auto()
     Filter: str = auto()
+    FilterFill:str = auto()
     FolderOpen: str = auto()
     FolderOpenFill:str = auto()
     FormsAddOn: str = auto()
@@ -50,6 +51,7 @@ class Icons(StrEnum):
     Trophy: str = auto()
     ZoomIn: str = auto()
     ZoomOut: str = auto()
+    ExpandMore:str = auto()
 
 
 class ScholarlyIcon(QIcon):

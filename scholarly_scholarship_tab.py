@@ -40,6 +40,7 @@ class ScholarlyScholarshipTab(QWidget):
 
     def __init__(
         self,
+        parent:QWidget = None,
         find_button_clicked: Callable[[QWidget], None] = voidCallBack,
         select_template_button_clicked: Callable[[QWidget], None] = voidCallBack,
         select_directory_button_clicked: Callable[[QWidget], None] = voidCallBack,
@@ -59,33 +60,31 @@ class ScholarlyScholarshipTab(QWidget):
         """
         super().__init__()
 
+        self.setObjectName("scholarshipTab")
+
         # Main layout for widget
         main_layout: QVBoxLayout = QVBoxLayout()
 
         # Load items in comboxbox
         self.scholarship_combobox: QComboBox = QComboBox()
+        self.scholarship_combobox.setObjectName("searchBox")
         self.scholarshipComboxBoxAddItems(scholarship_combo_box_items)
 
         # Set up auto complete
         self.scholarship_combobox.setEditable(True)
 
-        # Create Find button
-        self.find_button: QToolButton = QToolButton()
-        self.find_button.setIcon(ScholarlyIcon(Icons.Search))
-        self.find_button.clicked.connect(find_button_clicked)
+        # Create Search button
+        self.search_button: QToolButton = QToolButton()
+        self.search_button.setObjectName("searchButton")
+        self.search_button.clicked.connect(find_button_clicked)
 
-        # Create groupbox for scholarship combobox and find button
-        select_scholarship_group_box: QGroupBox = QGroupBox("Select a Scholarship")
-        select_scholarship_group_box.setStyleSheet(
-        """
-        QGroupBox {
-            height: 10px;
-        }
-        """
-        )
+        # Create groupbox for scholarship combobox and search button
+        select_scholarship_group_box: QGroupBox = QGroupBox()
+        select_scholarship_group_box.setObjectName("searchGroup")
+        #select_scholarship_group_box.setFixedHeight(60)
         
         search_layout: QHBoxLayout = QHBoxLayout()
-        search_layout.addWidget(self.find_button)
+        search_layout.addWidget(self.search_button)
         search_layout.addWidget(self.scholarship_combobox)
 
         select_scholarship_group_box.setLayout(search_layout)
@@ -179,7 +178,7 @@ class ScholarlyScholarshipTab(QWidget):
         Args:
             enabled (bool): If True, enables the button. If False, disabled it.
         """
-        self.find_button.setEnabled(enabled)
+        self.search_button.setEnabled(enabled)
 
     def scholarshipComboBoxToggle(self, enabled: bool) -> None:
         """Toggles the scholarship combobox
@@ -354,7 +353,7 @@ class ScholarlyScholarshipTab(QWidget):
         Args:
             callback (Callable[[QWidget], None]): The function to be assigned to the click event.
         """
-        self.find_button.clicked.connect(callback)
+        self.search_button.clicked.connect(callback)
 
     def setSelectTemplateButtonClicked(
         self, callback: Callable[[QWidget], None]
@@ -469,6 +468,8 @@ if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
 
     a = QApplication([])
+    with open("style.qss", "r") as styleFile:
+        a.setStyleSheet(styleFile.read())
     s = ScholarlyScholarshipTab()
     s.toggleAll(True)
     s.scholarshipComboxBoxAddItems(
