@@ -1,4 +1,4 @@
-*{
+* {
     font-family: Roboto-Flex;
     font-weight: normal;
 }
@@ -16,8 +16,6 @@ QGroupBox#searchGroup::title {
     subcontrol-origin: margin;
     subcontrol-position: top center;
     padding: 0 5px;
-    background: lightgray;
-    color: #ccc;
     border: none;
 }
 
@@ -42,7 +40,8 @@ QComboBox#searchBox::drop-down {
 }
 
 QComboBox#searchBox::down-arrow {
-    image: url("assets/icons/expandmore.svg"); /* Specify the image path */
+    image: url("assets/icons/expandmore.svg");
+    /* Specify the image path */
     height: 16px;
     width: 20px;
 }

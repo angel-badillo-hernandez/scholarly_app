@@ -40,7 +40,7 @@ class ScholarlyScholarshipTab(QWidget):
 
     def __init__(
         self,
-        parent:QWidget = None,
+        parent: QWidget = None,
         find_button_clicked: Callable[[QWidget], None] = voidCallBack,
         select_template_button_clicked: Callable[[QWidget], None] = voidCallBack,
         select_directory_button_clicked: Callable[[QWidget], None] = voidCallBack,
@@ -80,9 +80,11 @@ class ScholarlyScholarshipTab(QWidget):
 
         # Create groupbox for scholarship combobox and search button
         select_scholarship_group_box: QGroupBox = QGroupBox()
+        select_scholarship_group_box.setTitle("Select a Scholarship")
+        select_scholarship_group_box.setToolTip("The name of the scholarship to filter applicants by.")
         select_scholarship_group_box.setObjectName("searchGroup")
-        #select_scholarship_group_box.setFixedHeight(60)
-        
+        # select_scholarship_group_box.setFixedHeight(60)
+
         search_layout: QHBoxLayout = QHBoxLayout()
         search_layout.addWidget(self.search_button)
         search_layout.addWidget(self.scholarship_combobox)
@@ -98,21 +100,43 @@ class ScholarlyScholarshipTab(QWidget):
 
         # Text boxes
         self.sender_name_textbox: QLineEdit = QLineEdit()
+        self.sender_name_textbox.setToolTip("The name of the letter / email sender.")
         self.sender_title_textbox: QLineEdit = QLineEdit()
+        self.sender_title_textbox.setToolTip("The title of the letter / email sender..")
         self.sender_email_textbox: QLineEdit = QLineEdit()
+        self.sender_email_textbox.setToolTip(
+            "The sender email to be shown in the letter, and used for sending the email."
+        )
         self.amount_textbox: QLineEdit = QLineEdit()
+        self.amount_textbox.setToolTip(
+            "The financial award amount in USD, rounded to the nearest cent."
+        )
         self.amount_textbox.setValidator(QDoubleValidator())
         self.template_path_textbox: QLineEdit = QLineEdit()
+        self.template_path_textbox.setToolTip(
+            "The path to the template letter used for generating the acceptance letters."
+        )
         self.dest_dir_path_textbox: QLineEdit = QLineEdit()
+        self.dest_dir_path_textbox.setToolTip(
+            "The path to the destination folder for the generated acceptance letters."
+        )
         self.academic_year_fall_textbox: QLineEdit = QLineEdit()
+        self.academic_year_fall_textbox.setToolTip(
+            "The academic year for the Fall semester."
+        )
         self.academic_year_fall_textbox.setValidator(QIntValidator())
         self.academic_year_spring_textbox: QLineEdit = QLineEdit()
+        self.academic_year_spring_textbox.setToolTip(
+            "The academic year for the Spring semester."
+        )
         self.academic_year_spring_textbox.setValidator(QIntValidator())
 
         # Select template letter button
         self.select_template_button: QToolButton = QToolButton()
         self.select_template_button.setIcon(
-            ScholarlyIcon(Icons.FileOpenFill, size=IconSizes.Medium)
+            ScholarlyIcon(
+                Icons.FileOpenFill, size=IconSizes.Medium, color=QColor("blue")
+            )
         )
         self.select_template_button.setIconSize(QSize(24, 24))
         self.select_template_button.setToolTip("Select template letter file.")
@@ -126,7 +150,9 @@ class ScholarlyScholarshipTab(QWidget):
         # Select directory button
         self.select_directory_button: QToolButton = QToolButton()
         self.select_directory_button.setIcon(
-            ScholarlyIcon(Icons.FolderOpenFill, size=IconSizes.Medium),
+            ScholarlyIcon(
+                Icons.FolderOpenFill, size=IconSizes.Medium, color=QColor(204, 172, 0)
+            ),
         )
         self.select_directory_button.setIconSize(QSize(24, 24))
         self.select_directory_button.setToolTip("Select the destination directory.")
@@ -168,6 +194,15 @@ class ScholarlyScholarshipTab(QWidget):
 
         # Add widget to scholarship components layout
         main_layout.addWidget(self.generate_letters_button)
+
+        # Clear Selection button
+        self.clear_selection_button: QToolButton = QToolButton()
+        self.generate_letters_button.setText("Generate Letters")
+        self.generate_letters_button.setToolTip(
+            "Generates Scholarship Letter for selected students."
+        )
+        self.generate_letters_button.clicked.connect(generate_letters_button_clicked)
+
         self.setLayout(main_layout)
 
     def findButtonToggle(self, enabled: bool) -> None:
