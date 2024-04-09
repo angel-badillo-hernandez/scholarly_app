@@ -24,7 +24,7 @@ from PyQt6.QtGui import (
 from PyQt6.QtCore import QSize
 from typing import Callable
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
-from scholarly_scholarship_tab import ScholarlyScholarshipTab
+from scholarly_select_recipients_tab import ScholarlyScholarshipTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_outstanding_student_awards_tab import (
     ScholarlyOutstandingStudentAwardsTab,

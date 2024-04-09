@@ -30,7 +30,7 @@ from scholarly_database import ScholarlyDatabase
 from letter_writer import LetterVariables, LetterWriter
 from scholarly_menu_bar import ScholarlyMenuBar
 from scholarly_tab_bar import ScholarlyTabBar
-from scholarly_scholarship_tab import ScholarlyScholarshipTab
+from scholarly_select_recipients_tab import ScholarlyScholarshipTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from scholarly_fonts import ScholarlyFont, Fonts
