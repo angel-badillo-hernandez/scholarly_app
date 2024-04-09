@@ -421,7 +421,8 @@ class ScholarlyMainWindow(QMainWindow):
         Called when selection is changed in scholarship_combobox
         """
         scholarship_name:str = self.scholarship_tab.getScholarshipComboBoxCurrentText()
-    
+
+        # Display entire contents of file / database
         if scholarship_name == "":
             # Clear selection
             self.student_table_view.clearSelection()
@@ -430,12 +431,21 @@ class ScholarlyMainWindow(QMainWindow):
             student_data:list[StudentRecord] = self.database.select_all_students()
             self.student_table = StudentTableModel(student_data)
             self.student_table_view.setModel(self.student_table)
+        # Display results of query performed on data
         else:
+            # Clear selection
             self.student_table_view.clearSelection()
             award_criteria_record:AwardCriteriaRecord = self.database.select_award_criteria(scholarship_name)
-            student_data:list[StudentRecord] = self.database.select_students_by_criteria(award_criteria_record)
-            self.student_table = StudentTableModel(student_data)
-            self.student_table_view.setModel(self.student_table)
+
+            # If award criteria is valid, perform query and display results in table
+            if isinstance(award_criteria_record, AwardCriteriaRecord):
+                student_data:list[StudentRecord] = self.database.select_students_by_criteria(award_criteria_record)
+                self.student_table = StudentTableModel(student_data)
+                self.student_table_view.setModel(self.student_table)
+            # If award criteriai is not valid, scholarship does not exist.
+            else:
+                QMessageBox.information(self, "Invalid Scholarship", f"The scholarship '{scholarship_name}' does not exist. Please enter or select an existing scholarship.")
+
 
     @pyqtSlot()
     def scholarship_changed(self):
