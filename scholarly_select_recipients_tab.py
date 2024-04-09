@@ -45,6 +45,7 @@ class ScholarlyScholarshipTab(QWidget):
         select_template_button_clicked: Callable[[QWidget], None] = voidCallBack,
         select_directory_button_clicked: Callable[[QWidget], None] = voidCallBack,
         generate_letters_button_clicked: Callable[[QWidget], None] = voidCallBack,
+        clear_selection_button_clicked: Callable[[QWidget], None] = voidCallBack,
         scholarship_combo_box_items: list[str] = [],
     ) -> None:
         """Creates a new instance of ScholarlyScholarshipTab
@@ -56,6 +57,7 @@ class ScholarlyScholarshipTab(QWidget):
             select_template_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
             select_directory_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
             generate_letters_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
+            clear_selection_button_clicked (Callable[[QWidget], None], optional): The function to be called when button is clicked. Defaults to voidCallBack.
             scholarship_combo_box_items (list[str], optional): The items to be displayed in the combobox. Defaults to [].
         """
         super().__init__()
@@ -81,7 +83,9 @@ class ScholarlyScholarshipTab(QWidget):
         # Create groupbox for scholarship combobox and search button
         select_scholarship_group_box: QGroupBox = QGroupBox()
         select_scholarship_group_box.setTitle("Select a Scholarship")
-        select_scholarship_group_box.setToolTip("The name of the scholarship to filter applicants by.")
+        select_scholarship_group_box.setToolTip(
+            "The name of the scholarship to filter applicants by."
+        )
         select_scholarship_group_box.setObjectName("searchGroup")
         # select_scholarship_group_box.setFixedHeight(60)
 
@@ -197,13 +201,25 @@ class ScholarlyScholarshipTab(QWidget):
 
         # Clear Selection button
         self.clear_selection_button: QToolButton = QToolButton()
-        self.generate_letters_button.setText("Generate Letters")
-        self.generate_letters_button.setToolTip(
-            "Generates Scholarship Letter for selected students."
+        self.clear_selection_button.setText("Clear Selection")
+        self.clear_selection_button.setToolTip(
+            "Clears the current selection on the table."
         )
-        self.generate_letters_button.clicked.connect(generate_letters_button_clicked)
+        self.clear_selection_button.clicked.connect(clear_selection_button_clicked)
 
+        # Add widget to scholarship components layout
+        main_layout.addWidget(self.clear_selection_button)
+
+        # Set entire main layout for widget
         self.setLayout(main_layout)
+
+    def clearSelectionButtonToggle(self, enabled: bool) -> None:
+        """Toggles the clear selection button.
+
+        Args:
+            enabled (bool): If True, enables the button. If False, disables it.
+        """
+        self.clear_selection_button.setEnabled(enabled)
 
     def findButtonToggle(self, enabled: bool) -> None:
         """Toggles the find button
@@ -211,7 +227,7 @@ class ScholarlyScholarshipTab(QWidget):
         Toggles the find button.
 
         Args:
-            enabled (bool): If True, enables the button. If False, disabled it.
+            enabled (bool): If True, enables the button. If False, disables it.
         """
         self.search_button.setEnabled(enabled)
 
@@ -356,6 +372,7 @@ class ScholarlyScholarshipTab(QWidget):
         self.destDirPathTextBoxToggle(enabled)
         self.generateLettersButtonToggle(enabled)
         self.findButtonToggle(enabled)
+        self.clearSelectionButtonToggle(enabled)
 
     def scholarshipComboxBoxAddItems(self, items: list[str]) -> None:
         """Adds items to the scholarship combobox
@@ -381,6 +398,16 @@ class ScholarlyScholarshipTab(QWidget):
             item (str): An item to add to the combobox.
         """
         self.scholarship_combobox.addItem(item)
+
+    def setClearSelectionButtonClicked(
+        self, callback: Callable[[QWidget], None]
+    ) -> None:
+        """Sets the clicked slot for the clear selection button.
+
+        Args:
+            callback (Callable[[QWidget], None]): The function to be assigned to the click event.
+        """
+        self.clear_selection_button.clicked.connect(callback)
 
     def setFindButtonClicked(self, callback: Callable[[QWidget], None]) -> None:
         """Sets the clicked slot for the find button.

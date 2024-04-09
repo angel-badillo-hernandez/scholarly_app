@@ -89,7 +89,8 @@ class ScholarlyMainWindow(QMainWindow):
             find_button_clicked= self.find,
             select_directory_button_clicked=self.select_directory,
             select_template_button_clicked=self.select_template,
-            generate_letters_button_clicked=self.generate_letters
+            generate_letters_button_clicked=self.generate_letters,
+            clear_selection_button_clicked=self.clear_selection
             )
         self.scholarship_tab.setObjectName("scholarshipTab")
         self.load_combobox()
@@ -446,6 +447,11 @@ class ScholarlyMainWindow(QMainWindow):
             else:
                 QMessageBox.information(self, "Invalid Scholarship", f"The scholarship '{scholarship_name}' does not exist. Please enter or select an existing scholarship.")
 
+    @pyqtSlot()
+    def clear_selection(self)-> None:
+        """Clears the selection in the table.
+        """
+        self.student_table_view.clearSelection()
 
     @pyqtSlot()
     def scholarship_changed(self):
