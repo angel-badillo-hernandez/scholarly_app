@@ -11,10 +11,12 @@ from student_record import StudentRecord, read, write
 from award_criteria_record import AwardCriteriaRecord
 from pypika import Query, Table, Field, Schema, Column, Columns, Order
 
+
 class FileIsOpenError(Exception):
-        """Class for defining the "FileIsOpen" exception.
-        """
-        pass
+    """Class for defining the "FileIsOpen" exception."""
+
+    pass
+
 
 class ScholarlyDatabase:
     """Class to operate SQLite3 database.
@@ -24,7 +26,6 @@ class ScholarlyDatabase:
     """
 
     __award_criteria_table_name: str = "award_criteria"
-    __open_files_table_name: str = "open_files"
 
     __students_columns: list[Column] = Columns(
         ("name", "TEXT"),
@@ -43,11 +44,6 @@ class ScholarlyDatabase:
         ("criteria", "JSON"),
         ("limit", "INTEGER"),
         ("sort", "JSON"),
-    )
-
-    __open_files_columns: list[Column] = Columns(
-        ("file_id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-        ("name", "TEXT UNIQUE"),
     )
 
     def __init__(self, file_path: str, students_table_name=None) -> None:
@@ -90,15 +86,6 @@ class ScholarlyDatabase:
         return cls.__award_criteria_table_name
 
     @classmethod
-    def get_open_files_table_name(cls) -> str:
-        """Returns the name of the `open_files` table.
-
-        Returns:
-            str: Name of the table.
-        """
-        return cls.__open_files_table_name
-
-    @classmethod
     def get_students_table_columns(cls) -> list[Column]:
         """Returns the columns for the `students` table.
 
@@ -121,15 +108,6 @@ class ScholarlyDatabase:
 
         """
         return cls.__award_criteria_columns
-
-    @classmethod
-    def get_open_files_columns(cls) -> list[Column]:
-        """Returns the columns for the `open_files` table.
-
-        Returns:
-            list[Column]: Columns for the table.
-        """
-        return cls.__open_files_columns
 
     def insert_student(self, record: StudentRecord) -> None:
         """Inserts a student record into the `students` table.
@@ -260,38 +238,6 @@ class ScholarlyDatabase:
 
         return record
 
-    def select_open_file(self, file_path: str) -> str | None:
-        """Returns the path to the open file, if it exists
-
-        Args:
-            file_path (str): Path to the open file.
-
-        Returns:
-            str | None: Path to the open file, if it exists. Otherwise, None.
-        """
-        query: Query = (
-            Query.from_(self.__open_files_table_name)
-            .select("*")
-            .where(Field("name") == file_path)
-        )
-
-        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
-        cursor: sqlite3.Cursor = conn.cursor()
-        cursor.execute(str(query))
-
-        data = cursor.fetchone()
-
-        file_path: str = None
-
-        # If record does exist
-        if data:
-            file_path = data
-
-        conn.commit()
-        conn.close()
-
-        return file_path
-
     def file_is_open(self, file_path: str) -> bool:
         """Checks if the file actively open or not.
 
@@ -314,7 +260,7 @@ class ScholarlyDatabase:
 
         data = cursor.fetchone()
 
-        file_exists:bool = False
+        file_exists: bool = False
 
         # If record does exist
         if data != None:
@@ -499,6 +445,7 @@ class ScholarlyDatabase:
                 AwardCriteriaRecord(name, json.loads(criteria), limit, json.loads(sort))
             )
         return award_records
+
 
 # Example sqlite3 operations
 if __name__ == "__main__":
