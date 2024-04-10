@@ -11,6 +11,10 @@ from student_record import StudentRecord, read, write
 from award_criteria_record import AwardCriteriaRecord
 from pypika import Query, Table, Field, Schema, Column, Columns, Order
 
+class FileIsOpenError(Exception):
+        """Class for defining the "FileIsOpen" exception.
+        """
+        pass
 
 class ScholarlyDatabase:
     """Class to operate SQLite3 database.
@@ -19,8 +23,9 @@ class ScholarlyDatabase:
     the tables `students` and `award_criteria`.
     """
 
-    __students_table_name: str = "students"
     __award_criteria_table_name: str = "award_criteria"
+    __open_files_table_name: str = "open_files"
+
     __students_columns: list[Column] = Columns(
         ("name", "TEXT"),
         ("student_ID", "TEXT PRIMARY KEY"),
@@ -40,7 +45,12 @@ class ScholarlyDatabase:
         ("sort", "JSON"),
     )
 
-    def __init__(self, file_path: str) -> None:
+    __open_files_columns: list[Column] = Columns(
+        ("file_id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+        ("name", "TEXT UNIQUE"),
+    )
+
+    def __init__(self, file_path: str, students_table_name=None) -> None:
         """Creates an instance of ScholarlyDatabase.
 
         Creates an instance of ScholarlyDatabase for accessing and
@@ -49,21 +59,27 @@ class ScholarlyDatabase:
         Args:
             file_path (str): File path for the SQLite3 database.
         """
-        self.file_path: str = file_path
+        self.database_path: str = file_path
+        self.students_table_name = students_table_name
 
-    @classmethod
-    def students_table_name(cls) -> str:
-        """Returns the name of the `students` table.
-
-        Returns the name of the `students` table.
+    def get_students_table_name(self) -> str:
+        """Returns the name of the student table in usage.
 
         Returns:
-            Name of the `students` table as a `str`.
+            str: Name of table.
         """
-        return cls.__students_table_name
+        return self.students_table_name
+
+    def set_students_table_name(self, table_name: str) -> None:
+        """Sets the name of the student table in usage.
+
+        Args:
+            table_name (str): Name of the table.
+        """
+        self.students_table_name = table_name
 
     @classmethod
-    def award_criteria_table_name(cls) -> str:
+    def get_award_criteria_table_name(cls) -> str:
         """Returns the name of the `award_criteria` table.
 
         Returns the name of the `award_criteria` table.
@@ -74,7 +90,16 @@ class ScholarlyDatabase:
         return cls.__award_criteria_table_name
 
     @classmethod
-    def students_table_columns(cls) -> list[Column]:
+    def get_open_files_table_name(cls) -> str:
+        """Returns the name of the `open_files` table.
+
+        Returns:
+            str: Name of the table.
+        """
+        return cls.__open_files_table_name
+
+    @classmethod
+    def get_students_table_columns(cls) -> list[Column]:
         """Returns the columns for the `students` table.
 
         Returns the columns for the `students` table.
@@ -86,7 +111,7 @@ class ScholarlyDatabase:
         return cls.__students_columns
 
     @classmethod
-    def award_criteria_columns(cls) -> list[Column]:
+    def get_award_criteria_columns(cls) -> list[Column]:
         """Returns the columns for the `award_criteria` table.
 
         Returns the columns for the `award_criteria` table.
@@ -97,6 +122,15 @@ class ScholarlyDatabase:
         """
         return cls.__award_criteria_columns
 
+    @classmethod
+    def get_open_files_columns(cls) -> list[Column]:
+        """Returns the columns for the `open_files` table.
+
+        Returns:
+            list[Column]: Columns for the table.
+        """
+        return cls.__open_files_columns
+
     def insert_student(self, record: StudentRecord) -> None:
         """Inserts a student record into the `students` table.
 
@@ -105,8 +139,8 @@ class ScholarlyDatabase:
         Args:
             record (StudentRecord): A student record.
         """
-        query: Query = Query.into(self.__students_table_name).insert(*record.to_tuple())
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        query: Query = Query.into(self.students_table_name).insert(*record.to_tuple())
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
 
         cursor.execute(str(query))
@@ -127,7 +161,31 @@ class ScholarlyDatabase:
             record.limit,
             json.dumps(record.sort),
         )
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
+        cursor: sqlite3.Cursor = conn.cursor()
+
+        cursor.execute(str(query))
+        conn.commit()
+        conn.close()
+
+    def delete_student(self, student_ID: str) -> None:
+        """Deletes a `StudentRecord` from the `students` table, if it exists.
+
+        Args:
+            student_ID (str): ID of the student.
+        """
+        query: Query = Query.from_(self.students_table_name)
+
+    def insert_open_file(self, file_path: str) -> None:
+        """Insert a file path into the "open_files" table.
+
+        Args:
+            file_path (str): File path to the open file.
+        """
+        query: Query = (
+            Query.into(self.__open_files_table_name).columns("name").insert(file_path)
+        )
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
 
         cursor.execute(str(query))
@@ -145,7 +203,7 @@ class ScholarlyDatabase:
         """
         query: Query = Query.create_table(table_name).columns(*columns).if_not_exists()
 
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
 
         cursor.execute(str(query))
@@ -161,7 +219,7 @@ class ScholarlyDatabase:
             table_name (str): Name of the table.
         """
         query: Query = Query.drop_table(table_name).if_exists()
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
 
         cursor.execute(str(query))
@@ -184,7 +242,7 @@ class ScholarlyDatabase:
             .where(Field("name") == award_name)
         )
 
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
         cursor.execute(str(query))
 
@@ -202,6 +260,71 @@ class ScholarlyDatabase:
 
         return record
 
+    def select_open_file(self, file_path: str) -> str | None:
+        """Returns the path to the open file, if it exists
+
+        Args:
+            file_path (str): Path to the open file.
+
+        Returns:
+            str | None: Path to the open file, if it exists. Otherwise, None.
+        """
+        query: Query = (
+            Query.from_(self.__open_files_table_name)
+            .select("*")
+            .where(Field("name") == file_path)
+        )
+
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
+        cursor: sqlite3.Cursor = conn.cursor()
+        cursor.execute(str(query))
+
+        data = cursor.fetchone()
+
+        file_path: str = None
+
+        # If record does exist
+        if data:
+            file_path = data
+
+        conn.commit()
+        conn.close()
+
+        return file_path
+
+    def file_is_open(self, file_path: str) -> bool:
+        """Checks if the file actively open or not.
+
+        Args:
+            file_path (str): Path to the file.
+
+        Returns:
+            bool: True if file is open, False otherwise.
+        """
+        query: Query = (
+            Query.from_("sqlite_master")
+            .select("name")
+            .where(Field("type") == "table")
+            .where(Field("name") == file_path)
+        )
+
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
+        cursor: sqlite3.Cursor = conn.cursor()
+        cursor.execute(str(query))
+
+        data = cursor.fetchone()
+
+        file_exists:bool = False
+
+        # If record does exist
+        if data != None:
+            file_exists = True
+
+        conn.commit()
+        conn.close()
+
+        return file_exists
+
     def select_students_by_criteria(
         self, record: AwardCriteriaRecord
     ) -> list[StudentRecord]:
@@ -214,7 +337,7 @@ class ScholarlyDatabase:
             A list of StudentRecord matching the criteria for the award.
         """
         # The starting base query, if criteria is empty, becomes select all
-        query: Query = Query.from_(self.__students_table_name).select("*")
+        query: Query = Query.from_(self.students_table_name).select("*")
 
         # If sort is specified, apply to select statement
         if record.sort:
@@ -269,7 +392,7 @@ class ScholarlyDatabase:
         if record.limit:
             query = query.limit(record.limit)
 
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
         cursor.execute(str(query))
 
@@ -292,12 +415,12 @@ class ScholarlyDatabase:
             All of the student records as StudentRecords
         """
         query: Query = (
-            Query.from_(self.__students_table_name)
+            Query.from_(self.students_table_name)
             .select("*")
             .orderby("cum_gpa", order=Order.desc)
         )
 
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
         cursor.execute(str(query))
 
@@ -320,8 +443,12 @@ class ScholarlyDatabase:
         Args:
             file_path (str): File path for the CSV file.
         """
-        self.drop_table(self.__students_table_name)
-        self.create_table(self.__students_table_name, self.__students_columns)
+        if self.file_is_open(file_path):
+            raise FileIsOpenError(f"File '{file_path}' is already open.")
+
+        self.set_students_table_name(file_path)
+        self.drop_table(self.students_table_name)
+        self.create_table(self.students_table_name, self.__students_columns)
 
         data: list[StudentRecord] = read(file_path)
 
@@ -357,7 +484,7 @@ class ScholarlyDatabase:
             .orderby("name", order=Order.asc)
         )
 
-        conn: sqlite3.Connection = sqlite3.connect(self.file_path)
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
         cursor.execute(str(query))
 
@@ -373,18 +500,19 @@ class ScholarlyDatabase:
             )
         return award_records
 
-
 # Example sqlite3 operations
 if __name__ == "__main__":
     from rich import print
 
     db = ScholarlyDatabase("database/scholarly.sqlite")
 
-    db.drop_table(ScholarlyDatabase.award_criteria_table_name())
+    db.drop_table(ScholarlyDatabase.get_award_criteria_table_name())
+    db.set_students_table_name("example_data/student_data2.csv")
+    db.drop_table(db.get_students_table_name())
     db.student_csv_to_table("example_data/student_data2.csv")
     db.create_table(
-        ScholarlyDatabase.award_criteria_table_name(),
-        ScholarlyDatabase.award_criteria_columns(),
+        ScholarlyDatabase.get_award_criteria_table_name(),
+        ScholarlyDatabase.get_award_criteria_columns(),
     )
 
     db.award_criteria_json_to_table("scholarships.json")
@@ -392,3 +520,5 @@ if __name__ == "__main__":
     print(c)
     stud = db.select_students_by_criteria(c)
     print(stud)
+
+    db.drop_table(db.get_students_table_name())

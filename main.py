@@ -26,7 +26,7 @@ from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
 from student_record import StudentRecord, read, write
 from award_criteria_record import AwardCriteriaRecord
-from scholarly_database import ScholarlyDatabase
+from scholarly_database import ScholarlyDatabase, FileIsOpenError
 from letter_writer import LetterVariables, LetterWriter
 from scholarly_menu_bar import ScholarlyMenuBar
 from scholarly_tab_bar import ScholarlyTabBar
@@ -159,6 +159,13 @@ class ScholarlyMainWindow(QMainWindow):
         try:
             # Insert data from file to database
             self.database.student_csv_to_table(file_path)
+        except FileIsOpenError as f:
+            QMessageBox.warning(
+                self,
+                "File Is Open",
+                f"{f}",
+            )
+            return
         # If invalid data file, show error message
         except Exception as e:
             QMessageBox.critical(
@@ -166,6 +173,7 @@ class ScholarlyMainWindow(QMainWindow):
                 "Invalid File",
                 f"The file is not a CSV file, or is malformed.\n{type(e).__name__}: {e}",
             )
+            return
 
         # Retrieve data from the database
         student_data = self.database.select_all_students()
@@ -217,7 +225,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         self.scholarship_tab.toggleAll(False)
         self.scholarship_tab.scholarship_combobox.setCurrentText("")
-        self.database.drop_table(ScholarlyDatabase.students_table_name())
+        self.database.drop_table(self.database.get_students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
         
