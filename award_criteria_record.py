@@ -4,6 +4,8 @@ Provides the class `AwardCriteriaRecord` for storing award criteria and converti
 into other data structures for ease of use in the SQLite database.
 """
 
+from typing import Any
+
 
 class AwardCriteriaRecord:
     """Represents award criteria.
@@ -12,19 +14,24 @@ class AwardCriteriaRecord:
     """
 
     def __init__(
-        self, name: str = "", criteria: dict[str] = {}, limit: int = 0
+        self,
+        name: str = "",
+        criteria: dict[str] = {},
+        limit: int = 0,
+        sort: list[tuple[str, Any]] = [["cum_gpa", -1]],
     ) -> None:
-        """Creates a AwardCriteriaRecord object.
-
-        A class for storing and representing award criteria.
+        """Creates a new instance of AwardCriteria Record.
 
         Args:
-            name (str): Name of the award.
-            criteria (dict): Critieria for the award.
+            name (str, optional): The name of the scholarship. Defaults to "".
+            criteria (dict[str], optional): The query for retreiving appropriate student records. Defaults to {}.
+            limit (int, optional): The maximum number of student records to retreive. Defaults to 0, which means no limit and retreives all matches.
+            sort (list[tuple[str, Any]], optional): Specifies how to sort the records. Defaults to [["cum_gpa", -1]], which sorts results on descending cummulative GPA.
         """
         self.name: str = name
         self.criteria: dict[str] = criteria
         self.limit: int = limit
+        self.sort: list[tuple[str, Any]] = sort
 
     def __iter__(self):
         """Allows for iterating over attributes.
@@ -35,6 +42,7 @@ class AwardCriteriaRecord:
         yield "name", self.name
         yield "criteria", self.criteria
         yield "limit", self.limit
+        yield "sort", self.sort
 
     def to_dict(self) -> dict[str]:
         """Returns dict representation of AwardCriteriaRecord.
@@ -90,7 +98,11 @@ if __name__ == "__main__":
 
     x = AwardCriteriaRecord("Scholarship", {"cum_gpa": {"$gte": 4.0}}, limit=4)
 
-    print(f"SQLite record/row:  {x.to_tuple()}")
     print(f"Dictionary: {dict(x)}")
     print(f"Tuple: {tuple(x)}")
     print(f"String representation: {x}")
+
+    x = [["d", 1]]
+
+    for f, o in x:
+        print(f, o)

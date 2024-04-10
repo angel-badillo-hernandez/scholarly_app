@@ -37,6 +37,7 @@ class ScholarlyDatabase:
         ("name", "TEXT PRIMARY KEY COLLATE NOCASE"),
         ("criteria", "JSON"),
         ("limit", "INTEGER"),
+        ("sort", "JSON"),
     )
 
     def __init__(self, file_path: str) -> None:
@@ -121,7 +122,10 @@ class ScholarlyDatabase:
             record (AwardRecord): An award record.
         """
         query: Query = Query.into(self.__award_criteria_table_name).insert(
-            record.name, json.dumps(record.criteria), record.limit
+            record.name,
+            json.dumps(record.criteria),
+            record.limit,
+            json.dumps(record.sort),
         )
         conn: sqlite3.Connection = sqlite3.connect(self.file_path)
         cursor: sqlite3.Cursor = conn.cursor()
@@ -188,8 +192,10 @@ class ScholarlyDatabase:
         record: AwardCriteriaRecord = None
         # If record does exist
         if data:
-            name, criteria, limit = data
-            record = AwardCriteriaRecord(name, json.loads(criteria), limit)
+            name, criteria, limit, sort = data
+            record = AwardCriteriaRecord(
+                name, json.loads(criteria), limit, json.loads(sort)
+            )
 
         conn.commit()
         conn.close()
@@ -208,11 +214,22 @@ class ScholarlyDatabase:
             A list of StudentRecord matching the criteria for the award.
         """
         # The starting base query, if criteria is empty, becomes select all
-        query: Query = (
-            Query.from_(self.__students_table_name)
-            .select("*")
-            .orderby("cum_gpa", Order.desc)
-        )
+        query: Query = Query.from_(self.__students_table_name).select("*")
+
+        # If sort is specified, apply to select statement
+        if record.sort:
+            for field, order in record.sort:
+                sort_order: Order = None
+
+                # If order is -1, order by descending
+                if order == -1:
+                    sort_order = Order.desc
+                # If order is 1 or any other value, order by ascending
+                else:
+                    sort_order = Order.asc
+
+                # Add sort criteria to query
+                query = query.orderby(field, order=sort_order)
 
         # Add where clauses if criteria is not empty
         if record.criteria:
@@ -224,13 +241,31 @@ class ScholarlyDatabase:
                         # If criteria is $in, check if value of field is in val
                         if key == "$in":
                             query = query.where(Field(field).isin(val))
-                        # If criteria is $gte, check if val >= field
+                        # If criteria is $nin, check if value of field is NOT in val
+                        elif key == "$nin":
+                            query = query.where(Field(field).notin(val))
+                        # If criteria is $gte, check if field val >= val
                         elif key == "$gte":
                             query = query.where(Field(field) >= val)
+                        # If criteria is $gt, check if field val > val
+                        elif key == "$gt":
+                            query = query.where(Field(field) > val)
+                        # If criteria is $lte, check if field val <= val
+                        elif key == "$lte":
+                            query = query.where(Field(field) <= val)
+                        # If criteria is $lt, check if field val < val
+                        elif key == "$lt":
+                            query = query.where(Field(field) < val)
+                        # If criteria is $eq, check if field val == val
+                        elif key == "$eq":
+                            query = query.where(Field(field) == val)
+                        # If criteria is $ne, check if field val != val
+                        elif key == "$ne":
+                            query = query.where(Field(field) != val)
                 # If the value for field is not a dict, simply match for equality
                 else:
                     query = query.where(Field(field) == item)
-        # If limit is specified, and no 0, add limit
+        # If limit is specified, and not 0, add limit
         if record.limit:
             query = query.limit(record.limit)
 
@@ -332,8 +367,10 @@ class ScholarlyDatabase:
 
         award_records: list[AwardCriteriaRecord] = []
 
-        for name, criteria, limit in data:
-            award_records.append(AwardCriteriaRecord(name, json.loads(criteria), limit))
+        for name, criteria, limit, sort in data:
+            award_records.append(
+                AwardCriteriaRecord(name, json.loads(criteria), limit, json.loads(sort))
+            )
         return award_records
 
 
@@ -351,7 +388,7 @@ if __name__ == "__main__":
     )
 
     db.award_criteria_json_to_table("scholarships.json")
-    c = db.select_award_criteria("Tom C. White")
+    c = db.select_award_criteria("Colleen and Richard Simpson")
     print(c)
     stud = db.select_students_by_criteria(c)
     print(stud)

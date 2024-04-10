@@ -12,7 +12,8 @@
             "major": "Computer Science",
             "enrolled": "yes"
         },
-        "limit": 4
+        "limit": 4,
+        "sort": [["cum_gpa", -1]]
     },
     {
         "name": "Tom C. White",
@@ -24,16 +25,17 @@
             "major": "Computer Science",
             "enrolled": "yes"
         },
-        "limit": 0
+        "limit": 0,
+        "sort": [["cum_gpa", -1]]
     },
     {
         "name": "Colleen and Richard Simpson",
         "criteria": {
-            "gender": "female",
             "major":"Computer Science",
             "enrolled": "yes"
         },
-        "limit": 4
+        "limit": 4,
+        "sort": [["cum_gpa", -1], ["gender", 1]]
     },
     {
         "name": "Orion A Daniel",
