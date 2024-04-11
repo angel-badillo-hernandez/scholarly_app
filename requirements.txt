@@ -10,3 +10,5 @@ pypika
 python-docx
 auto-py-to-exe
 fsspec
+oauth2client
+oauthlib
