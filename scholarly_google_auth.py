@@ -13,6 +13,10 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/gmail.compose",
     "https://www.googleapis.com/auth/forms.body",
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
 ]
 
 
@@ -22,6 +26,10 @@ class OAuthTimedOutError(Exception):
 
 class OAuthAccessDeniedError(AccessDeniedError):
     """Exceptions that occurs access is denied on Google OAuth consent page."""
+
+
+class UserEmailAddressUnavailableError(Exception):
+    """Exception that is raised when the user's email address is not obtainable."""
 
 
 def google_oauth() -> Credentials:
@@ -76,7 +84,9 @@ def __try_get_creds(
     """
     creds: Credentials = None
 
-    flow:InstalledAppFlow = InstalledAppFlow.from_client_secrets_file(client_secrets_file, scopes)
+    flow: InstalledAppFlow = InstalledAppFlow.from_client_secrets_file(
+        client_secrets_file, scopes
+    )
 
     # Show consent page, and attempt to get credentials
     try:
@@ -95,11 +105,54 @@ def __try_get_creds(
     return creds
 
 
+def get_user_email_address(credentials: Credentials) -> str:
+    """Returns the current user's email address.
+
+    Args:
+        credentials (Credentials): The credentials retrieved from the OAuth token / login.
+
+    Returns:
+        str: The user's email address.
+    """
+    primary_email: str = None
+    service = build("people", "v1", credentials=creds)
+
+    # Call the People API to get the authenticated user's primary email address.
+    profile = (
+        service.people()
+        .get(resourceName="people/me", personFields="emailAddresses")
+        .execute()
+    )
+
+    # Retreive primary email address
+    email_addresses = profile.get("emailAddresses", [])
+    if email_addresses:
+        primary_email = next(
+            (
+                email["value"]
+                for email in email_addresses
+                if email.get("metadata", {}).get("primary", False)
+            ),
+            None,
+        )
+
+    # If the email address is None, that means the email address was not obtained
+    if primary_email is None:
+        raise UserEmailAddressUnavailableError(
+            "Authenticated user's primary email address was not obtainable. Please try again."
+        )
+
+    return primary_email
+
+
 if __name__ == "__main__":
     from rich import print
+
     try:
         creds = google_oauth()
-        print(creds.__dict__)
+        print(creds.to_json())
+        email = get_user_email_address(creds)
+        print(email)
     except OAuthTimedOutError as e:
         print(e)
     except OAuthAccessDeniedError as a:

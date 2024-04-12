@@ -1,11 +1,14 @@
 # https://developers.google.com/gmail/api/quickstart/python
 import os.path
-from scholarly_google_auth import google_oauth
+from scholarly_google_auth import google_oauth, get_user_email_address, OAuthAccessDeniedError, UserEmailAddressUnavailableError, OAuthTimedOutError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from rich import print
+import json
+
 
 def send_email(credentials: Credentials):
     """Shows basic usage of the Gmail API.
@@ -35,4 +38,3 @@ def send_email(credentials: Credentials):
 
 if __name__ == "__main__":
     creds = google_oauth()
-    send_email(creds)
