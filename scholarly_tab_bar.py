@@ -24,7 +24,7 @@ from PyQt6.QtGui import (
 from PyQt6.QtCore import QSize
 from typing import Callable
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
-from scholarly_select_recipients_tab import ScholarlyScholarshipTab
+from scholarly_select_recipients_tab import ScholarlySelectRecipientsTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_outstanding_student_awards_tab import (
     ScholarlyOutstandingStudentAwardsTab,
@@ -40,7 +40,7 @@ class ScholarlyTabBar(QTabWidget):
 
     def __init__(
         self,
-        scholarship_tab: ScholarlyScholarshipTab = None,
+        scholarship_tab: ScholarlySelectRecipientsTab = None,
         manage_scholarships_tab: ScholarlyManageScholarshipsTab = None,
         outstanding_student_awards_tab: ScholarlyOutstandingStudentAwardsTab = None,
     ) -> None:
@@ -54,7 +54,7 @@ class ScholarlyTabBar(QTabWidget):
         super().__init__()
 
         # Add scholarship tab
-        self.scholarship_tab: ScholarlyScholarshipTab = scholarship_tab
+        self.scholarship_tab: ScholarlySelectRecipientsTab = scholarship_tab
         self.scholarship_tab.setObjectName("scholarshipTab")
         self.scholarship_tab_name: str = "Select Scholarship Recipients"
         self.setScholarshipTab(self.scholarship_tab)
@@ -71,7 +71,7 @@ class ScholarlyTabBar(QTabWidget):
 
         self.setIconSize(IconSizes.Medium.value)
 
-    def setScholarshipTab(self, tab: ScholarlyScholarshipTab) -> None:
+    def setScholarshipTab(self, tab: ScholarlySelectRecipientsTab) -> None:
         """Sets the Scholarship tab
 
         Args:
@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
     a = QApplication([])
     s = ScholarlyTabBar(
-        ScholarlyScholarshipTab(),
+        ScholarlySelectRecipientsTab(),
         ScholarlyManageScholarshipsTab(),
         ScholarlyOutstandingStudentAwardsTab(),
     )

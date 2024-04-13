@@ -58,14 +58,7 @@ QComboBox#searchBox QAbstractItemView {
 }
 
 QToolButton#searchButton {
-    border: none;
-    background-color: transparent;
-    image: url("assets/icons/search.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 16px;
-    height: 16px;
-    margin-right: 2px;
+    border-style: none;
 }
 
 QLineEdit {
@@ -76,6 +69,10 @@ QLineEdit {
     selection-background-color: lightgray;
 }
 
-QWidget#scholarshipTab {
-    background-color: gray;
+QToolButton#selectTemplateButton{
+    border-style: none;
+}
+
+QToolButton#selectDirectoryButton{
+    border-style: none;
 }

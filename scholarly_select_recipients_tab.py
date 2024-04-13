@@ -32,7 +32,7 @@ import os
 voidCallBack: Callable[[], None] = lambda: None
 
 
-class ScholarlyScholarshipTab(QWidget):
+class ScholarlySelectRecipientsTab(QWidget):
     """Widget class for Scholarship Tab
 
     A class that is for the GUI component, Scholarship tab.
@@ -78,6 +78,8 @@ class ScholarlyScholarshipTab(QWidget):
         # Create Search button
         self.search_button: QToolButton = QToolButton()
         self.search_button.setObjectName("searchButton")
+        self.search_button.setIcon(ScholarlyIcon(Icons.Search, size=IconSizes.Medium))
+        self.search_button.setIconSize(QSize(24, 24))
         self.search_button.clicked.connect(find_button_clicked)
 
         # Create groupbox for scholarship combobox and search button
@@ -137,6 +139,7 @@ class ScholarlyScholarshipTab(QWidget):
 
         # Select template letter button
         self.select_template_button: QToolButton = QToolButton()
+        self.select_template_button.setObjectName("selectTemplateButton")
         self.select_template_button.setIcon(
             ScholarlyIcon(
                 Icons.FileOpenFill, size=IconSizes.Medium, color=QColor("blue")
@@ -153,6 +156,7 @@ class ScholarlyScholarshipTab(QWidget):
 
         # Select directory button
         self.select_directory_button: QToolButton = QToolButton()
+        self.select_directory_button.setObjectName("selectDirectoryButton")
         self.select_directory_button.setIcon(
             ScholarlyIcon(
                 Icons.FolderOpenFill, size=IconSizes.Medium, color=QColor(204, 172, 0)
@@ -532,7 +536,7 @@ if __name__ == "__main__":
     a = QApplication([])
     with open("style.qss", "r") as styleFile:
         a.setStyleSheet(styleFile.read())
-    s = ScholarlyScholarshipTab()
+    s = ScholarlySelectRecipientsTab()
     s.toggleAll(True)
     s.scholarshipComboxBoxAddItems(
         [

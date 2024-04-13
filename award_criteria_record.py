@@ -15,7 +15,7 @@ class AwardCriteriaRecord:
 
     def __init__(
         self,
-        name: str = "",
+        name: str,
         criteria: dict[str] = {},
         limit: int = 0,
         sort: list[tuple[str, Any]] = [["cum_gpa", -1]],
@@ -23,7 +23,7 @@ class AwardCriteriaRecord:
         """Creates a new instance of AwardCriteria Record.
 
         Args:
-            name (str, optional): The name of the scholarship. Defaults to "".
+            name (str): The name of the scholarship.
             criteria (dict[str], optional): The query for retreiving appropriate student records. Defaults to {}.
             limit (int, optional): The maximum number of student records to retreive. Defaults to 0, which means no limit and retreives all matches.
             sort (list[tuple[str, Any]], optional): Specifies how to sort the records. Defaults to [["cum_gpa", -1]], which sorts results on descending cummulative GPA.

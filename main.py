@@ -30,7 +30,7 @@ from scholarly_database import ScholarlyDatabase, FileIsOpenError
 from letter_writer import LetterVariables, LetterWriter
 from scholarly_menu_bar import ScholarlyMenuBar
 from scholarly_tab_bar import ScholarlyTabBar
-from scholarly_select_recipients_tab import ScholarlyScholarshipTab
+from scholarly_select_recipients_tab import ScholarlySelectRecipientsTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from scholarly_fonts import ScholarlyFont, Fonts
@@ -55,7 +55,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table: StudentTableModel = None
         self.student_table_view: QTableView = None
         self.database: ScholarlyDatabase = ScholarlyDatabase(os.path.join(BASE_DIR, "database/scholarly.sqlite"))
-        self.scholarship_tab:ScholarlyScholarshipTab = None
+        self.scholarship_tab:ScholarlySelectRecipientsTab = None
         self.tab_bar:ScholarlyTabBar = None
 
         self.initialize_ui()
@@ -85,7 +85,7 @@ class ScholarlyMainWindow(QMainWindow):
         central_widget: QWidget = QWidget()
         central_widget_layout: QHBoxLayout = QHBoxLayout()
 
-        self.scholarship_tab = ScholarlyScholarshipTab(
+        self.scholarship_tab = ScholarlySelectRecipientsTab(
             find_button_clicked= self.find,
             select_directory_button_clicked=self.select_directory,
             select_template_button_clicked=self.select_template,
