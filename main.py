@@ -147,7 +147,6 @@ class ScholarlyMainWindow(QMainWindow):
         a file dialog for opening a file, then reads the data
         from the file into the database and the table.
         """
-        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
         # Current user's Documents Directory
         user_documents_path: str = os.path.join(os.path.expanduser("~"), "Documents")
 
@@ -180,6 +179,8 @@ class ScholarlyMainWindow(QMainWindow):
                 "Invalid File",
                 f"The file is not a CSV file, or is malformed.\n{type(e).__name__}: {e}",
             )
+            print(self.database.get_students_table_name())
+            self.database.drop_table(self.database.get_students_table_name())
             return
 
         # Retrieve data from the database
@@ -218,8 +219,6 @@ class ScholarlyMainWindow(QMainWindow):
         a file dialog for saving a file, then stores the data from the table
         into the selected CSV file.
         """
-        # [1] ChatGPT, response to "Write me python code for a PyQT6 menu bar with a File tab and Open button.". OpenAI [Online]. https://chat.openai.com/ (accessed February 29, 2024).
-        # Current user's Documents Directory
         user_documents_path: str = os.path.join(os.path.expanduser("~"), "Documents")
 
         # Open file dialog, and gets the selected file path
@@ -292,6 +291,10 @@ class ScholarlyMainWindow(QMainWindow):
         )
 
     @pyqtSlot()
+    def about_qt(self)-> None:
+        QMessageBox.aboutQt(self)
+
+    @pyqtSlot()
     def help(self) -> None:
         """Slot (event handler) for "Help" action.
 
@@ -358,7 +361,10 @@ class ScholarlyMainWindow(QMainWindow):
             student_name:str = None
 
             try:
-                student_last_name, student_first_name = student.name.replace(" ", "").split(",")
+                student_last_name, student_first_name = student.name.split(",")
+                student_last_name = student_last_name.lstrip().rstrip()
+                student_first_name = student_first_name.lstrip().rstrip()
+
 
                 student_name = f"{student_first_name} {student_last_name}"
             except ValueError as e:
@@ -367,7 +373,7 @@ class ScholarlyMainWindow(QMainWindow):
             
             letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year_fall, academic_year_spring, sender_name, sender_email, sender_title)
             
-            letter_writer:LetterWriter = LetterWriter(template_path, f"{dir_path}/{student_name}.docx", letter_vars)
+            letter_writer:LetterWriter = LetterWriter(template_path, f"{dir_path}/{student_name}_{student.student_ID}.docx", letter_vars)
             
             try:
                 letter_writer.writer_letter()
