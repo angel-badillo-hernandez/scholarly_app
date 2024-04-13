@@ -129,7 +129,14 @@ class ScholarlyMainWindow(QMainWindow):
 
         Initializes the menu bar for the main window of the appllication.
         """
-        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self.open_file, self.save_as_file, self.close_file, self.about, self.help, self.close)
+        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self.open_file, self.save_file, self.save_as_file, self.close_file, self.about, self.help, self.close)
+        
+        # Disable Save, Save As, and Close file actions
+        self.menu_bar.saveActionToggle(False)
+        self.menu_bar.saveAsActionToggle(False)
+        self.menu_bar.closeActionToggle(False)
+
+        # Set the menubar for the window
         self.setMenuBar(self.menu_bar)
 
     @pyqtSlot()
@@ -186,6 +193,23 @@ class ScholarlyMainWindow(QMainWindow):
         # Enable scholarship combobox
         self.scholarship_tab.toggleAll(True)
 
+        # Enable Save, Save As, and Close file actions on the menu bar
+        self.menu_bar.saveActionToggle(True)
+        self.menu_bar.saveAsActionToggle(True)
+        self.menu_bar.closeActionToggle(True)
+
+    @pyqtSlot()
+    def save_file(self) -> None:
+        file_path:str =self.database.get_students_table_name()
+
+        # If the name of the file is non-existent, prompt for path to store file
+        if not file_path:
+            self.save_as_file()
+        else:
+            student_data:list[StudentRecord] = self.student_table.get_all_data()
+            write(file_path, student_data)
+            
+
     @pyqtSlot()
     def save_as_file(self) -> None:
         """Slot (event handler) for "Save" action.
@@ -228,6 +252,11 @@ class ScholarlyMainWindow(QMainWindow):
         self.database.drop_table(self.database.get_students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
+
+        # Disable Save, Save As, and Close file actions
+        self.menu_bar.saveActionToggle(False)
+        self.menu_bar.saveAsActionToggle(False)
+        self.menu_bar.closeActionToggle(False)
         
     def closeEvent(self, event: QCloseEvent) -> None:
         """Event handler for closing the application.

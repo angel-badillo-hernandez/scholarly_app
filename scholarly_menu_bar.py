@@ -18,7 +18,7 @@ class ScholarlyMenuBar(QMenuBar):
     def __init__(
         self,
         open_file_slot: Callable[[QWidget], None] = voidCallBack,
-        #save_file_slot: Callable[[QWidget], None] = voidCallBack,
+        save_file_slot: Callable[[QWidget], None] = voidCallBack,
         save_as_file_slot: Callable[[QWidget], None] = voidCallBack,
         close_file_slot: Callable[[QWidget], None] = voidCallBack,
         about_slot: Callable[[QWidget], None] = voidCallBack,
@@ -51,12 +51,12 @@ class ScholarlyMenuBar(QMenuBar):
         self.open_action.setShortcut("ctrl+o")
         self.file_menu.addAction(self.open_action)
 
-        # # Save Action
-        # self.save_action: QAction = QAction("&Save File", self)
-        # self.save_action.setIcon(ScholarlyIcon(Icons.Save))
-        # self.save_action.triggered.connect(save_file_slot)
-        # self.save_action.setShortcut("ctrl+s")
-        # self.file_menu.addAction(self.save_action)
+        # Save Action
+        self.save_action: QAction = QAction("&Save File", self)
+        self.save_action.setIcon(ScholarlyIcon(Icons.Save))
+        self.save_action.triggered.connect(save_file_slot)
+        self.save_action.setShortcut("ctrl+s")
+        self.file_menu.addAction(self.save_action)
 
         # Save As Action
         self.save_as_action: QAction = QAction("&Save As", self)
@@ -78,7 +78,7 @@ class ScholarlyMenuBar(QMenuBar):
         self.exit_action.triggered.connect(exit_slot)
         self.file_menu.addAction(self.exit_action)
 
-        self.help_menu:QMenu = self.addMenu("&Help")
+        self.help_menu: QMenu = self.addMenu("&Help")
 
         # About Menu Tab
         self.about_action: QAction = QAction("&About", self)
@@ -104,8 +104,16 @@ class ScholarlyMenuBar(QMenuBar):
         """
         self.open_action.triggered.connect(callback)
 
+    def setSaveFileSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for the save_file_action.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.save_action.triggered.connect(callback)
+
     def setSaveAsFileSlot(self, callback: Callable[[QWidget], None]) -> None:
-        """Sets the slot for save_file_action.
+        """Sets the slot for save_as_file_action.
 
         Sets the slot for the "Save" action on the "File" menu.
 
@@ -164,6 +172,76 @@ class ScholarlyMenuBar(QMenuBar):
         """
         self.exit_action.triggered.connect(callback)
 
+    def saveActionToggle(self, enabled: bool) -> None:
+        """Toggles the Save action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.save_action.setEnabled(enabled)
+
+    def saveAsActionToggle(self, enabled: bool) -> None:
+        """Toggles the Save As action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.save_as_action.setEnabled(enabled)
+
+    def closeActionToggle(self, enabled: bool) -> None:
+        """Toggles the Close action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.close_action.setEnabled(enabled)
+
+    def openActionToggle(self, enabled: bool) -> None:
+        """Toggles the Open action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.open_action.setEnabled(enabled)
+
+    def aboutActionToggle(self, enabled: bool) -> None:
+        """Toggles the About action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.about_action.setEnabled(enabled)
+
+    def helpActionToggle(self, enabled: bool) -> None:
+        """Toggles the Help action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.help_action.setEnabled(enabled)
+
+    def exitActionToggle(self, enabled: bool) -> None:
+        """Toggles the Exit action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.exit_action.setEnabled(enabled)
+
+    def toggleAll(self, enabled: bool) -> None:
+        """Toggles all of the actions.
+
+        Args:
+            enabled (bool): If True, enables all of the actions. If False, disables them all.
+        """
+        self.saveActionToggle(enabled)
+        self.exitActionToggle(enabled)
+        self.saveAsActionToggle(enabled)
+        self.helpActionToggle(enabled)
+        self.closeActionToggle(enabled)
+        self.openActionToggle(enabled)
+        self.aboutActionToggle(enabled)
+
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
@@ -177,6 +255,7 @@ if __name__ == "__main__":
     s.setAboutSlot(lambda: print("About"))
     s.setHelpSlot(lambda: print("Help"))
     s.setExitSlot(lambda: print("Exit"))
+    s.toggleAll(False)
 
     s.show()
     a.exec()
