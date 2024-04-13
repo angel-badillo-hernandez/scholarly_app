@@ -4,12 +4,12 @@ from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
+from googleapiclient.discovery import build, Resource
 from googleapiclient.errors import HttpError
 from oauthlib.oauth2.rfc6749.errors import AccessDeniedError
 
-# If modifying these scopes, delete the file token.json.
-SCOPES = [
+# The allowed scopes for Google APIs to be used
+SCOPES: list[str] = [
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/gmail.compose",
     "https://www.googleapis.com/auth/forms.body",
@@ -18,6 +18,18 @@ SCOPES = [
     "openid",
     "https://www.googleapis.com/auth/userinfo.email",
 ]
+
+# Absolute path for file to prevent issues with
+# relative path when building app with PyInstaller
+BASE_DIR: str = os.path.dirname(__file__)
+
+# Absolute path for client secret JSON file
+CLIENT_SECRET_FILE: str = os.path.join(
+    BASE_DIR, f"assets\\google_auth\\credentials.json"
+)
+
+# Absolute path for token JSON file
+TOKEN_FILE: str = os.path.join(BASE_DIR, f"assets\\google_auth\\token.json")
 
 
 class OAuthTimedOutError(Exception):
@@ -32,8 +44,11 @@ class UserEmailAddressUnavailableError(Exception):
     """Exception that is raised when the user's email address is not obtainable."""
 
 
-def google_oauth() -> Credentials:
+def google_oauth(time_out_seconds: int = 300) -> Credentials:
     """Gets authorization from token on user from Google OAuth consent page, then returns credentials.
+
+    Args:
+        time_out_seconds (int): The amount of time in seconds for the Google OAuth consent page times out. Defaults to 300, or 5 minutes. When None, there is no timeout.
 
     Returns:
         Credentials: Credentials needed for communicating with Google APIs.
@@ -42,9 +57,9 @@ def google_oauth() -> Credentials:
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists("token.json"):
+    if os.path.exists(TOKEN_FILE):
         try:
-            creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+            creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
         except ValueError as e:
             creds = None
     # If there are no (valid) credentials available, let the user log in.
@@ -55,11 +70,11 @@ def google_oauth() -> Credentials:
                 creds.refresh(Request())
             # If refresh error occurs, let the user log in.
             except:
-                creds = __try_get_creds("credentials.json", SCOPES, 60)
+                creds = __try_get_creds(CLIENT_SECRET_FILE, SCOPES, time_out_seconds)
         else:
-            creds = __try_get_creds("credentials.json", SCOPES, 60)
+            creds = __try_get_creds(CLIENT_SECRET_FILE, SCOPES, time_out_seconds)
         # Save the credentials for the next run
-        with open("token.json", "w") as token:
+        with open(TOKEN_FILE, "w") as token:
             token.write(creds.to_json())
 
     return creds
@@ -115,7 +130,7 @@ def get_user_email_address(credentials: Credentials) -> str:
         str: The user's email address.
     """
     primary_email: str = None
-    service = build("people", "v1", credentials=creds)
+    service = build("people", "v1", credentials=credentials)
 
     # Call the People API to get the authenticated user's primary email address.
     profile = (
@@ -157,3 +172,5 @@ if __name__ == "__main__":
         print(e)
     except OAuthAccessDeniedError as a:
         print(a)
+    except UserEmailAddressUnavailableError as u:
+        print(u)
