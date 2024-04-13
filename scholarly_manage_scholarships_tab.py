@@ -14,7 +14,14 @@ from PyQt6.QtWidgets import (
     QComboBox,
     QLabel,
 )
-from PyQt6.QtGui import QAction, QDoubleValidator, QValidator, QIntValidator, QIcon, QColor
+from PyQt6.QtGui import (
+    QAction,
+    QDoubleValidator,
+    QValidator,
+    QIntValidator,
+    QIcon,
+    QColor,
+)
 from PyQt6.QtCore import QSize
 from scholarly_icons import ScholarlyIcon, IconSizes, Icons
 from typing import Callable
