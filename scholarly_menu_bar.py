@@ -77,6 +77,7 @@ class ScholarlyMenuBar(QMenuBar):
         self.exit_action: QAction = QAction("&Exit", self)
         self.exit_action.setIcon(ScholarlyIcon(Icons.ExitToApp))
         self.exit_action.triggered.connect(exit_slot)
+        self.exit_action.setShortcut("alt+f4")
         self.file_menu.addAction(self.exit_action)
 
         # Help Menu Tab
@@ -102,8 +103,6 @@ class ScholarlyMenuBar(QMenuBar):
         self.about_qt_action.setShortcut("ctrl+q")
         self.about_qt_action.triggered.connect(about_qt_slot)
         self.help_menu.addAction(self.about_qt_action)
-
-        
 
     def setOpenFileSlot(self, callback: Callable[[QWidget], None]) -> None:
         """Sets the slot for open_file_action.

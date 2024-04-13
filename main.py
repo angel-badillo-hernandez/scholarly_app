@@ -68,6 +68,7 @@ class ScholarlyMainWindow(QMainWindow):
         # Set window properties
         self.setWindowTitle("Scholarly")
         self.setWindowIcon(ScholarlyIcon(Icons.Scholarly, QColor("maroon"), IconSizes.Medium))
+        self.setWindowIconText("Fortnite")
         self.setGeometry(200, 200, 500, 500)
 
         # Initalize menu bar
