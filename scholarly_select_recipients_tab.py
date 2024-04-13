@@ -22,7 +22,7 @@ from PyQt6.QtGui import (
     QIcon,
     QColor,
 )
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, Qt
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from typing import Callable
 import os
@@ -45,6 +45,7 @@ class ScholarlySelectRecipientsTab(QWidget):
         select_template_button_clicked: Callable[[QWidget], None] = voidCallBack,
         select_directory_button_clicked: Callable[[QWidget], None] = voidCallBack,
         generate_letters_button_clicked: Callable[[QWidget], None] = voidCallBack,
+        email_button_clicked: Callable[[QWidget], None] = voidCallBack,
         clear_selection_button_clicked: Callable[[QWidget], None] = voidCallBack,
         scholarship_combo_box_items: list[str] = [],
     ) -> None:
@@ -192,16 +193,9 @@ class ScholarlySelectRecipientsTab(QWidget):
         letter_info_layout.addRow("Destination Directory", select_dir_layout)
         main_layout.addWidget(letter_info_widget)
 
-        # Generate Letters button
-        self.generate_letters_button: QToolButton = QToolButton()
-        self.generate_letters_button.setText("Generate Letters")
-        self.generate_letters_button.setToolTip(
-            "Generates Scholarship Letter for selected students."
-        )
-        self.generate_letters_button.clicked.connect(generate_letters_button_clicked)
-
-        # Add widget to scholarship components layout
-        main_layout.addWidget(self.generate_letters_button)
+        # Layout for bottom-most buttons
+        bottom_buttons_widget: QWidget = QWidget()
+        bottom_buttons_layout: QHBoxLayout = QHBoxLayout()
 
         # Clear Selection button
         self.clear_selection_button: QToolButton = QToolButton()
@@ -211,11 +205,43 @@ class ScholarlySelectRecipientsTab(QWidget):
         )
         self.clear_selection_button.clicked.connect(clear_selection_button_clicked)
 
+        # Generate Letters button
+        self.generate_letters_button: QToolButton = QToolButton()
+        self.generate_letters_button.setText("Generate Letters")
+        self.generate_letters_button.setToolTip(
+            "Generates Scholarship Letter for selected students."
+        )
+        self.generate_letters_button.clicked.connect(generate_letters_button_clicked)
+
+        # Add widget to buttons layout
+        bottom_buttons_layout.addWidget(self.generate_letters_button)
+
+        # Email Recipients Button
+        self.email_button: QToolButton = QToolButton()
+        self.email_button.setText("Email Recipients")
+        self.email_button.setToolTip("Emails the selected recipients.")
+        self.email_button.clicked.connect(email_button_clicked)
+
+        # Add widget to buttons layout
+        bottom_buttons_layout.addWidget(self.email_button)
+
         # Add widget to scholarship components layout
-        main_layout.addWidget(self.clear_selection_button)
+        bottom_buttons_layout.addWidget(self.clear_selection_button)
+        bottom_buttons_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        bottom_buttons_widget.setLayout(bottom_buttons_layout)
+
+        main_layout.addWidget(bottom_buttons_widget)
 
         # Set entire main layout for widget
         self.setLayout(main_layout)
+
+    def emailButtonToggle(self, enabled: bool) -> None:
+        """Toggles the Email Button
+
+        Args:
+            enabled (bool): If True, enables the button. If False, disables it.
+        """
+        self.email_button.setEnabled(enabled)
 
     def clearSelectionButtonToggle(self, enabled: bool) -> None:
         """Toggles the clear selection button.
@@ -377,6 +403,7 @@ class ScholarlySelectRecipientsTab(QWidget):
         self.generateLettersButtonToggle(enabled)
         self.findButtonToggle(enabled)
         self.clearSelectionButtonToggle(enabled)
+        self.emailButtonToggle(enabled)
 
     def scholarshipComboxBoxAddItems(self, items: list[str]) -> None:
         """Adds items to the scholarship combobox
@@ -402,6 +429,14 @@ class ScholarlySelectRecipientsTab(QWidget):
             item (str): An item to add to the combobox.
         """
         self.scholarship_combobox.addItem(item)
+
+    def setEmailButtonClicked(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the clicked slot for the Email button.
+
+        Args:
+            callback (Callable[[QWidget], None]): The function to be assigned to the click event.
+        """
+        self.email_button.clicked.connect(callback)
 
     def setClearSelectionButtonClicked(
         self, callback: Callable[[QWidget], None]

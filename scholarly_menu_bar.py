@@ -53,7 +53,7 @@ class ScholarlyMenuBar(QMenuBar):
         self.file_menu.addAction(self.open_action)
 
         # Save Action
-        self.save_action: QAction = QAction("&Save File", self)
+        self.save_action: QAction = QAction("&Save", self)
         self.save_action.setIcon(ScholarlyIcon(Icons.Save))
         self.save_action.triggered.connect(save_file_slot)
         self.save_action.setShortcut("ctrl+s")
