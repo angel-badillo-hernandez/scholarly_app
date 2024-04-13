@@ -22,6 +22,7 @@ class ScholarlyMenuBar(QMenuBar):
         save_as_file_slot: Callable[[QWidget], None] = voidCallBack,
         close_file_slot: Callable[[QWidget], None] = voidCallBack,
         about_slot: Callable[[QWidget], None] = voidCallBack,
+        about_qt_slot: Callable[[QWidget], None] = voidCallBack,
         help_slot: Callable[[QWidget], None] = voidCallBack,
         exit_slot: Callable[[QWidget], bool] = voidCallBack,
     ) -> None:
@@ -78,21 +79,31 @@ class ScholarlyMenuBar(QMenuBar):
         self.exit_action.triggered.connect(exit_slot)
         self.file_menu.addAction(self.exit_action)
 
+        # Help Menu Tab
         self.help_menu: QMenu = self.addMenu("&Help")
 
-        # About Menu Tab
+        # Help Menu Action
+        self.help_action: QAction = QAction("&Help", self)
+        self.help_action.setIcon(ScholarlyIcon(Icons.Help))
+        self.help_action.setShortcut("F1")
+        self.help_action.triggered.connect(help_slot)
+        self.help_menu.addAction(self.help_action)
+
+        # About Menu Action
         self.about_action: QAction = QAction("&About", self)
         self.about_action.setIcon(ScholarlyIcon(Icons.Info))
         self.about_action.setShortcut("ctrl+a")
         self.about_action.triggered.connect(about_slot)
         self.help_menu.addAction(self.about_action)
 
-        # Help Menu Tab
-        self.help_action: QAction = QAction("&Help", self)
-        self.help_action.setIcon(ScholarlyIcon(Icons.Help))
-        self.help_action.setShortcut("F1")
-        self.help_action.triggered.connect(help_slot)
-        self.help_menu.addAction(self.help_action)
+        # About Qt Menu Action
+        self.about_qt_action: QAction = QAction("&About Qt", self)
+        self.about_qt_action.setIcon(ScholarlyIcon(Icons.Info))
+        self.about_qt_action.setShortcut("ctrl+q")
+        self.about_qt_action.triggered.connect(about_qt_slot)
+        self.help_menu.addAction(self.about_qt_action)
+
+        
 
     def setOpenFileSlot(self, callback: Callable[[QWidget], None]) -> None:
         """Sets the slot for open_file_action.
@@ -141,6 +152,16 @@ class ScholarlyMenuBar(QMenuBar):
             callback (Callable[[QWidget], None]): A function.
         """
         self.about_action.triggered.connect(callback)
+
+    def setAboutQtSlot(self, callback: Callable[[QWidget], None]) -> None:
+        """Sets the slot for about_qt_action.
+
+        Sets the slot for the "About Qt" action on the menu bar.
+
+        Args:
+            callback (Callable[[QWidget], None]): A function.
+        """
+        self.about_qt_action.triggered.connect(callback)
 
     def setHelpSlot(self, callback: Callable[[QWidget], None]) -> None:
         """Sets the slot for help_action.
@@ -212,6 +233,14 @@ class ScholarlyMenuBar(QMenuBar):
         """
         self.about_action.setEnabled(enabled)
 
+    def aboutQtActionToggle(self, enabled: bool) -> None:
+        """Toggles the About Qt action.
+
+        Args:
+            enabled (bool): If True, enables the action. If False, disables it.
+        """
+        self.about_qt_action.setEnabled(enabled)
+
     def helpActionToggle(self, enabled: bool) -> None:
         """Toggles the Help action.
 
@@ -241,6 +270,7 @@ class ScholarlyMenuBar(QMenuBar):
         self.closeActionToggle(enabled)
         self.openActionToggle(enabled)
         self.aboutActionToggle(enabled)
+        self.aboutQtActionToggle(enabled)
 
 
 if __name__ == "__main__":

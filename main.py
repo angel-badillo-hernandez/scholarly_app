@@ -129,7 +129,7 @@ class ScholarlyMainWindow(QMainWindow):
 
         Initializes the menu bar for the main window of the appllication.
         """
-        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self.open_file, self.save_file, self.save_as_file, self.close_file, self.about, self.help, self.close)
+        self.menu_bar: ScholarlyMenuBar = ScholarlyMenuBar(self.open_file, self.save_file, self.save_as_file, self.close_file, self.about, self.about_qt, self.help, self.close)
         
         # Disable Save, Save As, and Close file actions
         self.menu_bar.saveActionToggle(False)
@@ -292,6 +292,8 @@ class ScholarlyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def about_qt(self)-> None:
+        """Displays a message box providing information about Qt.
+        """
         QMessageBox.aboutQt(self)
 
     @pyqtSlot()
