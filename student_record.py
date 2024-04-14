@@ -115,7 +115,7 @@ class StudentRecord:
         """
         return str(dict(self))
 
-def read(file_path:str) -> list[StudentRecord]:
+def read_student_data_from_csv(file_path:str) -> list[StudentRecord]:
         """Returns data from CSV file.
 
         Returns the student data from the CSV file as
@@ -137,7 +137,7 @@ def read(file_path:str) -> list[StudentRecord]:
 
         return studentRecordList
 
-def write(file_path:str, student_data: list[StudentRecord]) -> None:
+def write_student_data_to_csv(file_path:str, student_data: list[StudentRecord]) -> None:
         """Writes student data to a CSV file.
 
         Writes a list of student records to a CSV file.

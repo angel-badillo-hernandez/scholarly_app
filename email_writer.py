@@ -68,6 +68,65 @@ def gmail_send_email(
     )
 
 
+def gmail_send_email_from_bytes(
+    credentials: Credentials,
+    recipient_email_address: str,
+    subject: str,
+    body: str,
+    attachment_bytes: bytes,
+    attachment_file_name: str,
+) -> None:
+    """Send an email via Gmail from the authorized user's Google Account.
+
+    Args:
+        credentials (Credentials): Credentials needed to communicate with Google APIs.
+        recipient_email_address (str): Email address of the recipient.
+        subject (str): Subject of the email.
+        body (str): Body of the email.
+        attachment_bytes (bytes): Attachment as bytes.
+        attachment_file_name (str): Name of the file.
+    """
+
+    # Create Gmail API client
+    service: Resource = build("gmail", "v1", credentials=credentials)
+    email_message: EmailMessage = EmailMessage()
+
+    # Headers
+    email_message["To"] = recipient_email_address
+    email_message["From"] = get_user_email_address(credentials)
+    email_message["Subject"] = subject
+
+    # Text content
+    email_message.set_content(body)
+
+    # Build attachment MIME part
+    attachment_part = __build_attachment_from_bytes(
+        attachment_bytes, attachment_file_name
+    )
+
+    # Add attachment part to the message
+    email_message.add_attachment(
+        attachment_part.get_payload(decode=True),
+        maintype=attachment_part.get_content_maintype(),
+        subtype=attachment_part.get_content_subtype(),
+        filename=os.path.basename(attachment_file_name),
+    )
+
+    # Encode messaged for request body
+    encoded_message: str = base64.urlsafe_b64encode(email_message.as_bytes()).decode()
+
+    # Request body for GMail API
+    send_email_request_body: dict = {"raw": encoded_message}
+
+    # Perform API call and send email
+    send_message = (
+        service.users()
+        .messages()
+        .send(userId="me", body=send_email_request_body)
+        .execute()
+    )
+
+
 def __build_attachment(file_path: str) -> MIMEText | MIMEAudio | MIMEImage | MIMEBase:
     """Create the MIME document for a file.
 
@@ -108,6 +167,55 @@ def __build_attachment(file_path: str) -> MIMEText | MIMEAudio | MIMEImage | MIM
 
     # Get the file name from the file path
     filename: str = os.path.basename(file_path)
+
+    # Add appriopriate header for the attachment
+    mime_document.add_header("Content-Disposition", "attachment", filename=filename)
+
+    return mime_document
+
+
+def __build_attachment_from_bytes(
+    attachment_bytes: bytes,
+    file_name: str,
+) -> MIMEText | MIMEAudio | MIMEImage | MIMEBase:
+    """Create the MIME document for a file from the bytes.
+
+    Args:
+        attachment_bytes (bytes): File represented as bytes.
+        file_name (str): File path for the file attachment.
+
+    Returns:
+        MIMEText | MIMEAudio | MIMEImage | MIMEBase: An MIMEBase object representing the file.
+    """
+    # Get the content type for file
+    content_type, _ = mimetypes.guess_type(file_name)
+
+    # If content type could not be discerned, use
+    # application/octet-stream to represent a generic binary file
+    if content_type is None:
+        content_type = "application/octet-stream"
+
+    main_type, sub_type = content_type.split("/", 1)
+
+    mime_document: MIMEBase = None
+
+    # If main type is text, create MIMEText document
+    if main_type == "text":
+        mime_document: MIMEText = MIMEText(attachment_bytes.decode(), _subtype=sub_type)
+    # If main type is image, create MIMEImage document
+    elif main_type == "image":
+        mime_document: MIMEImage = MIMEImage(attachment_bytes, _subtype=sub_type)
+    # If main type is audio, create MIMEAudio document
+    elif main_type == "audio":
+        mime_document: MIMEAudio = MIMEAudio(attachment_bytes, _subtype=sub_type)
+    # If main type is not one of the common MIME types, create the appriopriate
+    # document with MIMEBase
+    else:
+        mime_document: MIMEBase = MIMEBase(main_type, sub_type)
+        mime_document.set_payload(attachment_bytes)
+
+    # Get the file name from the file path
+    filename: str = os.path.basename(file_name)
 
     # Add appriopriate header for the attachment
     mime_document.add_header("Content-Disposition", "attachment", filename=filename)

@@ -7,6 +7,7 @@ that will replace the placeholders (variables) in the template letter.
 """
 
 from docx import Document
+from io import BytesIO
 
 
 class LetterVariables:
@@ -15,6 +16,7 @@ class LetterVariables:
     Class for representing the variables for
     the placeholders in the template letter.
     """
+
     def __init__(
         self,
         student_name: str,
@@ -92,135 +94,81 @@ class LetterVariables:
         """
         return str(dict(self))
 
-class LetterWriter:
-    """Class for generating a letter.
 
-    Class for generating a letter given a template
-    and the replacement values for the placeholders in the template.
+def write_letter(
+    template_file_path: str, output_file_path: str, variables: LetterVariables
+) -> None:
+    """Generates the letter.
+
+    Generates the letter using the template letter and the
+    dict containing the keys and values used to replace the
+    placeholders in the template letter.
     """
+    # Read in the docx file
+    document = Document(template_file_path)
 
-    def __init__(
-        self,
-        template_file_path: str,
-        output_file_path: str,
-        variables: LetterVariables,
-    ) -> None:
-        """Creates an instance of LetterWriter.
+    # Convert letter variables to dictionary
+    variables_dict: dict[str] = variables.to_dict()
 
-        Creates a new instance of LetterWriter.
+    # Iterate over the items in the dictionary
+    for key, value in variables_dict.items():
+        for paragraph in document.paragraphs:
+            if key in paragraph.text:
+                runs = paragraph.runs
+                for item in runs:
+                    # If the key is present in the text
+                    # replace the placeholder with the value
+                    if key in item.text:
+                        item.text = item.text.replace(key, value)
 
-        Args:
-            template_file_path (str): File path to the template letter docx file.
-            output_file_path (str): File path to the output letter docx file.
-            variables_dict (dict[str,str]): A dict containing the keys and values for replacing the placeholders.
-        """
-        self.template_file_path: str = template_file_path
-        self.output_file_path: str = output_file_path
-        self.variables:LetterVariables = variables
+    # Save the generate docx file to the output file path
+    document.save(output_file_path)
 
-    def get_template_file_path(self) -> str:
-        """Returns the file path to the template letter.
 
-        Returns the file path to the template letter.
+def write_letter_to_bytes(template_file_path: str, variables: LetterVariables) -> bytes:
+    write_out: BytesIO = BytesIO()
+    # Read in the docx file
+    document = Document(template_file_path)
 
-        Returns:
-            File path as str to the template letter.
-        """
-        return self.template_file_path
+    # Convert letter variables to dictionary
+    variables_dict: dict[str] = variables.to_dict()
 
-    def set_template_file_path(self, file_path: str) -> None:
-        """Sets the file path to the template letter.
+    # Iterate over the items in the dictionary
+    for key, value in variables_dict.items():
+        for paragraph in document.paragraphs:
+            if key in paragraph.text:
+                runs = paragraph.runs
+                for item in runs:
+                    # If the key is present in the text
+                    # replace the placeholder with the value
+                    if key in item.text:
+                        item.text = item.text.replace(key, value)
 
-        Sets the filepath to the template letter.
+    # Save the generate docx file to the BytesIO
+    document.save(write_out)
 
-        Args:
-            file_path (str): File path to the template letter.
-        """
-        self.template_file_path = file_path
+    # Get the data from BytesIO as bytes
+    document_bytes: bytes = write_out.getvalue()
 
-    def get_output_file_path(self) -> str:
-        """Returns the file path to the output letter.
-
-        Returns the file path to the output letter.
-
-        Returns:
-            The file path to the output letter.
-        """
-        return self.output_file_path
-
-    def set_output_file_path(self, file_path: str) -> None:
-        """Sets the file path to the output letter.
-
-        Returns the file path to the output letter.
-
-        Returns:
-            File path to the output letter.
-        """
-        self.output_file_path = file_path
-
-    def get_variables_dict(self) -> LetterVariables:
-        """Returns the variables dictionary.
-
-        Returns the dictionary containing the keys and values for the placeholders
-        used to replace the placeholders in the template letter.
-
-        Returns:
-            A dict containing the keys and values used for replacing
-            the placeholders in the template letter.
-
-        """
-        return self.variables_dict
-
-    def set_variables_dict(self, variables:LetterVariables) -> None:
-        """Sets the variables dictionary.
-
-        Sets the dictionary containing the keys and values for the placeholders
-        used to replace the placeholders in the template letter.
-
-        Args:
-            vars_dict (dict[str,str]): dict containing the keys and values for the placeholders
-            used to replace the placeholders in the template letter.
-        """
-        self.variables = variables
-
-    def writer_letter(self):
-        """Generates the letter.
-
-        Generates the letter using the template letter and the
-        dict containing the keys and values used to replace the
-        placeholders in the template letter.
-        """
-        # Read in the docx file
-        document = Document(self.template_file_path)
-
-        # Convert letter variables to dictionary
-        variables_dict:dict[str] = self.variables.to_dict()
-
-        # Iterate over the items in the dictionary
-        for key, value in variables_dict.items():
-            for paragraph in document.paragraphs:
-                if key in paragraph.text:
-                    runs = paragraph.runs
-                    for item in runs:
-                        # If the key is present in the text
-                        # replace the placeholder with the value
-                        if key in item.text:
-                            item.text = item.text.replace(key, value)
-
-        # Save the generate docx file to the output file path
-        document.save(self.output_file_path)
+    return document_bytes
 
 
 if __name__ == "__main__":
     vars = LetterVariables(
-        "Angel Badillo",
+        "Angel Badillo Hernandez",
         "March 8, 2024",
         "1000",
         "Hardworking Scholarship",
-        "2023-2024",
+        "2024",
+        "2025",
         "Angel Badillo",
         "email@email.com",
         "Computer Science Master",
     )
-    l = LetterWriter("template_letter.docx", "test.docx", vars.to_dict())
-    l.writer_letter()
+    
+    write_letter("assets/templates/template_letter.docx", "test.docx", vars)
+
+    docx_bytes:bytes = write_letter_to_bytes("assets/templates/template_letter.docx", vars)
+
+    with open("test2.docx", "wb") as file:
+        file.write(docx_bytes)

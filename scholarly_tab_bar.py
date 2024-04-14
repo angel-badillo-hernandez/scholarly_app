@@ -24,7 +24,8 @@ from PyQt6.QtGui import (
 from PyQt6.QtCore import QSize
 from typing import Callable
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
-from scholarly_select_recipients_tab import ScholarlySelectRecipientsTab
+from scholarly_generate_letters_tab import ScholarlyGenerateLettersTab
+from scholarly_send_emails_tab import ScholarlySendEmailsTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_outstanding_student_awards_tab import (
     ScholarlyOutstandingStudentAwardsTab,
@@ -40,24 +41,29 @@ class ScholarlyTabBar(QTabWidget):
 
     def __init__(
         self,
-        scholarship_tab: ScholarlySelectRecipientsTab = None,
+        generate_letters_tab: ScholarlyGenerateLettersTab = None,
+        send_emails_tab:ScholarlySendEmailsTab = None,
         manage_scholarships_tab: ScholarlyManageScholarshipsTab = None,
         outstanding_student_awards_tab: ScholarlyOutstandingStudentAwardsTab = None,
     ) -> None:
         """Creates a new instance of ScholarlyTabBar
 
         Args:
-            scholarship_tab (ScholarlyScholarshipTab, optional): Scholarship tab. Defaults to None.
+            generate_letters_tab (ScholarlyGenerateLettersTab, optional): Generate Letters Tab. Defaults to None.
             manage_scholarships_tab (ScholarlyManageScholarshipsTab, optional): Manage Scholarships tab. Defaults to None.
             outstanding_student_awards_tab (ScholarlyOutstandingStudentAwardsTab, optional): Outstanding Student Awards tab. Defaults to None.
         """
         super().__init__()
 
-        # Add scholarship tab
-        self.scholarship_tab: ScholarlySelectRecipientsTab = scholarship_tab
-        self.scholarship_tab.setObjectName("scholarshipTab")
-        self.scholarship_tab_name: str = "Select Scholarship Recipients"
-        self.setScholarshipTab(self.scholarship_tab)
+        # Add generate letters tab
+        self.generate_letters_tab: ScholarlyGenerateLettersTab = generate_letters_tab
+        self.generate_letters_tab_name: str = "Generate Acceptance Letters"
+        self.setGenerateLettersTab(self.generate_letters_tab)
+
+        # Add send emails tab
+        self.send_emails_tab: ScholarlySendEmailsTab = send_emails_tab
+        self.generate_letters_tab_name: str = "Send Emails"
+        self.setSendEmailsTab(self.send_emails_tab)
 
         # Add manage scholarships tab
         self.manage_scholarships_tab = manage_scholarships_tab
@@ -71,16 +77,28 @@ class ScholarlyTabBar(QTabWidget):
 
         self.setIconSize(IconSizes.Medium.value)
 
-    def setScholarshipTab(self, tab: ScholarlySelectRecipientsTab) -> None:
-        """Sets the Scholarship tab
+    def setGenerateLettersTab(self, tab: ScholarlyGenerateLettersTab) -> None:
+        """Sets the Generate Letters tab.
 
         Args:
-            tab (ScholarlyScholarshipTab): Scholarship tab.
+            tab (ScholarlyGenerateLettersTab): Tab to be set.
         """
         self.removeTab(0)
-        self.insertTab(0, tab, self.scholarship_tab_name)
+        self.insertTab(0, tab, self.generate_letters_tab_name)
         self.setTabIcon(
             0, ScholarlyIcon(Icons.School, QColor("maroon"), IconSizes.Medium)
+        )
+
+    def setSendEmailsTab(self, tab: ScholarlySendEmailsTab) -> None:
+        """Sets the Send Emails tab.
+
+        Args:
+            tab (ScholarlySendEmailsTab): Tab to be set.
+        """
+        self.removeTab(1)
+        self.insertTab(1, tab, self.generate_letters_tab_name)
+        self.setTabIcon(
+            1, ScholarlyIcon(Icons.StackedEmail, QColor("red"), IconSizes.Medium)
         )
 
     def setManageScholarShipsTab(self, tab: ScholarlyManageScholarshipsTab) -> None:
@@ -89,10 +107,10 @@ class ScholarlyTabBar(QTabWidget):
         Args:
             tab (ScholarlyManageScholarshipsTab): Manage Scholarships tab.
         """
-        self.removeTab(1)
-        self.insertTab(1, tab, self.manage_scholarships_tab_name)
+        self.removeTab(2)
+        self.insertTab(2, tab, self.manage_scholarships_tab_name)
         self.setTabIcon(
-            1, ScholarlyIcon(Icons.Filter, QColor("black"), IconSizes.Medium)
+            2, ScholarlyIcon(Icons.Filter, QColor("black"), IconSizes.Medium)
         )
 
     def setOutstandingStudentAwardTab(
@@ -103,10 +121,10 @@ class ScholarlyTabBar(QTabWidget):
         Args:
             tab (ScholarlyOutstandingStudentAwardsTab): Outstanding Student Awards tab.
         """
-        self.removeTab(2)
-        self.insertTab(2, tab, self.outstanding_student_awards_tab_name)
+        self.removeTab(3)
+        self.insertTab(3, tab, self.outstanding_student_awards_tab_name)
         self.setTabIcon(
-            2, ScholarlyIcon(Icons.Trophy, QColor(204, 172, 0), IconSizes.Medium)
+            3, ScholarlyIcon(Icons.Trophy, QColor(204, 172, 0), IconSizes.Medium)
         )
 
 
@@ -115,7 +133,7 @@ if __name__ == "__main__":
 
     a = QApplication([])
     s = ScholarlyTabBar(
-        ScholarlySelectRecipientsTab(),
+        ScholarlyGenerateLettersTab(),
         ScholarlyManageScholarshipsTab(),
         ScholarlyOutstandingStudentAwardsTab(),
     )

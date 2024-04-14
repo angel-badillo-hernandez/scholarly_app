@@ -24,16 +24,20 @@ from PyQt6.QtGui import (
 )
 from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
-from student_record import StudentRecord, read, write
+from student_record import StudentRecord, read_student_data_from_csv, write_student_data_to_csv
 from award_criteria_record import AwardCriteriaRecord
 from scholarly_database import ScholarlyDatabase, FileIsOpenError
-from letter_writer import LetterVariables, LetterWriter
+from letter_writer import LetterVariables, write_letter, write_letter_to_bytes
 from scholarly_menu_bar import ScholarlyMenuBar
 from scholarly_tab_bar import ScholarlyTabBar
-from scholarly_select_recipients_tab import ScholarlySelectRecipientsTab
+from scholarly_generate_letters_tab import ScholarlyGenerateLettersTab
+from scholarly_send_emails_tab import ScholarlySendEmailsTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from scholarly_fonts import ScholarlyFont, Fonts
+from google.oauth2.credentials import Credentials
+from scholarly_google_auth import google_oauth, get_user_email_address
+from email_writer import gmail_send_email_from_bytes, gmail_send_email
 
 # Absolute address for file to prevent issues with
 # relative addresses when building app with PyInstaller
@@ -55,7 +59,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table: StudentTableModel = None
         self.student_table_view: QTableView = None
         self.database: ScholarlyDatabase = ScholarlyDatabase(os.path.join(BASE_DIR, "database/scholarly.sqlite"))
-        self.scholarship_tab:ScholarlySelectRecipientsTab = None
+        self.generate_letters_tab:ScholarlyGenerateLettersTab = None
         self.tab_bar:ScholarlyTabBar = None
 
         self.initialize_ui()
@@ -86,20 +90,29 @@ class ScholarlyMainWindow(QMainWindow):
         central_widget: QWidget = QWidget()
         central_widget_layout: QHBoxLayout = QHBoxLayout()
 
-        self.scholarship_tab = ScholarlySelectRecipientsTab(
+        self.generate_letters_tab = ScholarlyGenerateLettersTab(
             find_button_clicked= self.find,
             select_directory_button_clicked=self.select_directory,
             select_template_button_clicked=self.select_template,
             generate_letters_button_clicked=self.generate_letters,
             clear_selection_button_clicked=self.clear_selection
             )
-        self.scholarship_tab.setObjectName("scholarshipTab")
+
+        self.send_emails_tab = ScholarlySendEmailsTab(
+            find_button_clicked= self.find,
+            select_template_button_clicked=self.select_template,
+            email_button_clicked=self.send_emails,
+            clear_selection_button_clicked=self.clear_selection
+            )
+        
+
         self.load_combobox()
-        self.scholarship_tab.toggleAll(False)
+        self.generate_letters_tab.toggleAll(False)
+        self.send_emails_tab.toggleAll(False)
 
         self.manage_scholarshops_tab =  ScholarlyManageScholarshipsTab()
 
-        self.tab_bar = ScholarlyTabBar(self.scholarship_tab, self.manage_scholarshops_tab, QWidget())
+        self.tab_bar = ScholarlyTabBar(generate_letters_tab=self.generate_letters_tab, send_emails_tab=self.send_emails_tab, manage_scholarships_tab=self.manage_scholarshops_tab, outstanding_student_awards_tab=QWidget())
         central_widget_layout.addWidget(self.tab_bar)
 
         # Add layout to central widget
@@ -192,8 +205,9 @@ class ScholarlyMainWindow(QMainWindow):
         self.student_table_view.setModel(self.student_table)
         self.student_table_view.resizeColumnsToContents()
 
-        # Enable scholarship combobox
-        self.scholarship_tab.toggleAll(True)
+        # Enable disabled components
+        self.generate_letters_tab.toggleAll(True)
+        self.send_emails_tab.toggleAll(True)
 
         # Enable Save, Save As, and Close file actions on the menu bar
         self.menu_bar.saveActionToggle(True)
@@ -209,7 +223,7 @@ class ScholarlyMainWindow(QMainWindow):
             self.save_as_file()
         else:
             student_data:list[StudentRecord] = self.student_table.get_all_data()
-            write(file_path, student_data)
+            write_student_data_to_csv(file_path, student_data)
             
 
     @pyqtSlot()
@@ -238,7 +252,7 @@ class ScholarlyMainWindow(QMainWindow):
         student_data: list[StudentRecord] = self.student_table.get_all_data()
 
         # Write to CSV file
-        write(file_path, student_data)
+        write_student_data_to_csv(file_path, student_data)
 
     @pyqtSlot()
     def close_file(self) -> None:
@@ -247,8 +261,12 @@ class ScholarlyMainWindow(QMainWindow):
         Function that is called when "Close" action is activated. Clears the database
         and clears the table.
         """
-        self.scholarship_tab.toggleAll(False)
-        self.scholarship_tab.scholarship_combobox.setCurrentText("")
+        self.generate_letters_tab.toggleAll(False)
+        self.generate_letters_tab.scholarship_combobox.setCurrentText("")
+
+        self.send_emails_tab.toggleAll(False)
+        self.send_emails_tab.scholarship_combobox.setCurrentText("")
+
         self.database.drop_table(self.database.get_students_table_name())
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
@@ -327,15 +345,15 @@ class ScholarlyMainWindow(QMainWindow):
         curr_time:datetime = datetime.now()
         date:str = f"{curr_time.strftime("%B")} {curr_time.day}, {curr_time.year}"
 
-        scholarship_name:str = self.scholarship_tab.getScholarshipComboBoxCurrentText()
-        sender_name:str = self.scholarship_tab.getSenderNameTexBoxText()
-        sender_title:str = self.scholarship_tab.getSenderTitleTextBoxText()
-        sender_email:str = self.scholarship_tab.getSenderEmailTextBoxText()
-        amount:str = self.scholarship_tab.getAmountTextBoxText()
-        academic_year_fall:str = self.scholarship_tab.getAcademicYearFallTextBoxText()
-        academic_year_spring:str = self.scholarship_tab.getAcademicYearSpringTextBoxText()
-        template_path:str = self.scholarship_tab.getTemplateLetterPathTextBoxText()
-        dir_path:str = self.scholarship_tab.getDestDirPathTextBoxText()
+        scholarship_name:str = self.generate_letters_tab.getScholarshipComboBoxCurrentText()
+        sender_name:str = self.generate_letters_tab.getSenderNameTexBoxText()
+        sender_title:str = self.generate_letters_tab.getSenderTitleTextBoxText()
+        sender_email:str = self.generate_letters_tab.getSenderEmailTextBoxText()
+        amount:str = self.generate_letters_tab.getAmountTextBoxText()
+        academic_year_fall:str = self.generate_letters_tab.getAcademicYearFallTextBoxText()
+        academic_year_spring:str = self.generate_letters_tab.getAcademicYearSpringTextBoxText()
+        template_path:str = self.generate_letters_tab.getTemplateLetterPathTextBoxText()
+        dir_path:str = self.generate_letters_tab.getDestDirPathTextBoxText()
 
         # Ensure text boxes are not empty, if so, show warning
         if not sender_name:
@@ -376,10 +394,8 @@ class ScholarlyMainWindow(QMainWindow):
             
             letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year_fall, academic_year_spring, sender_name, sender_email, sender_title)
             
-            letter_writer:LetterWriter = LetterWriter(template_path, f"{dir_path}/{student_name}_{student.student_ID}.docx", letter_vars)
-            
             try:
-                letter_writer.writer_letter()
+                write_letter(template_path, f"{dir_path}/{student_name}_{student.student_ID}.docx", letter_vars)
             except Exception as e:
                 QMessageBox.critical(self, "Invalid File Paths", f"Invalid template letter file path or destination directory path'.\n{type(e).__name__}: {e}")
                 return
@@ -394,7 +410,82 @@ class ScholarlyMainWindow(QMainWindow):
 
         if reponse == QMessageBox.StandardButton.Yes:
             os.startfile(dir_path)
+
+    @pyqtSlot()
+    def send_emails(self)-> None:
+        """Slot (event handler) for "generate letters" button.
+
+        Function that is called when "generate letters" button is pressed. Generates
+        the letters based on the selections in the table.
+        """
+        student_data: list[StudentRecord] = self.get_selected_rows()
+        
+        # If no selection has been made, show warning message
+        if not student_data:
+            QMessageBox.warning(self, "No Selection", "No selection has been made. Make a selection on the table.")
+            return
+
+        curr_time:datetime = datetime.now()
+        date:str = f"{curr_time.strftime("%B")} {curr_time.day}, {curr_time.year}"
+
+        scholarship_name:str = self.send_emails_tab.getScholarshipComboBoxCurrentText()
+        sender_email:str = None
+        sender_name:str = self.send_emails_tab.getSenderNameTexBoxText()
+        sender_title:str = self.send_emails_tab.getSenderTitleTextBoxText()
+        amount:str = self.send_emails_tab.getAmountTextBoxText()
+        academic_year_fall:str = self.send_emails_tab.getAcademicYearFallTextBoxText()
+        academic_year_spring:str = self.send_emails_tab.getAcademicYearSpringTextBoxText()
+        template_path:str = self.send_emails_tab.getTemplateLetterPathTextBoxText()
+
+        # Ensure text boxes are not empty, if so, show warning
+        if not sender_name:
+            QMessageBox.warning(self, "Enter Sender Name", "Sender name is empty. Please enter the sender name.")
+            return
+        elif not sender_title:
+            QMessageBox.warning(self, "Enter Sender Title", "Sender name is empty. Please enter the sender title.")
+            return
+        elif not amount:
+            QMessageBox.warning(self, "Enter Amount", "The amount is empty. Please enter the amount.")
+            return
+        elif not academic_year_fall:
+            QMessageBox.warning(self, "Enter Academic Year", "The academic year is empty. Please enter the academic year.")
+            return
+        elif not scholarship_name:
+            QMessageBox.warning(self, "Select a Scholarship", "A scholarship has not been selected. Please select a scholarship.")
+            return
+        
+        # Get credentials and authenticate user
+        credentials:Credentials = google_oauth()
+        # Get sender email address
+        sender_email = get_user_email_address(credentials)
+       
+        
+
+        for student in student_data:
+            student_name:str = None
+
+            try:
+                student_last_name, student_first_name = student.name.split(",")
+                student_last_name = student_last_name.lstrip().rstrip()
+                student_first_name = student_first_name.lstrip().rstrip()
+
+
+                student_name = f"{student_first_name} {student_last_name}"
+            except ValueError as e:
+                QMessageBox.critical(self, "Invalid Arguments", f"Invalid student name: '{student.name}'.\nMust be in the format 'last_name, first_name'.\n{type(e).__name__}: {e}")
+                return
             
+            letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year_fall, academic_year_spring, sender_name, sender_email, sender_title)
+            
+            try:
+                letter_bytes:bytes = write_letter_to_bytes(template_path, letter_vars)
+
+                gmail_send_email_from_bytes(credentials=credentials, recipient_email_address=student.email, attachment_bytes=letter_bytes, attachment_file_name=f"{scholarship_name}.docx")
+
+            except Exception as e:
+                QMessageBox.critical(self, "Invalid File Paths", f"Invalid template letter file path or destination directory path'.\n{type(e).__name__}: {e}")
+                return
+
     def get_selected_rows(self)-> list[StudentRecord]:
         """Returns the student data from the selection.
 
@@ -435,7 +526,7 @@ class ScholarlyMainWindow(QMainWindow):
             return
 
         # Change textbox text to directory path
-        self.scholarship_tab.setDestDirPathTextBoxText(dir_path)
+        self.generate_letters_tab.setDestDirPathTextBoxText(dir_path)
 
     @pyqtSlot()
     def select_template(self):
@@ -459,7 +550,7 @@ class ScholarlyMainWindow(QMainWindow):
             return
 
         # Change textbox text to directory path
-        self.scholarship_tab.setTemplateLetterPathTextBoxText(file_path)
+        self.generate_letters_tab.setTemplateLetterPathTextBoxText(file_path)
 
     @pyqtSlot()
     def find(self):
@@ -467,7 +558,7 @@ class ScholarlyMainWindow(QMainWindow):
 
         Called when selection is changed in scholarship_combobox
         """
-        scholarship_name:str = self.scholarship_tab.getScholarshipComboBoxCurrentText()
+        scholarship_name:str = self.generate_letters_tab.getScholarshipComboBoxCurrentText()
 
         # Display entire contents of file / database
         if scholarship_name == "":
@@ -499,29 +590,6 @@ class ScholarlyMainWindow(QMainWindow):
         """
         self.student_table_view.clearSelection()
 
-    @pyqtSlot()
-    def scholarship_changed(self):
-        """Called when selection is changed in scholarship_combobox
-
-        Called when selection is changed in scholarship_combobox
-        """
-        scholarship_name:str = self.scholarship_combobox.currentText()
-
-        if scholarship_name == "":
-            # Clear selection
-            self.student_table_view.clearSelection()
-            
-            # Reset table to have entire contents of database
-            student_data:list[StudentRecord] = self.database.select_all_students()
-            self.student_table = StudentTableModel(student_data)
-            self.student_table_view.setModel(self.student_table)
-        else:
-            self.student_table_view.clearSelection()
-            award_criteria_record:AwardCriteriaRecord = self.database.select_award_criteria(scholarship_name)
-            student_data:list[StudentRecord] = self.database.select_students_by_criteria(award_criteria_record)
-            self.student_table = StudentTableModel(student_data)
-            self.student_table_view.setModel(self.student_table)
-
     def getScholarshipNames(self)-> list[str]:
         records:list[AwardCriteriaRecord] = self.database.select_all_award_criteria()
         scholarship_names:list[str] = [record.name for record in records]
@@ -534,15 +602,18 @@ class ScholarlyMainWindow(QMainWindow):
         Populates scholarship combobox with scholarship names from the
         award criteria table in the database.
         """
-        self.scholarship_tab.scholarshipComboBoxClear()
+        self.generate_letters_tab.scholarshipComboBoxClear()
+        self.send_emails_tab.scholarshipComboBoxClear()
 
         # Add empty item for representing no filter / no selection
-        self.scholarship_tab.scholarshipComboBoxAddItem("")
+        self.generate_letters_tab.scholarshipComboBoxAddItem("")
+        self.send_emails_tab.scholarshipComboBoxAddItem("")
         
         # Retrieve all award criteria
         scholarship_names:list[str] = self.getScholarshipNames()
 
-        self.scholarship_tab.scholarshipComboxBoxAddItems(scholarship_names)
+        self.generate_letters_tab.scholarshipComboxBoxAddItems(scholarship_names)
+        self.send_emails_tab.scholarshipComboxBoxAddItems(scholarship_names)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -7,7 +7,7 @@ and inserting records in the students table and award criteria table.
 
 import sqlite3
 import json
-from student_record import StudentRecord, read, write
+from student_record import StudentRecord, read_student_data_from_csv, write_student_data_to_csv
 from award_criteria_record import AwardCriteriaRecord
 from pypika import Query, Table, Field, Schema, Column, Columns, Order
 
@@ -396,7 +396,7 @@ class ScholarlyDatabase:
         self.drop_table(self.students_table_name)
         self.create_table(self.students_table_name, self.__students_columns)
 
-        data: list[StudentRecord] = read(file_path)
+        data: list[StudentRecord] = read_student_data_from_csv(file_path)
 
         # Insert student records into database
         for record in data:
