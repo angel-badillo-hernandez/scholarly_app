@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLineEdit,
+    QTextEdit,
     QPushButton,
     QToolButton,
     QToolTip,
@@ -22,7 +23,7 @@ from PyQt6.QtGui import (
     QIcon,
     QColor,
 )
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QSize, Qt, pyqtSlot
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from typing import Callable
 import os
@@ -58,8 +59,6 @@ class ScholarlySendEmailsTab(QWidget):
             scholarship_combo_box_items (list[str], optional): The items to be displayed in the combobox. Defaults to [].
         """
         super().__init__()
-
-        self.setObjectName("scholarshipTab")
 
         # Main layout for widget
         main_layout: QVBoxLayout = QVBoxLayout()
@@ -98,8 +97,8 @@ class ScholarlySendEmailsTab(QWidget):
 
         # Fields and text boxes for generating letters
         letter_info_widget: QWidget = QWidget()
-        letter_info_layout: QFormLayout = QFormLayout()
-        letter_info_widget.setLayout(letter_info_layout)
+        form_layout: QFormLayout = QFormLayout()
+        letter_info_widget.setLayout(form_layout)
 
         # Text boxes
         self.sender_name_textbox: QLineEdit = QLineEdit()
@@ -111,10 +110,6 @@ class ScholarlySendEmailsTab(QWidget):
             "The financial award amount in USD, rounded to the nearest cent."
         )
         self.amount_textbox.setValidator(QDoubleValidator())
-        self.template_path_textbox: QLineEdit = QLineEdit()
-        self.template_path_textbox.setToolTip(
-            "The path to the template letter used for generating the acceptance letters."
-        )
         self.academic_year_fall_textbox: QLineEdit = QLineEdit()
         self.academic_year_fall_textbox.setToolTip(
             "The academic year for the Fall semester."
@@ -125,6 +120,14 @@ class ScholarlySendEmailsTab(QWidget):
             "The academic year for the Spring semester."
         )
         self.academic_year_spring_textbox.setValidator(QIntValidator())
+        self.template_path_textbox: QLineEdit = QLineEdit()
+        self.template_path_textbox.setToolTip(
+            "The path to the template letter used for generating the acceptance letters."
+        )
+        self.email_subject_textbox:QLineEdit = QLineEdit()
+        self.email_subject_textbox.setToolTip("Subject line of the email.")
+        self.email_body_textbox:QTextEdit = QTextEdit()
+        self.email_body_textbox.setToolTip("Body of the email.")
 
         # Select template letter button
         self.select_template_button: QToolButton = QToolButton()
@@ -144,9 +147,9 @@ class ScholarlySendEmailsTab(QWidget):
         select_template_layout.addWidget(self.template_path_textbox)
 
         # Add textboxes to form layout
-        letter_info_layout.addRow("Sender Name", self.sender_name_textbox)
-        letter_info_layout.addRow("Sender Title", self.sender_title_textbox)
-        letter_info_layout.addRow("Amount", self.amount_textbox)
+        form_layout.addRow("Sender Name", self.sender_name_textbox)
+        form_layout.addRow("Sender Title", self.sender_title_textbox)
+        form_layout.addRow("Amount", self.amount_textbox)
 
         # Create layout for academic year
         academic_year_layout: QHBoxLayout = QHBoxLayout()
@@ -154,10 +157,16 @@ class ScholarlySendEmailsTab(QWidget):
         academic_year_layout.addWidget(QLabel("-"))
         academic_year_layout.addWidget(self.academic_year_spring_textbox)
 
-        letter_info_layout.addRow("Academic Year", academic_year_layout)
+        form_layout.addRow("Academic Year", academic_year_layout)
 
         # Add template letter layout to letter info layout
-        letter_info_layout.addRow("Template Letter", select_template_layout)
+        form_layout.addRow("Template Letter", select_template_layout)
+
+        # Add subject textbox to letter info layout
+        form_layout.addRow("Email Subject Line", self.email_subject_textbox)
+
+        # add email body textbox to letter info layout
+        form_layout.addRow("Email Body", self.email_body_textbox)
 
         main_layout.addWidget(letter_info_widget)
 
@@ -173,17 +182,23 @@ class ScholarlySendEmailsTab(QWidget):
         )
         self.clear_selection_button.clicked.connect(clear_selection_button_clicked)
 
+        # Clear email body button
+        self.clear_email_body_button:QToolButton = QToolButton()
+        self.clear_email_body_button.setText("Clear Email Body")
+        self.clear_email_body_button.setToolTip("Clears the email body textbox.")
+        self.clear_email_body_button.clicked.connect(self.emailBodyTextBoxClear)
+
         # Email Recipients Button
         self.email_button: QToolButton = QToolButton()
         self.email_button.setText("Email Recipients")
         self.email_button.setToolTip("Emails the selected recipients.")
         self.email_button.clicked.connect(email_button_clicked)
 
-        # Add widget to buttons layout
-        bottom_buttons_layout.addWidget(self.email_button)
-
         # Add widget to scholarship components layout
         bottom_buttons_layout.addWidget(self.clear_selection_button)
+        bottom_buttons_layout.addWidget(self.email_button)
+        bottom_buttons_layout.addWidget(self.clear_email_body_button)
+
         bottom_buttons_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         bottom_buttons_widget.setLayout(bottom_buttons_layout)
 
@@ -191,6 +206,30 @@ class ScholarlySendEmailsTab(QWidget):
 
         # Set entire main layout for widget
         self.setLayout(main_layout)
+
+    def emailSubjectTextBoxToggle(self, enabled:bool)-> None:
+        """Toggles the email subject textbox.
+
+        Args:
+            enabled (bool): If True, enables the line edit. If False, disables it.
+        """
+        self.email_subject_textbox.setEnabled(enabled)
+
+    def emailBodyTextBoxToggle(self, enabled:bool)-> None:
+        """Toggles the email body textbox.
+
+        Args:
+            enabled (bool): If True, enables the text edit. If False, disables it.
+        """
+        self.email_body_textbox.setEnabled(enabled)
+
+    def clearEmailBodyButtonToggle(self, enabled:bool)-> None:
+        """Toggles the clear email body button.
+
+        Args:
+            enabled (bool): If True, enables the button. If False, disables it.
+        """
+        self.clear_email_body_button.setEnabled(enabled)
 
     def emailButtonToggle(self, enabled: bool) -> None:
         """Toggles the Email Button
@@ -317,6 +356,9 @@ class ScholarlySendEmailsTab(QWidget):
         self.findButtonToggle(enabled)
         self.clearSelectionButtonToggle(enabled)
         self.emailButtonToggle(enabled)
+        self.emailSubjectTextBoxToggle(enabled)
+        self.emailBodyTextBoxToggle(enabled)
+        self.clearEmailBodyButtonToggle(enabled)
 
     def scholarshipComboxBoxAddItems(self, items: list[str]) -> None:
         """Adds items to the scholarship combobox
@@ -443,6 +485,27 @@ class ScholarlySendEmailsTab(QWidget):
         """
         self.template_path_textbox.setText(file_path)
 
+    def getEmailSubjectTextBoxText(self)-> str:
+        """Returns the text from the email subject textbox.
+
+        Returns:
+            str: Text from the textbox.
+        """
+        return self.email_subject_textbox.text()
+
+    def getEmailBodyTextBoxText(self)-> str:
+        """Returns the rich text from the email body textbox as HTML.
+
+        Returns:
+            str: Rich text from the textbox as HTML.
+        """
+        return self.email_body_textbox.toHtml()
+
+    @pyqtSlot()
+    def emailBodyTextBoxClear(self)-> None:
+        """Clears the email body textbox.
+        """
+        self.email_body_textbox.clear()
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
@@ -451,7 +514,7 @@ if __name__ == "__main__":
     with open("style.qss", "r") as styleFile:
         a.setStyleSheet(styleFile.read())
     s = ScholarlySendEmailsTab()
-    s.toggleAll(True)
+    s.toggleAll(False)
     s.scholarshipComboxBoxAddItems(
         [
             "",

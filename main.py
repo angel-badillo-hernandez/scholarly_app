@@ -92,15 +92,15 @@ class ScholarlyMainWindow(QMainWindow):
 
         self.generate_letters_tab = ScholarlyGenerateLettersTab(
             find_button_clicked= self.find,
-            select_directory_button_clicked=self.select_directory,
-            select_template_button_clicked=self.select_template,
+            select_directory_button_clicked=self.letter_tab_select_directory,
+            select_template_button_clicked=self.letter_tab_select_template,
             generate_letters_button_clicked=self.generate_letters,
             clear_selection_button_clicked=self.clear_selection
             )
 
         self.send_emails_tab = ScholarlySendEmailsTab(
             find_button_clicked= self.find,
-            select_template_button_clicked=self.select_template,
+            select_template_button_clicked=self.emails_tab_select_template,
             email_button_clicked=self.send_emails,
             clear_selection_button_clicked=self.clear_selection
             )
@@ -436,6 +436,8 @@ class ScholarlyMainWindow(QMainWindow):
         academic_year_fall:str = self.send_emails_tab.getAcademicYearFallTextBoxText()
         academic_year_spring:str = self.send_emails_tab.getAcademicYearSpringTextBoxText()
         template_path:str = self.send_emails_tab.getTemplateLetterPathTextBoxText()
+        email_subject:str = self.send_emails_tab.getEmailSubjectTextBoxText()
+        email_body:str = self.send_emails_tab.getEmailBodyTextBoxText()
 
         # Ensure text boxes are not empty, if so, show warning
         if not sender_name:
@@ -453,14 +455,18 @@ class ScholarlyMainWindow(QMainWindow):
         elif not scholarship_name:
             QMessageBox.warning(self, "Select a Scholarship", "A scholarship has not been selected. Please select a scholarship.")
             return
+        elif not email_subject:
+            QMessageBox.warning(self, "Enter Email Subject", "The email subject is empty. Please enter the subject.")
+            return
+        elif not email_body:
+            QMessageBox.warning(self, "Enter Email Body", "The email body is empty. Please enter the body.")
+            return
         
         # Get credentials and authenticate user
         credentials:Credentials = google_oauth()
         # Get sender email address
         sender_email = get_user_email_address(credentials)
        
-        
-
         for student in student_data:
             student_name:str = None
 
@@ -480,11 +486,22 @@ class ScholarlyMainWindow(QMainWindow):
             try:
                 letter_bytes:bytes = write_letter_to_bytes(template_path, letter_vars)
 
-                gmail_send_email_from_bytes(credentials=credentials, recipient_email_address=student.email, attachment_bytes=letter_bytes, attachment_file_name=f"{scholarship_name}.docx")
+                gmail_send_email_from_bytes(credentials=credentials, recipient_email_address=student.email, subject=email_subject, body=email_body, attachment_bytes=letter_bytes, attachment_file_name=f"{scholarship_name}.docx")
 
             except Exception as e:
                 QMessageBox.critical(self, "Invalid File Paths", f"Invalid template letter file path or destination directory path'.\n{type(e).__name__}: {e}")
                 return
+            
+        # Open Browser to Gmail to show sent letters
+        reponse: QMessageBox.StandardButton = QMessageBox.question(
+            self,
+            "Open GMail in Browser",
+            "The emails were successful delivered.\nWould you like to view them in your browser?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+
+        if reponse == QMessageBox.StandardButton.Yes:
+            webbrowser.open("https://mail.google.com/")
 
     def get_selected_rows(self)-> list[StudentRecord]:
         """Returns the student data from the selection.
@@ -506,7 +523,7 @@ class ScholarlyMainWindow(QMainWindow):
         return data
 
     @pyqtSlot()
-    def select_directory(self):
+    def letter_tab_select_directory(self):
         """Slot (event handler) for choosing destination directory.
 
         Function called when "Browse" button on the "Destination Directory" field
@@ -529,7 +546,7 @@ class ScholarlyMainWindow(QMainWindow):
         self.generate_letters_tab.setDestDirPathTextBoxText(dir_path)
 
     @pyqtSlot()
-    def select_template(self):
+    def letter_tab_select_template(self):
         """Slot (event handler) for choosing template letter file.
 
         Function called when "Browse" button on the "Template Letter" field
@@ -551,6 +568,30 @@ class ScholarlyMainWindow(QMainWindow):
 
         # Change textbox text to directory path
         self.generate_letters_tab.setTemplateLetterPathTextBoxText(file_path)
+
+    @pyqtSlot()
+    def emails_tab_select_template(self):
+        """Slot (event handler) for choosing template letter file.
+
+        Function called when "Browse" button on the "Template Letter" field
+        section is pressed. Opens file dialog for selecting a docx file.
+        """
+        templates_path: str = os.path.join(BASE_DIR, "assets/templates")
+
+        # Open file dialog, and get the selected file path
+        file_path, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption="Select Template Letter",
+            directory=templates_path,
+            filter="Word Documents (*.docx)",
+        )
+
+        # If no file is specified, do nothing
+        if not file_path:
+            return
+
+        # Change textbox text to directory path
+        self.send_emails_tab.setTemplateLetterPathTextBoxText(file_path)
 
     @pyqtSlot()
     def find(self):

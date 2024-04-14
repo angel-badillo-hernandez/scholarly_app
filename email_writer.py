@@ -40,7 +40,7 @@ def gmail_send_email(
     email_message["Subject"] = subject
 
     # Text content
-    email_message.set_content(body)
+    email_message.set_content(body, subtype="html")
 
     # Build attachment MIME part
     attachment_part = __build_attachment(attachment_path)
@@ -97,7 +97,7 @@ def gmail_send_email_from_bytes(
     email_message["Subject"] = subject
 
     # Text content
-    email_message.set_content(body)
+    email_message.set_content(body, subtype="html")
 
     # Build attachment MIME part
     attachment_part = __build_attachment_from_bytes(
