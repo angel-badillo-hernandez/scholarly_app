@@ -91,7 +91,7 @@ class ScholarlyMainWindow(QMainWindow):
         central_widget_layout: QHBoxLayout = QHBoxLayout()
 
         self.generate_letters_tab = ScholarlyGenerateLettersTab(
-            find_button_clicked= self.find,
+            find_button_clicked= self.letter_tab_find,
             select_directory_button_clicked=self.letter_tab_select_directory,
             select_template_button_clicked=self.letter_tab_select_template,
             generate_letters_button_clicked=self.generate_letters,
@@ -99,7 +99,7 @@ class ScholarlyMainWindow(QMainWindow):
             )
 
         self.send_emails_tab = ScholarlySendEmailsTab(
-            find_button_clicked= self.find,
+            find_button_clicked= self.emails_tab_find,
             select_template_button_clicked=self.emails_tab_select_template,
             email_button_clicked=self.send_emails,
             clear_selection_button_clicked=self.clear_selection
@@ -175,6 +175,10 @@ class ScholarlyMainWindow(QMainWindow):
         # If no file is specified, do nothing
         if not file_path:
             return
+
+        # If file is open, drop the table from the database before proceeding
+        if not self.database.get_students_table_name() is None:
+            self.close_file()
 
         try:
             # Insert data from file to database
@@ -267,7 +271,11 @@ class ScholarlyMainWindow(QMainWindow):
         self.send_emails_tab.toggleAll(False)
         self.send_emails_tab.scholarship_combobox.setCurrentText("")
 
+        # Drop the table from the database
         self.database.drop_table(self.database.get_students_table_name())
+        self.database.set_students_table_name(None)
+
+        # Clear table view
         self.student_table = StudentTableModel()
         self.student_table_view.setModel(self.student_table)
 
@@ -594,12 +602,44 @@ class ScholarlyMainWindow(QMainWindow):
         self.send_emails_tab.setTemplateLetterPathTextBoxText(file_path)
 
     @pyqtSlot()
-    def find(self):
+    def letter_tab_find(self):
         """Called when selection is changed in scholarship_combobox
 
         Called when selection is changed in scholarship_combobox
         """
         scholarship_name:str = self.generate_letters_tab.getScholarshipComboBoxCurrentText()
+
+        # Display entire contents of file / database
+        if scholarship_name == "":
+            # Clear selection
+            self.student_table_view.clearSelection()
+            
+            # Reset table to have entire contents of database
+            student_data:list[StudentRecord] = self.database.select_all_students()
+            self.student_table = StudentTableModel(student_data)
+            self.student_table_view.setModel(self.student_table)
+        # Display results of query performed on data
+        else:
+            # Clear selection
+            self.student_table_view.clearSelection()
+            award_criteria_record:AwardCriteriaRecord = self.database.select_award_criteria(scholarship_name)
+
+            # If award criteria is valid, perform query and display results in table
+            if isinstance(award_criteria_record, AwardCriteriaRecord):
+                student_data:list[StudentRecord] = self.database.select_students_by_criteria(award_criteria_record)
+                self.student_table = StudentTableModel(student_data)
+                self.student_table_view.setModel(self.student_table)
+            # If award criteriai is not valid, scholarship does not exist.
+            else:
+                QMessageBox.information(self, "Invalid Scholarship", f"The scholarship '{scholarship_name}' does not exist. Please enter or select an existing scholarship.")
+
+    @pyqtSlot()
+    def emails_tab_find(self):
+        """Called when selection is changed in scholarship_combobox
+
+        Called when selection is changed in scholarship_combobox
+        """
+        scholarship_name:str = self.send_emails_tab.getScholarshipComboBoxCurrentText()
 
         # Display entire contents of file / database
         if scholarship_name == "":
