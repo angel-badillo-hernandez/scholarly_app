@@ -187,12 +187,7 @@ class ScholarshipCriteriaDialog(QDialog):
         Returns:
             AwardCriteriaRecord: Scholarship criteria entered in the fields
         """
-        return {
-            "name": self.name_edit.text(),
-            "criteria": self.criteria_edit.toPlainText(),
-            "limit": self.limit_edit.text(),
-            "sort": self.sort_edit.text(),
-        }
+        return AwardCriteriaRecord(self.name_edit.text(),) # Fix
 
 
 # Example usage:
