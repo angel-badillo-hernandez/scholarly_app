@@ -13,15 +13,28 @@ from PyQt6.QtWidgets import (
     QFormLayout,
     QDialogButtonBox,
     QLineEdit,
+    QComboBox,
     QPlainTextEdit,
+    QMessageBox,
 )
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
+import json
+from PyQt6.QtGui import QStandardItemModel, QStandardItem, QIntValidator
 from award_criteria_record import AwardCriteriaRecord
+from typing import Callable
+
+# Function that takes no parameters, and returns nothing
+voidCallBack: Callable[[], None] = lambda: None
 
 
 class ScholarlyManageScholarshipsTab(QWidget):
-    def __init__(self):
+    def __init__(
+        self,
+        add_new_item_clicked: Callable[[QWidget], None] = voidCallBack,
+        edit_button_clicked: Callable[[QWidget], None] = voidCallBack,
+        delete_button_clicked: Callable[[QWidget], None] = voidCallBack,
+        refresh_button_clicked: Callable[[QWidget], None] = voidCallBack,
+    ):
         super().__init__()
 
         # Create widgets
@@ -35,16 +48,18 @@ class ScholarlyManageScholarshipsTab(QWidget):
         self.new_button = QPushButton("New")
         self.edit_button = QPushButton("Edit")
         self.delete_button = QPushButton("Delete")
+        self.refresh_button = QPushButton("Refresh")
         self.clear_selection_button = QPushButton("Clear Selection")
 
         # Connect button signals to slots
-        self.new_button.clicked.connect(self.add_new_item)
-        self.edit_button.clicked.connect(self.edit_selected_item)
-        self.delete_button.clicked.connect(self.delete_selected_items)
+        self.new_button.clicked.connect(add_new_item_clicked)
+        self.edit_button.clicked.connect(edit_button_clicked)
+        self.delete_button.clicked.connect(delete_button_clicked)
+        self.refresh_button.clicked.connect(refresh_button_clicked)
         self.clear_selection_button.clicked.connect(self.clear_selection)
 
         # Connect double-click signal to edit_selected_item method
-        self.list_view.doubleClicked.connect(self.edit_selected_item)
+        self.list_view.doubleClicked.connect(edit_button_clicked)
 
         # Layout setup
         layout = QVBoxLayout()
@@ -56,6 +71,7 @@ class ScholarlyManageScholarshipsTab(QWidget):
         button_layout.addWidget(self.new_button)
         button_layout.addWidget(self.edit_button)
         button_layout.addWidget(self.delete_button)
+        button_layout.addWidget(self.refresh_button)
         button_layout.addWidget(self.clear_selection_button)
 
         layout.addLayout(button_layout)
@@ -82,59 +98,32 @@ class ScholarlyManageScholarshipsTab(QWidget):
             )  # Store item data in UserRole
             self.model.appendRow(item)
 
-    def add_new_item(self):
-        """
-        Add a new item to the list view.
-        """
-        item_data = self.get_scholarship_data_from_user()
-        if item_data:
-            item = QStandardItem(item_data.name)
-            item.setEditable(False)  # Make item non-editable
-            item.setData(
-                item_data, Qt.ItemDataRole.UserRole
-            )  # Store item data in UserRole
-            self.model.appendRow(item)
-
-    def edit_selected_item(self):
-        """
-        Edit the selected item in the list view.
-        """
-        selected_indexes = self.list_view.selectedIndexes()
-        if not selected_indexes:
-            return
-
-        index = selected_indexes[0]
-        item = self.model.itemFromIndex(index)
-        if item:
-            current_data = item.data(Qt.ItemDataRole.UserRole)
-            new_data = self.get_scholarship_data_from_user(current_data, True)
-            if new_data:
-                item.setText(new_data.name)
-                item.setData(new_data, Qt.ItemDataRole.UserRole)
-
-    def delete_selected_items(self):
-        """
-        Delete the selected items from the list view.
-        """
-        selected_indexes = self.list_view.selectedIndexes()
-        if not selected_indexes:
-            return
-
-        items_to_remove = []
-        for index in selected_indexes:
-            items_to_remove.append(index.row())
-
-        # Remove items from bottom to top to avoid index issues
-        items_to_remove.sort(reverse=True)
-        for row in items_to_remove:
-            self.model.removeRow(row)
-
     def get_scholarship_data_from_user(
-        self, initial_data=None, is_edit: bool = False
+        self, initial_data: AwardCriteriaRecord = None, is_edit: bool = False
     ) -> AwardCriteriaRecord:
+        """Return AwardCriteriaRecord acquired from user input.
+
+        Args:
+            initial_data (AwardCriteriaRecord, optional): Initial data of the item, if the action is an edit. Defaults to None.
+            is_edit (bool, optional): True if the action is an edit. If False, the action is adding a new item into the list. Defaults to False.
+
+        Returns:
+            AwardCriteriaRecord: _description_
+        """
         dialog = ScholarshipCriteriaDialog(initial_data, parent=self, is_edit=is_edit)
+
+        # Show dialog
         if dialog.exec():
-            return dialog.get_scholarship_data()
+
+            try:
+                scholarship_criteria: AwardCriteriaRecord = (
+                    dialog.get_scholarship_data()
+                )
+
+                return scholarship_criteria
+            except Exception as e:
+                QMessageBox.critical(self, "Invalid Data", str(e))
+                return None
         return None
 
     def clear_selection(self):
@@ -142,28 +131,44 @@ class ScholarlyManageScholarshipsTab(QWidget):
 
 
 class ScholarshipCriteriaDialog(QDialog):
-    def __init__(self, initial_data=None, parent=None, is_edit: bool = False):
+    def __init__(
+        self,
+        initial_data: AwardCriteriaRecord = None,
+        parent: QWidget = None,
+        is_edit: bool = False,
+    ):
         super().__init__(parent)
 
+        # Set appropriate title for action being performed
         if is_edit:
             self.setWindowTitle("Edit Scholarship")
         else:
             self.setWindowTitle("Create Scholarship")
 
-        self.name_edit = QLineEdit()
-        self.name_edit.setDisabled(is_edit)
+        # Create textbox for name
+        self.name_textbox = QLineEdit()
 
-        self.criteria_edit = QPlainTextEdit()
-        self.limit_edit = QLineEdit()
-        self.sort_edit = QLineEdit()
+        # If action is an edit, disable name textbox
+        self.name_textbox.setDisabled(is_edit)
+
+        # Create textbox for criteria
+        self.criteria_textbox = QPlainTextEdit()
+
+        # Create textbox for limit
+        self.limit_textbox = QLineEdit()
+        self.limit_textbox.setValidator(QIntValidator())
+
+        # Create textbox for sort
+        self.sort_textbox = QLineEdit()
 
         form_layout = QFormLayout()
-        form_layout.addRow("Name:", self.name_edit)
-        form_layout.addRow("Criteria:", self.criteria_edit)
-        form_layout.addRow("Limit:", self.limit_edit)
-        form_layout.addRow("Sort:", self.sort_edit)
+        form_layout.addRow("Name:", self.name_textbox)
+        form_layout.addRow("Criteria:", self.criteria_textbox)
+        form_layout.addRow("Limit:", self.limit_textbox)
+        form_layout.addRow("Sort:", self.sort_textbox)
 
-        button_box = QDialogButtonBox(
+        # Button box for dialog button options
+        button_box: QDialogButtonBox = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
         button_box.accepted.connect(self.accept)
@@ -175,11 +180,13 @@ class ScholarshipCriteriaDialog(QDialog):
 
         self.setLayout(main_layout)
 
+        # If dialog is created with initial data passed in,
+        # display the initial data text
         if initial_data:
-            self.name_edit.setText(initial_data.get("name", ""))
-            self.criteria_edit.setPlainText(initial_data.get("criteria", ""))
-            self.limit_edit.setText(initial_data.get("limit", ""))
-            self.sort_edit.setText(initial_data.get("sort", ""))
+            self.name_textbox.setText(initial_data.name)
+            self.criteria_textbox.setPlainText(json.dumps(initial_data.criteria))
+            self.limit_textbox.setText(json.dumps(initial_data.limit))
+            self.sort_textbox.setText(json.dumps(initial_data.sort))
 
     def get_scholarship_data(self) -> AwardCriteriaRecord:
         """Get data entered in the input fields.
@@ -187,21 +194,96 @@ class ScholarshipCriteriaDialog(QDialog):
         Returns:
             AwardCriteriaRecord: Scholarship criteria entered in the fields
         """
-        return AwardCriteriaRecord(self.name_edit.text(),) # Fix
+        name: str = None
+        criteria: dict = None
+        limit: int = None
+        sort: list[list[str, int]] = None
+
+        name: str = self.name_textbox.text()
+
+        # Name is primary key for scholarship table, so must not be empty
+        if not name:
+            raise Exception("Name is empty, please enter a name.")
+
+        # Perform data validation criteria
+        try:
+            text: str = self.criteria_textbox.toPlainText()
+
+            # If nothing is entered, use default criteria
+            if not text:
+                criteria = {}
+            else:
+                criteria = json.loads(text)
+
+                # If not a dict object, invalid criteria
+                if not isinstance(criteria, dict):
+                    raise Exception(
+                        "Invalid format for criteria. Please enter valid criteria."
+                    )
+        except json.JSONDecodeError as e:
+            raise Exception("Invalid format for criteria. Please enter valid criteria.")
+
+        # Perform data validation on limit
+        try:
+            text: str = self.limit_textbox.text()
+
+            # If nothing is entered, use default criteria
+            if not text:
+                limit = 0
+            else:
+                limit = json.loads(text)
+
+                # If limit is not a non-negative integer, invalid limit
+                if not isinstance(limit, int) or limit < 0:
+                    raise Exception(
+                        "Invalid value for limit. Please enter a non-negative integer for limit."
+                    )
+        except json.JSONDecodeError as f:
+            raise Exception(
+                "Invalid value for limit. Please enter a non-negative integer for limit."
+            )
+
+        # Perform data validation on sort
+        try:
+            text: str = self.sort_textbox.text()
+
+            # If nothing is entered, use default sort
+            if not text:
+                sort = sort = [["cum_gpa", 1]]
+            else:
+                sort = json.loads(text)
+
+                # If sort is not a list, invalid sort
+                if not isinstance(sort, list):
+                    raise Exception(
+                        "Invalid format for sort. Please enter a valid argument for sort."
+                    )
+        except json.JSONDecodeError as g:
+            raise Exception(
+                "Invalid format for sort. Please enter a valid argument for sort."
+            )
+
+        return AwardCriteriaRecord(name, criteria, limit, sort)
 
 
 # Example usage:
 if __name__ == "__main__":
     import sys
+    from rich import print
 
     app: QApplication = QApplication([])
     tab: ScholarlyManageScholarshipsTab = ScholarlyManageScholarshipsTab()
 
     # Set data for the list view
     data = [
-        {"name": "Item 1", "criteria": "A", "limit": "10", "sort": "asc"},
-        {"name": "Item 2", "criteria": "B", "limit": "20", "sort": "desc"},
-        {"name": "Item 3", "criteria": "C", "limit": "30", "sort": "asc"},
+        AwardCriteriaRecord(
+            **{
+                "name": "Item 1",
+                "criteria": {"a": "g"},
+                "limit": 1,
+                "sort": [["cum_gpa", 1]],
+            }
+        )
     ]
     tab.set_list_data(data)
 

@@ -21,6 +21,7 @@ from PyQt6.QtGui import (
     QPixmap,
     QFontDatabase,
     QFontInfo,
+    QStandardItem
 )
 from PyQt6.QtCore import QEvent, Qt, QSize, QModelIndex, pyqtSlot
 from student_table_model import StudentTableModel
@@ -105,12 +106,11 @@ class ScholarlyMainWindow(QMainWindow):
             clear_selection_button_clicked=self.clear_selection
             )
         
-
-        self.load_combobox()
         self.generate_letters_tab.toggleAll(False)
         self.send_emails_tab.toggleAll(False)
 
-        self.manage_scholarshops_tab =  ScholarlyManageScholarshipsTab()
+        self.manage_scholarshops_tab =  ScholarlyManageScholarshipsTab(self.add_new_scholarship, self.edit_selected_scholarship, self.delete_selected_scholarships, self.refresh_scholarships)
+        self.refresh_scholarships()
 
         self.tab_bar = ScholarlyTabBar(generate_letters_tab=self.generate_letters_tab, send_emails_tab=self.send_emails_tab, manage_scholarships_tab=self.manage_scholarshops_tab, outstanding_student_awards_tab=QWidget())
         central_widget_layout.addWidget(self.tab_bar)
@@ -695,6 +695,111 @@ class ScholarlyMainWindow(QMainWindow):
 
         self.generate_letters_tab.scholarshipComboxBoxAddItems(scholarship_names)
         self.send_emails_tab.scholarshipComboxBoxAddItems(scholarship_names)
+
+    @pyqtSlot()
+    def add_new_scholarship(self):
+        """
+        Add a new item to the scholarship list view.
+        """
+        item_data:AwardCriteriaRecord = self.manage_scholarshops_tab.get_scholarship_data_from_user()
+
+        # If data is not empty, append to list
+        if item_data:
+            try:
+                self.database.insert_award_criteria(item_data)
+            except Exception:
+                QMessageBox.critical(self, "Cannot Create Scholarship", "Error creating scholarship.")
+                self.refresh_scholarships()
+                return
+            
+            item = QStandardItem(item_data.name)
+            item.setEditable(False)  # Make item non-editable
+            item.setData(
+                item_data, Qt.ItemDataRole.UserRole
+            )
+            # Store data in list view
+            self.manage_scholarshops_tab.model.appendRow(item)
+
+        # Refresh scholarship info
+        self.refresh_scholarships()
+
+
+    @pyqtSlot()
+    def edit_selected_scholarship(self):
+        """
+        Edit the selected item in the list view.
+        """
+        selected_indexes = self.manage_scholarshops_tab.list_view.selectedIndexes()
+        
+        # If nothing is selected, do nothing
+        if not selected_indexes:
+            return
+
+        # Use index of first selected item
+        index = selected_indexes[0]
+        item = self.manage_scholarshops_tab.model.itemFromIndex(index)
+
+        # If item is not None, edit it
+        if item:
+            current_data:AwardCriteriaRecord = item.data(Qt.ItemDataRole.UserRole)
+            scholarship_name:str = current_data.name
+
+            new_data = self.manage_scholarshops_tab.get_scholarship_data_from_user(current_data, True)
+
+            # If new data is entered, change data in list view
+            # And update in database
+            if new_data:
+                # Update scholarship in database table
+                try:
+                    self.database.update_award_criteria(scholarship_name, new_data.criteria, new_data.limit, new_data.sort)
+                except Exception:
+                    QMessageBox.critical(self, "Cannot Update Scholarship", "Scholarship does not exist. Please refresh list.")
+                    self.refresh_scholarships()
+                    return
+                
+        
+        self.refresh_scholarships()
+
+    @pyqtSlot()
+    def delete_selected_scholarships(self):
+        """
+        Delete the selected items from the list view.
+        """
+        selected_indexes = self.manage_scholarshops_tab.list_view.selectedIndexes()
+        if not selected_indexes:
+            return
+
+        # items_to_remove:list[int] = []
+        # for index in selected_indexes:
+        #     items_to_remove.append(index.row())
+
+        # Remove items from bottom to top to avoid index issues
+        selected_indexes.sort(reverse=True)
+
+        for index in selected_indexes:
+            scholarship = self.manage_scholarshops_tab.model.itemFromIndex(index)
+
+            try:
+                self.database.remove_award_criteria(scholarship.text())
+            except Exception as e:
+                print(e)
+                QMessageBox.critical(self, "Error Deleting Scholarship", "Failed to delete scholarship. Scholarship does not exist. Refresh list.")
+
+        
+        # Refresh scholarship info
+        self.refresh_scholarships()
+
+    @pyqtSlot()
+    def refresh_scholarships(self):
+        """Refresh the scholarships in the manage scholarship tab list view, as well as the comboboxes in other tabs.
+        """
+        self.load_combobox()
+
+        scholarships:list[AwardCriteriaRecord] = self.database.select_all_award_criteria()
+
+        self.manage_scholarshops_tab.set_list_data(scholarships)
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

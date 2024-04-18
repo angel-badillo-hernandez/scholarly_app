@@ -7,7 +7,11 @@ and inserting records in the students table and award criteria table.
 
 import sqlite3
 import json
-from student_record import StudentRecord, read_student_data_from_csv, write_student_data_to_csv
+from student_record import (
+    StudentRecord,
+    read_student_data_from_csv,
+    write_student_data_to_csv,
+)
 from award_criteria_record import AwardCriteriaRecord
 from pypika import Query, Table, Field, Schema, Column, Columns, Order
 
@@ -126,7 +130,7 @@ class ScholarlyDatabase:
         conn.close()
 
     def insert_award_criteria(self, record: AwardCriteriaRecord) -> None:
-        """Inserts award critiera into the `award_criteria` table.
+        """Inserts award criteria into the `award_criteria` table.
 
         Inserts award criteria into the `award_criteria` table.
 
@@ -146,23 +150,44 @@ class ScholarlyDatabase:
         conn.commit()
         conn.close()
 
-    def delete_student(self, student_ID: str) -> None:
-        """Deletes a `StudentRecord` from the `students` table, if it exists.
+    def remove_award_criteria(self, name: str) -> None:
+        """Remove specified award criteria from table.
 
         Args:
-            student_ID (str): ID of the student.
-        """
-        query: Query = Query.from_(self.students_table_name)
-
-    def insert_open_file(self, file_path: str) -> None:
-        """Insert a file path into the "open_files" table.
-
-        Args:
-            file_path (str): File path to the open file.
+            name (str): Name of the award criteria / scholarship.
         """
         query: Query = (
-            Query.into(self.__open_files_table_name).columns("name").insert(file_path)
+            Query.from_(self.__award_criteria_table_name)
+            .where(Field("name") == name)
+            .delete()
         )
+
+        conn: sqlite3.Connection = sqlite3.connect(self.database_path)
+        cursor: sqlite3.Cursor = conn.cursor()
+
+        cursor.execute(str(query))
+        conn.commit()
+        conn.close()
+
+    def update_award_criteria(
+        self, name: str, criteria: dict, limit: int, sort: list
+    ) -> None:
+        """Update the specified award criteria.
+
+        Args:
+            name (str): Name of award criteria to update.
+            criteria (dict): Criteria of the award.
+            limit (int): Limit on returned matches.
+            sort (list): List specifying sorting behavior.
+        """
+        query: Query = (
+            Query.update(self.__award_criteria_table_name)
+            .set(Field("criteria"), json.dumps(criteria))
+            .set(Field("limit"), limit)
+            .set(Field("sort"), json.dumps(sort))
+            .where(Field("name") == name)
+        )
+
         conn: sqlite3.Connection = sqlite3.connect(self.database_path)
         cursor: sqlite3.Cursor = conn.cursor()
 
