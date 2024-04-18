@@ -249,7 +249,7 @@ class ScholarshipCriteriaDialog(QDialog):
 
             # If nothing is entered, use default sort
             if not text:
-                sort = sort = [["cum_gpa", 1]]
+                sort = sort = [["cum_gpa", -1]]
             else:
                 sort = json.loads(text)
 
