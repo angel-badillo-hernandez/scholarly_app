@@ -54,6 +54,7 @@ def create_form(
 
     f_man_q:dict = build_question_body("Outstanding Freshman Man", "Pick a candidate for Outstanding Freshman Man", True, "RADIO", f_man_a, True)
 
+    # Create question for freshman woman
     f_woman_a:list[dict] = []
 
     for freshman in freshman_women:
@@ -61,8 +62,22 @@ def create_form(
 
     f_woman_a.append({"isOther": True})
 
+    f_woman_q:dict = build_question_body("Outstanding Freshman Woman", "Pick a candidate for Outstanding Freshman Woman", True, "RADIO", f_woman_a, True)
+
+    # Create question for sophomore man
+    s_man_a:list[dict] = []
+
+    for sophomore in sophomore_men:
+        s_man_a.append({"value": freshman})
+
+    s_man_a.append({"isOther": True})
+
+    s_man_q:dict = build_question_body("Outstanding Sophomore Man", "Pick a candidate for Outstanding Sophomore Man", True, "RADIO", s_man_a, True)
+
     # Append this request to create question
     update_form_requests["requests"].append(f_man_q)
+    update_form_requests["requests"].append(f_woman_q)
+    update_form_requests["requests"].append(s_man_q)
 
     # Create form
     result = service.forms().create(body=form).execute()
