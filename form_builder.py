@@ -1,74 +1,110 @@
-#https://developers.google.com/forms/api/quickstart/python
-from apiclient import discovery
+# https://developers.google.com/forms/api/quickstart/python
+from google.oauth2.credentials import Credentials
+from scholarly_google_auth import google_oauth
+from googleapiclient.discovery import build, Resource
+from googleapiclient.errors import HttpError
 from httplib2 import Http
-from oauth2client import client, file, tools
+from datetime import datetime
 
-SCOPES = "https://www.googleapis.com/auth/forms.body"
-DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
 
-store = file.Storage("token.json")
-creds = None
-if not creds or creds.invalid:
-  flow = client.flow_from_clientsecrets("credentials.json", SCOPES)
-  creds = tools.run_flow(flow, store)
+def create_form(
+    credentials: Credentials,
+    freshman_men: list[str],
+    freshman_women: list[str],
+    sophomore_men: list[str],
+    sophomore_women: list[str],
+    junior_men: list[str],
+    junior_women: list[str],
+    senior_men: list[str],
+):
+    # Create Gmail API client
+    service: Resource = build("forms", "v1", credentials=credentials)
 
-form_service = discovery.build(
-    "forms",
-    "v1",
-    http=creds.authorize(Http()),
-    discoveryServiceUrl=DISCOVERY_DOC,
-    static_discovery=False,
-)
+    date: str = datetime.now().ctime()
 
-# Request body for creating a form
-NEW_FORM = {
-    "info": {
-        "title": "Quickstart form",
-    }
-}
-
-# Request body to add a multiple-choice question
-NEW_QUESTION = {
-    "requests": [
-        {
-            "createItem": {
-                "item": {
-                    "title": (
-                        "In what year did the United States land a mission on"
-                        " the moon?"
-                    ),
-                    "questionItem": {
-                        "question": {
-                            "required": True,
-                            "choiceQuestion": {
-                                "type": "RADIO",
-                                "options": [
-                                    {"value": "1965"},
-                                    {"value": "1967"},
-                                    {"value": "1969"},
-                                    {"value": "1971"},
-                                ],
-                                "shuffle": True,
-                            },
-                        }
-                    },
-                },
-                "location": {"index": 0},
-            }
+    form: dict = {
+        "info": {
+            "title": "Outstanding Student Awards",
+            "documentTitle": f"Outstanding Student Awards Form - {date}",
         }
-    ]
-}
+    }
 
-# Creates the initial form
-result = form_service.forms().create(body=NEW_FORM).execute()
+    update_form_requests: dict = {
+        "requests": [
+            {
+                "updateFormInfo": {
+                    "info": {
+                        "description": (
+                            'Voting form for Outstanding Student Awards. Please select a student or enter a student of your choice in "Other" in each category.'
+                        )
+                    },
+                    "updateMask": "description",
+                },
+            }
+        ]
+    }
 
-# Adds the question to the form
-question_setting = (
-    form_service.forms()
-    .batchUpdate(formId=result["formId"], body=NEW_QUESTION)
-    .execute()
-)
+    #Create question for freshman man
+    f_men_a:list[dict] = []
 
-# Prints the result to show the question has been added
-get_result = form_service.forms().get(formId=result["formId"]).execute()
-print(get_result)
+    for freshman in freshman_men:
+        f_men_a.append({"value": freshman})
+
+    f_men_a.append({"isOther": True})
+
+    f_men_q:dict = build_question_body("Outstanding Freshman Man", "Pick a candidate for Outstanding Freshman Man", True, "RADIO", f_men_a, True)
+
+    # Append this request to create question
+    update_form_requests["requests"].append(f_men_q)
+
+    result = service.forms().create(body=form).execute()
+
+    question_setting = (
+        service.forms()
+        .batchUpdate(formId=result["formId"], body=update_form_requests)
+        .execute()
+    )
+
+    get_result = service.forms().get(formId=result["formId"]).execute()
+
+    print(get_result)
+
+
+def build_question_body(
+    title: str,
+    description: str,
+    required: bool,
+    type: str,
+    options: list[dict],
+    shuffle: bool,
+) -> dict:
+
+    question_body: dict = {
+        "createItem": {
+            "item": {
+                "title": title,
+                "description": description,
+                "questionItem": {
+                    "question": {
+                        "required": required,
+                        "choiceQuestion": {
+                            "type": type,
+                            "options": options,
+                            "shuffle": True,
+                        },
+                    }
+                },
+            },
+            "location": {"index": 0},
+        }
+    }
+
+    return question_body
+
+
+if __name__ == "__main__":
+    from rich import print
+
+    creds = google_oauth()
+
+    create_form(creds, ["Angel", "Angel2"], None, None, None, None, None, None)
