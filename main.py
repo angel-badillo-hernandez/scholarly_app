@@ -403,7 +403,7 @@ class ScholarlyMainWindow(QMainWindow):
             letter_vars:LetterVariables = LetterVariables(student_name, date, amount, scholarship_name, academic_year_fall, academic_year_spring, sender_name, sender_email, sender_title)
             
             try:
-                write_letter(template_path, f"{dir_path}/{student_name}_{student.student_ID}.docx", letter_vars)
+                write_letter(template_path, f"{dir_path}/{student_name}_{student.student_ID}_{scholarship_name}.docx", letter_vars)
             except Exception as e:
                 QMessageBox.critical(self, "Invalid File Paths", f"Invalid template letter file path or destination directory path'.\n{type(e).__name__}: {e}")
                 return
