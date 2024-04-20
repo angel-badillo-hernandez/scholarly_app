@@ -1,4 +1,11 @@
-# https://developers.google.com/forms/api/quickstart/python
+"""Functions for creating basic Google Forms
+
+This module provides functions for creating basic Google Forms.
+
+Portions of code adapted from Google Forms API Quickstart:
+https://developers.google.com/forms/api/quickstart/python
+"""
+
 from google.oauth2.credentials import Credentials
 from scholarly_google_auth import google_oauth
 from googleapiclient.discovery import build, Resource

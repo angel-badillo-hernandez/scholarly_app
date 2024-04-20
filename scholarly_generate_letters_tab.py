@@ -1,3 +1,9 @@
+"""Provides widget for Generate Letters tab for Scholarly app.
+
+Provides the ScholarlyGenerateLettersTab QWidget subclass for simplifying and
+modularizing the code for creating the GUI for generating scholarship acceptance letters.
+"""
+
 from PyQt6.QtWidgets import (
     QWidget,
     QTabWidget,

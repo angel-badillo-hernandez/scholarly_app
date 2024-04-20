@@ -124,9 +124,9 @@ class ScholarlySendEmailsTab(QWidget):
         self.template_path_textbox.setToolTip(
             "The path to the template letter used for generating the acceptance letters."
         )
-        self.email_subject_textbox:QLineEdit = QLineEdit()
+        self.email_subject_textbox: QLineEdit = QLineEdit()
         self.email_subject_textbox.setToolTip("Subject line of the email.")
-        self.email_body_textbox:QTextEdit = QTextEdit()
+        self.email_body_textbox: QTextEdit = QTextEdit()
         self.email_body_textbox.setToolTip("Body of the email.")
 
         # Select template letter button
@@ -183,7 +183,7 @@ class ScholarlySendEmailsTab(QWidget):
         self.clear_selection_button.clicked.connect(clear_selection_button_clicked)
 
         # Clear email body button
-        self.clear_email_body_button:QToolButton = QToolButton()
+        self.clear_email_body_button: QToolButton = QToolButton()
         self.clear_email_body_button.setText("Clear Email Body")
         self.clear_email_body_button.setToolTip("Clears the email body textbox.")
         self.clear_email_body_button.clicked.connect(self.emailBodyTextBoxClear)
@@ -207,7 +207,7 @@ class ScholarlySendEmailsTab(QWidget):
         # Set entire main layout for widget
         self.setLayout(main_layout)
 
-    def emailSubjectTextBoxToggle(self, enabled:bool)-> None:
+    def emailSubjectTextBoxToggle(self, enabled: bool) -> None:
         """Toggles the email subject textbox.
 
         Args:
@@ -215,7 +215,7 @@ class ScholarlySendEmailsTab(QWidget):
         """
         self.email_subject_textbox.setEnabled(enabled)
 
-    def emailBodyTextBoxToggle(self, enabled:bool)-> None:
+    def emailBodyTextBoxToggle(self, enabled: bool) -> None:
         """Toggles the email body textbox.
 
         Args:
@@ -223,7 +223,7 @@ class ScholarlySendEmailsTab(QWidget):
         """
         self.email_body_textbox.setEnabled(enabled)
 
-    def clearEmailBodyButtonToggle(self, enabled:bool)-> None:
+    def clearEmailBodyButtonToggle(self, enabled: bool) -> None:
         """Toggles the clear email body button.
 
         Args:
@@ -485,7 +485,7 @@ class ScholarlySendEmailsTab(QWidget):
         """
         self.template_path_textbox.setText(file_path)
 
-    def getEmailSubjectTextBoxText(self)-> str:
+    def getEmailSubjectTextBoxText(self) -> str:
         """Returns the text from the email subject textbox.
 
         Returns:
@@ -493,7 +493,7 @@ class ScholarlySendEmailsTab(QWidget):
         """
         return self.email_subject_textbox.text()
 
-    def getEmailBodyTextBoxText(self)-> str:
+    def getEmailBodyTextBoxText(self) -> str:
         """Returns the rich text from the email body textbox as HTML.
 
         Returns:
@@ -502,10 +502,10 @@ class ScholarlySendEmailsTab(QWidget):
         return self.email_body_textbox.toHtml()
 
     @pyqtSlot()
-    def emailBodyTextBoxClear(self)-> None:
-        """Clears the email body textbox.
-        """
+    def emailBodyTextBoxClear(self) -> None:
+        """Clears the email body textbox."""
         self.email_body_textbox.clear()
+
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication

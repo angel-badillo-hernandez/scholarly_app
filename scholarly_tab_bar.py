@@ -42,7 +42,7 @@ class ScholarlyTabBar(QTabWidget):
     def __init__(
         self,
         generate_letters_tab: ScholarlyGenerateLettersTab = None,
-        send_emails_tab:ScholarlySendEmailsTab = None,
+        send_emails_tab: ScholarlySendEmailsTab = None,
         manage_scholarships_tab: ScholarlyManageScholarshipsTab = None,
         outstanding_student_awards_tab: ScholarlyOutstandingStudentAwardsTab = None,
     ) -> None:

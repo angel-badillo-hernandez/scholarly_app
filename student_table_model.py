@@ -129,8 +129,8 @@ class StudentTableModel(QAbstractTableModel):
             StudentRecord(*record) for record in self.student_data
         ]
         return data
-    
-    def get_row(self, row:int)->StudentRecord:
+
+    def get_row(self, row: int) -> StudentRecord:
         """Returns the data from a row in the table.
 
         Returns the data from a row in the table as a StudentRecord.
@@ -140,7 +140,7 @@ class StudentTableModel(QAbstractTableModel):
         Returns:
             A StudentRecord.
         """
-        record:StudentRecord = StudentRecord(*self.student_data[row])
+        record: StudentRecord = StudentRecord(*self.student_data[row])
         return record
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlag:

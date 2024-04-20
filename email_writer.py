@@ -1,4 +1,11 @@
-# https://developers.google.com/gmail/api/quickstart/python
+"""Functions for sending emails via GMail.
+
+This module provides functions for sending emails with attachments via Gmail.
+
+Portion of code in this module are adapted from GMail API quickstart:
+https://developers.google.com/gmail/api/quickstart/python
+"""
+
 from scholarly_google_auth import get_user_email_address
 from google.oauth2.credentials import Credentials
 import base64

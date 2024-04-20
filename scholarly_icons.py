@@ -1,3 +1,13 @@
+"""Provides class for creating Icons for Scholarly App
+
+This module provide the following classes for easily creating
+ScholarlyIcon objects, subclasses of QIcon for use in the Scholarly app:
+IconSizes, Icons, and ScholarlyIcon. IconSizes is an Enum subclass for simplifying the
+creation of icons of different sizes. Icons is a StrEnum subclass with the names of the icons
+used in the Scholarly app. ScholarlyIcon is a QIcon subclass that creates QIcon objects
+with the specified icon size, icon name, and icon color.
+"""
+
 from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor
 from PyQt6.QtCore import QSize
 import os
@@ -25,24 +35,24 @@ class Icons(StrEnum):
     Cancel: str = auto()
     Close: str = auto()
     CSV: str = auto()
-    ExitToApp:str = auto()
+    ExitToApp: str = auto()
     FileOpen: str = auto()
-    FileOpenFill:str = auto()
+    FileOpenFill: str = auto()
     Filter: str = auto()
-    FilterFill:str = auto()
+    FilterFill: str = auto()
     FolderOpen: str = auto()
-    FolderOpenFill:str = auto()
+    FolderOpenFill: str = auto()
     FormsAddOn: str = auto()
     Help: str = auto()
-    HelpFill:str = auto()
+    HelpFill: str = auto()
     Info: str = auto()
-    InfoFill:str = auto()
+    InfoFill: str = auto()
     Mail: str = auto()
     Remove: str = auto()
     Save: str = auto()
-    SaveFill:str = auto()
+    SaveFill: str = auto()
     SaveAs: str = auto()
-    SaveAsFill:str = auto()
+    SaveAsFill: str = auto()
     School: str = auto()
     Search: str = auto()
     Send: str = auto()
@@ -51,7 +61,7 @@ class Icons(StrEnum):
     Trophy: str = auto()
     ZoomIn: str = auto()
     ZoomOut: str = auto()
-    ExpandMore:str = auto()
+    ExpandMore: str = auto()
 
 
 class ScholarlyIcon(QIcon):

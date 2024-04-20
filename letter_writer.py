@@ -165,10 +165,12 @@ if __name__ == "__main__":
         "email@email.com",
         "Computer Science Master",
     )
-    
+
     write_letter("assets/templates/template_letter.docx", "test.docx", vars)
 
-    docx_bytes:bytes = write_letter_to_bytes("assets/templates/template_letter.docx", vars)
+    docx_bytes: bytes = write_letter_to_bytes(
+        "assets/templates/template_letter.docx", vars
+    )
 
     with open("test2.docx", "wb") as file:
         file.write(docx_bytes)

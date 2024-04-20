@@ -69,10 +69,10 @@ QLineEdit {
     selection-background-color: lightgray;
 }
 
-QToolButton#selectTemplateButton{
+QToolButton#selectTemplateButton {
     border-style: none;
 }
 
-QToolButton#selectDirectoryButton{
+QToolButton#selectDirectoryButton {
     border-style: none;
 }

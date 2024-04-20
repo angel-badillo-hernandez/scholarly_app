@@ -1,4 +1,12 @@
-# https://developers.google.com/gmail/api/quickstart/python
+"""Provides fuctions and descriptive exceptions for using Google OAuth
+
+This module provides functions for authenticating with Google OAuth and receiving credentials
+that can be used to work with the GMail and Google Forms APIs.
+
+Portions of code adapted from GMail API quickstart:
+https://developers.google.com/gmail/api/quickstart/python
+"""
+
 import os.path
 from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
@@ -45,7 +53,7 @@ class UserEmailAddressUnavailableError(Exception):
 
 
 def google_oauth(time_out_seconds: int = 300) -> Credentials:
-    """Gets authorization from token on user from Google OAuth consent page, then returns credentials.
+    """Gets authorization from token of user from Google OAuth consent page, then returns credentials.
 
     Args:
         time_out_seconds (int): The amount of time in seconds for the Google OAuth consent page times out. Defaults to 300, or 5 minutes. When None, there is no timeout.
