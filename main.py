@@ -34,6 +34,7 @@ from scholarly_tab_bar import ScholarlyTabBar
 from scholarly_generate_letters_tab import ScholarlyGenerateLettersTab
 from scholarly_send_emails_tab import ScholarlySendEmailsTab
 from scholarly_manage_scholarships_tab import ScholarlyManageScholarshipsTab
+from scholarly_outstanding_student_awards_tab import ScholarlyOutstandingStudentAwardsTab
 from scholarly_icons import ScholarlyIcon, Icons, IconSizes
 from scholarly_fonts import ScholarlyFont, Fonts
 from google.oauth2.credentials import Credentials
@@ -109,10 +110,12 @@ class ScholarlyMainWindow(QMainWindow):
         self.generate_letters_tab.toggleAll(False)
         self.send_emails_tab.toggleAll(False)
 
-        self.manage_scholarshops_tab =  ScholarlyManageScholarshipsTab(self.add_new_scholarship, self.edit_selected_scholarship, self.delete_selected_scholarships, self.refresh_scholarships)
+        self.manage_scholarships_tab =  ScholarlyManageScholarshipsTab(self.add_new_scholarship, self.edit_selected_scholarship, self.delete_selected_scholarships, self.refresh_scholarships)
         self.refresh_scholarships()
 
-        self.tab_bar = ScholarlyTabBar(generate_letters_tab=self.generate_letters_tab, send_emails_tab=self.send_emails_tab, manage_scholarships_tab=self.manage_scholarshops_tab, outstanding_student_awards_tab=QWidget())
+        self.student_awards_tab = ScholarlyOutstandingStudentAwardsTab()
+
+        self.tab_bar = ScholarlyTabBar(generate_letters_tab=self.generate_letters_tab, send_emails_tab=self.send_emails_tab, manage_scholarships_tab=self.manage_scholarships_tab, outstanding_student_awards_tab=self.student_awards_tab)
         central_widget_layout.addWidget(self.tab_bar)
 
         # Add layout to central widget
@@ -701,7 +704,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         Add a new item to the scholarship list view.
         """
-        item_data:AwardCriteriaRecord = self.manage_scholarshops_tab.get_scholarship_data_from_user()
+        item_data:AwardCriteriaRecord = self.manage_scholarships_tab.get_scholarship_data_from_user()
 
         # If data is not empty, append to list
         if item_data:
@@ -718,7 +721,7 @@ class ScholarlyMainWindow(QMainWindow):
                 item_data, Qt.ItemDataRole.UserRole
             )
             # Store data in list view
-            self.manage_scholarshops_tab.model.appendRow(item)
+            self.manage_scholarships_tab.model.appendRow(item)
 
         # Refresh scholarship info
         self.refresh_scholarships()
@@ -729,7 +732,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         Edit the selected item in the list view.
         """
-        selected_indexes = self.manage_scholarshops_tab.list_view.selectedIndexes()
+        selected_indexes = self.manage_scholarships_tab.list_view.selectedIndexes()
         
         # If nothing is selected, do nothing
         if not selected_indexes:
@@ -737,14 +740,14 @@ class ScholarlyMainWindow(QMainWindow):
 
         # Use index of first selected item
         index = selected_indexes[0]
-        item = self.manage_scholarshops_tab.model.itemFromIndex(index)
+        item = self.manage_scholarships_tab.model.itemFromIndex(index)
 
         # If item is not None, edit it
         if item:
             current_data:AwardCriteriaRecord = item.data(Qt.ItemDataRole.UserRole)
             scholarship_name:str = current_data.name
 
-            new_data = self.manage_scholarshops_tab.get_scholarship_data_from_user(current_data, True)
+            new_data = self.manage_scholarships_tab.get_scholarship_data_from_user(current_data, True)
 
             # If new data is entered, change data in list view
             # And update in database
@@ -765,7 +768,7 @@ class ScholarlyMainWindow(QMainWindow):
         """
         Delete the selected items from the list view.
         """
-        selected_indexes = self.manage_scholarshops_tab.list_view.selectedIndexes()
+        selected_indexes = self.manage_scholarships_tab.list_view.selectedIndexes()
         if not selected_indexes:
             return
 
@@ -777,7 +780,7 @@ class ScholarlyMainWindow(QMainWindow):
         selected_indexes.sort(reverse=True)
 
         for index in selected_indexes:
-            scholarship = self.manage_scholarshops_tab.model.itemFromIndex(index)
+            scholarship = self.manage_scholarships_tab.model.itemFromIndex(index)
 
             try:
                 self.database.remove_award_criteria(scholarship.text())
@@ -797,7 +800,7 @@ class ScholarlyMainWindow(QMainWindow):
 
         scholarships:list[AwardCriteriaRecord] = self.database.select_all_award_criteria()
 
-        self.manage_scholarshops_tab.set_list_data(scholarships)
+        self.manage_scholarships_tab.set_list_data(scholarships)
 
 
 

@@ -134,6 +134,7 @@ if __name__ == "__main__":
     a = QApplication([])
     s = ScholarlyTabBar(
         ScholarlyGenerateLettersTab(),
+        ScholarlySendEmailsTab(),
         ScholarlyManageScholarshipsTab(),
         ScholarlyOutstandingStudentAwardsTab(),
     )
