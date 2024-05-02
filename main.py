@@ -40,6 +40,7 @@ from scholarly_fonts import ScholarlyFont, Fonts
 from google.oauth2.credentials import Credentials
 from scholarly_google_auth import google_oauth, get_user_email_address
 from email_writer import gmail_send_email_from_bytes, gmail_send_email
+from form_builder import create_outstanding_student_awards_form
 
 # Absolute address for file to prevent issues with
 # relative addresses when building app with PyInstaller
@@ -113,7 +114,8 @@ class ScholarlyMainWindow(QMainWindow):
         self.manage_scholarships_tab =  ScholarlyManageScholarshipsTab(self.add_new_scholarship, self.edit_selected_scholarship, self.delete_selected_scholarships, self.refresh_scholarships)
         self.refresh_scholarships()
 
-        self.student_awards_tab = ScholarlyOutstandingStudentAwardsTab()
+        self.student_awards_tab = ScholarlyOutstandingStudentAwardsTab(self.create_form)
+        self.student_awards_tab.toggleAll(False)
 
         self.tab_bar = ScholarlyTabBar(generate_letters_tab=self.generate_letters_tab, send_emails_tab=self.send_emails_tab, manage_scholarships_tab=self.manage_scholarships_tab, outstanding_student_awards_tab=self.student_awards_tab)
         central_widget_layout.addWidget(self.tab_bar)
@@ -215,6 +217,7 @@ class ScholarlyMainWindow(QMainWindow):
         # Enable disabled components
         self.generate_letters_tab.toggleAll(True)
         self.send_emails_tab.toggleAll(True)
+        self.student_awards_tab.toggleAll(True)
 
         # Enable Save, Save As, and Close file actions on the menu bar
         self.menu_bar.saveActionToggle(True)
@@ -268,11 +271,14 @@ class ScholarlyMainWindow(QMainWindow):
         Function that is called when "Close" action is activated. Clears the database
         and clears the table.
         """
+        # Disable all components on these tabs to prevent errors
         self.generate_letters_tab.toggleAll(False)
         self.generate_letters_tab.scholarship_combobox.setCurrentText("")
 
         self.send_emails_tab.toggleAll(False)
         self.send_emails_tab.scholarship_combobox.setCurrentText("")
+
+        self.student_awards_tab.toggleAll(False)
 
         # Drop the table from the database
         self.database.drop_table(self.database.get_students_table_name())
@@ -802,6 +808,78 @@ class ScholarlyMainWindow(QMainWindow):
 
         self.manage_scholarships_tab.set_list_data(scholarships)
 
+    @pyqtSlot()
+    def create_form(self):
+
+        num_candidates:str = self.student_awards_tab.getNumCandidatesTextBoxText()
+        limit:int = 0
+
+        # If no valid number is entered, show warning
+        if not num_candidates and int(num_candidates) < 0:
+            QMessageBox.warning(self, "Enter Number of Candidates", "Please enter a positive integer.")
+            return
+        else:
+            limit = int(num_candidates)
+
+        categories:list[str] = ["freshman", "sophomore", "junior", "senior", "graduate"]
+        genders:list[str] = ["male", "female"]
+
+        candidates:dict[str, dict[str, list[str]]] = {
+            "freshman": {"male": [], "female": []},
+            "sophomore": {"male": [], "female": []},
+            "junior": {"male": [], "female": []},
+            "senior": {"male": [], "female": []},
+            "graduate": {"male": [], "female": []},
+        }
+
+        form_link:str = None
+
+        # Create lists of candidates
+        for category in categories:
+            for gender in genders:
+                # Specify criteria
+                criteria:AwardCriteriaRecord = AwardCriteriaRecord(category, {"classification": category, "gender": gender, "major": "Computer Science"}, limit)
+                # Get students
+                students:list[StudentRecord] = self.database.select_students_by_criteria(criteria)
+
+                # Creating list of names
+                for student in students:
+                    student_last_name, student_first_name = student.name.split(",")
+                    student_last_name = student_last_name.lstrip().rstrip()
+                    student_first_name = student_first_name.lstrip().rstrip()
+                    student_name = f"{student_first_name} {student_last_name}"
+                    
+                    candidates[category][gender].append(student_name)
+        try:
+            # Authorize user
+            creds:Credentials = google_oauth()
+
+        
+            form_link = create_outstanding_student_awards_form(
+                creds, 
+                candidates["freshman"]["male"], candidates["freshman"]["female"], 
+                candidates["sophomore"]["male"], candidates["sophomore"]["female"], 
+                candidates["junior"]["male"], candidates["junior"]["female"],
+                candidates["senior"]["male"], candidates["senior"]["female"],
+                candidates["graduate"]["male"], candidates["graduate"]["female"]
+                )
+
+        except:
+            QMessageBox.critical(self, "Failed to Create Form", "Please try again later.")
+            return
+        
+         # Open Browser to Google Forms to show form
+        reponse: QMessageBox.StandardButton = QMessageBox.question(
+            self,
+            "Open Google Form in Browser",
+            "The Google Form was successfully created.\nWould you like to view it in your browser?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+
+        if reponse == QMessageBox.StandardButton.Yes:
+            webbrowser.open(form_link)
+                
+        
 
 
 if __name__ == "__main__":
