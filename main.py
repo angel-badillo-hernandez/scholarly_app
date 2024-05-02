@@ -876,6 +876,7 @@ class ScholarlyMainWindow(QMainWindow):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
 
+        # Open browser if response is yes
         if reponse == QMessageBox.StandardButton.Yes:
             webbrowser.open(form_link)
                 
