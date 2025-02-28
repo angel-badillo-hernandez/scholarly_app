@@ -20,8 +20,14 @@ Scholarly is a self-contained system and does not rely on integration with other
 
 ---
 
-## Software Requirements Specification Document
-[![Software Demo](https://github.com/user-attachments/assets/58d98cce-e682-4589-9a08-5de7458d7b1a)](/scholarly_app_srs.pdf)
+## [Software Requirements Specification Document](/scholarly_app_srs.pdf)
+
+[![Document](https://github.com/user-attachments/assets/58d98cce-e682-4589-9a08-5de7458d7b1a)](/scholarly_app_srs.pdf)
+
+---
+
+## [Feasability Study](/scholarly_feasability_study.pdf)
+[![Document](https://github.com/user-attachments/assets/7fedd1bd-d802-4cdf-8256-9ffe685755ff)](/scholarly_feasability_study.pdf)
 
 ---
 ## **Python Virtual Environment Setup**  
