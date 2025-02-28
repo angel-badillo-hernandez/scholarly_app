@@ -1,75 +1,93 @@
-# scholarly_app
+# Scholarly App
 
-# Windows App developed with PyQt6 GUI framework.
+## Overview
 
-## Python3.12
+Scholarly is a Windows application designed to streamline the process of managing scholarships and academic awards for the Midwestern State University (MSU) Department of Computer Science. The app provides functionality for the scholarship committee to efficiently filter and evaluate student data, generate personalized scholarship award letters, and create polls for the selection of Outstanding Student Award candidates. It allows for easy importation of student application data from CSV files, and helps facilitate the approval process for scholarships and awards.
 
-## Python Virtual Environment Setup:
+The primary user of Scholarly is the Chair of the MSU Computer Science Scholarship Committee. Scholarly does not include students or applicants as users, but instead focuses on helping the committee make decisions by simplifying data filtering, award letter generation, and voting processes. 
 
-1. Download Python3.12, easier to do so on Microsft Store.
-2. Get into the scholarly_app directory.
-3. Run the following command in Powershell:
+Scholarly is a self-contained system and does not rely on integration with other larger systems, offering a dedicated solution to MSU’s scholarship and award selection processes.
 
-```powershell
-python3.12 -m venv venv
-```
+---
 
-4. To activate and use the virtual environment's Python interpretor run the following command:
+## **Technologies Used**  
+- **Python 3.12**  
+- **PyQt6**  
+- **SQLite3**  
+- **Google Forms API**
+- **GMail API**
+- **Google Auth API**
 
-```
-venv\Scripts\Activate.ps1
-```
+---
 
-5. To install the require packages, run the following command:
+## **Python Virtual Environment Setup**  
 
-```
-pip install -r requirements.txt
-```
+1. Download **Python 3.12** (easily available on the Microsoft Store).  
+2. Navigate to the **scholarly_app** directory.  
+3. Run the following command in PowerShell:  
 
-## Opening and Closing the Python Virtual Environment:
+   ```powershell
+   python3.12 -m venv venv
+   ```
 
-- To open the virtual environment, run this command in powershell:
+4. To activate the virtual environment, use this command:  
 
-```
-venv\Scripts\Activate.ps1
-```
+   ```powershell
+   venv\Scripts\Activate.ps1
+   ```
 
-- To close the virtual environment, run this command in Powershell:
+5. To install the required packages, run:  
 
-```
-deactivate
-```
+   ```powershell
+   pip install -r requirements.txt
+   ```
 
-## Running Python Source Files:
+---
 
-- To run a script:
+## **Opening and Closing the Python Virtual Environment**  
 
-```
-python main.py
-```
+- To open the virtual environment, run this command in PowerShell:  
 
-## Turning the project into a distributable EXE with included dependencies:
+   ```powershell
+   venv\Scripts\Activate.ps1
+   ```
 
-- Coming soon
+- To close the virtual environment, run this command in PowerShell:  
 
-## Recommended VS Code Extensions:
+   ```powershell
+   deactivate
+   ```
 
-- Black Formatter: ms-python.black-formatter
-- Python: ms-python.python
-- SQLite Viewer: qwtel.sqlite-viewer
-- Todo Tree: Gruntfuggly.todo-tree
-- Office Viewer: cweijan.vscode-office
+---
 
-## Resources:
+## **Running Python Source Files**  
 
-### Sqlite3
+- To run the script, execute:  
 
-- https://docs.python.org/3/library/sqlite3.html
+   ```powershell
+   python main.py
+   ```
 
-### PyQt6
+---
 
-- https://pypi.org/project/PyQt6/
+## **Turning the Project into a Distributable EXE with Included Dependencies**  
 
-### Google Forms API:
+- Coming soon...
 
-- https://developers.google.com/forms/api/quickstart/python
+---
+
+## **Resources**  
+
+- [SQLite3 Documentation](https://docs.python.org/3/library/sqlite3.html)  
+- [PyQt6 Documentation](https://pypi.org/project/PyQt6/)  
+- [Google Forms API](https://developers.google.com/forms/api/quickstart/python)  
+
+---
+
+## **Video Demonstrations**  
+
+### 1. **Project Presentation**  
+[![Project Presentation](https://img.youtube.com/vi/rPxEUYlOVX0/0.jpg)](https://www.youtube.com/watch?v=rPxEUYlOVX0)
+
+### 2. **Software Demo**  
+[![Software Demo](https://img.youtube.com/vi/Z3uo21HEc4s/0.jpg)](https://www.youtube.com/watch?v=Z3uo21HEc4s)
