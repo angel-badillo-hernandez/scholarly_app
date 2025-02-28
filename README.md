@@ -20,6 +20,10 @@ Scholarly is a self-contained system and does not rely on integration with other
 
 ---
 
+## Software Requirements Specification Document
+[![Software Demo](https://github.com/user-attachments/assets/58d98cce-e682-4589-9a08-5de7458d7b1a)](/scholarly_app_srs.pdf)
+
+---
 ## **Python Virtual Environment Setup**  
 
 1. Download **Python 3.12** (easily available on the Microsoft Store).  
